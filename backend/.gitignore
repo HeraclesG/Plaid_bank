@@ -1,0 +1,11 @@
+# Dependencies
+node_modules
+
+# yarn error logs
+yarn-error.log
+
+# Code coverage
+coverage
+
+yarn.lock
+package-lock.json
