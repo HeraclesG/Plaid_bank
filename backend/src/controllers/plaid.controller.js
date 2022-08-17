@@ -70,7 +70,7 @@ const createLinkToken = catchAsync(async (req, res, next) => {
           // This should correspond to a unique id for the current user.
           client_user_id: 'user-id',
         },
-        client_name: 'Maui',
+        client_name: 'Oropay',
         products: PLAID_PRODUCTS,
         country_codes: PLAID_COUNTRY_CODES,
         language: 'en',
