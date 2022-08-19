@@ -81,10 +81,6 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    userId: {
-      type: String,
-      required: true,
-    },
     payMethods: [
       {
         ref: "PayMethod",
