@@ -4,6 +4,9 @@ import { StyleSheet, Text,TouchableOpacity , View} from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg"
 import Keyboard from '../components/Keyboard';
+import { User } from '../module/user/User'
+import { userStore } from '../module/user/UserStore'
+
 
 export default function PinScreen({navigation}) {
   const [pins,setPins]=useState([]);
@@ -18,7 +21,28 @@ export default function PinScreen({navigation}) {
     
   }
   function IsOk(){
-    navigation.navigate('DashboardScreen');
+    pinLogin();
+  }
+  const goBack=()=>{
+    userStore.logout();
+  }
+  const pinLogin = () => {
+    // if (email === '') {
+    //   Alert.alert('Warning', 'Please input Login');
+    //   return;
+    // }
+    // if (password === '') {
+    //   Alert.alert('Warning', 'Please input password');
+    //   return;
+    // }
+    const loginResponse={
+      ...userStore.user,
+      userId:userStore.user.id,
+      permission:2,
+    }
+
+    const user = User.fromJson(loginResponse, loginResponse.email)
+    userStore.setUser(user)
   }
   function delPin(val){
     const mid=[...pins];
@@ -27,7 +51,7 @@ export default function PinScreen({navigation}) {
   }
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={navigation.goBack}>
+      <TouchableOpacity onPress={goBack}>
           <Svg
             width={22}
             height={20}

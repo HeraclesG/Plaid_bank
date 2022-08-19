@@ -5,11 +5,31 @@ import { StyleSheet,TouchableOpacity, Text,CheckBox , View} from 'react-native';
 import { theme } from '../core/theme';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
+import { User } from '../module/user/User'
+import { userStore } from '../module/user/UserStore'
 
 export default function LoginScreen({navigation}) {
   const [isSelected, setSelection] = useState(false);
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const login = () => {
+    // if (email === '') {
+    //   Alert.alert('Warning', 'Please input Login');
+    //   return;
+    // }
+    // if (password === '') {
+    //   Alert.alert('Warning', 'Please input password');
+    //   return;
+    // }
+    const loginResponse={
+      userId:1,
+      authToken:'test',
+      refreshToken:'test',
+      permission:1,
+    };
+    const user = User.fromJson(loginResponse, email)
+    userStore.setUser(user)
+  }
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -59,7 +79,7 @@ export default function LoginScreen({navigation}) {
           />
           <Text style={styles.label}>Remember Me</Text>
         </View>
-        <Button onPress={()=>{navigation.navigate('PinScreen');}}  color={theme.colors.backgroundColor} style={styles.Sign}>
+        <Button onPress={login}  color={theme.colors.backgroundColor} style={styles.Sign}>
           Log In
         </Button>
       </View>

@@ -12,6 +12,7 @@ export const theme = {
     thickyellowColor:'#C6A15A',
     textinputbackColor:'#3C3C3C',
     pinbackColor:'#242424',
+    bottomColor:'#111111',
     description:'blue',
     error:'red'
   },

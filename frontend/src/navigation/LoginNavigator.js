@@ -4,7 +4,6 @@ import {
 import SplashScreen from '../screen/SplashScreen'
 import DashboardScreen from '../screen/DashboardScreen'
 import LoginScreen from '../screen/LoginScreen'
-import PinScreen from '../screen/PinScreen'
 import SignupScreen from '../screen/SignupScreen'
 import LinkbankScreen from '../screen/LinkbankScreen'
 import LinkbankLoginScreen from '../screen/LinkbankLoginScreen'
@@ -28,11 +27,6 @@ return (
       <Stack.Screen
           name="LoginScreen"
           component={LoginScreen}
-          options={{ headerShown: false }}
-      />
-      <Stack.Screen
-          name="PinScreen"
-          component={PinScreen}
           options={{ headerShown: false }}
       />
       <Stack.Screen
