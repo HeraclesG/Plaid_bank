@@ -63,14 +63,15 @@ const configuration = new Configuration({
 const client = new PlaidApi(configuration);
 
 const createLinkToken = catchAsync(async (req, res, next) => {
+  console.log(req.sessionID)
   Promise.resolve()
     .then(async function () {
       const configs = {
         user: {
           // This should correspond to a unique id for the current user.
-          client_user_id: 'user-id',
+          client_user_id: req.sessionID,
         },
-        client_name: 'Oropay',
+        client_name: 'OroCash',
         products: PLAID_PRODUCTS,
         country_codes: PLAID_COUNTRY_CODES,
         language: 'en',
@@ -90,6 +91,20 @@ const createLinkToken = catchAsync(async (req, res, next) => {
     })
     .catch(next);
 });
+
+const exchangePublicToken = catchAsync(async(req, res, next)=>{
+  console.log(req.sessionID, req.body.public_token)
+  const exchangeResponse = await client.itemPublicTokenExchange({
+    public_token: req.body.public_token,
+  });
+  console.log(exchangeResponse.data)
+
+  // FOR DEMO PURPOSES ONLY
+  // Store access_token in DB instead of session storage
+  req.session.access_token = exchangeResponse.data.access_token;
+  console.log(req.session)
+  res.json(true);
+})
 
 const setProcessorToken = catchAsync(async (req, res, next) => {
   PUBLIC_TOKEN = req.body.public_token;
@@ -128,7 +143,19 @@ const setProcessorToken = catchAsync(async (req, res, next) => {
     .catch(next);
 });
 
+const getBalance = catchAsync(async(req, res, next)=>{
+  console.log(req.session)
+  const access_token = req.session.access_token;
+  console.log(access_token)
+  const balanceResponse = await client.accountsBalanceGet({ access_token });
+  res.json({
+    Balance: balanceResponse.data,
+  });
+}) 
+
 module.exports = {
   createLinkToken,
   setProcessorToken,
+  exchangePublicToken,
+  getBalance
 };

@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require("express-session");
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -15,6 +16,12 @@ const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 
 const app = express();
+
+app.use(
+  // FOR DEMO PURPOSES ONLY
+  // Use an actual secret key in production
+  session({ secret: "bosco", saveUninitialized: true, resave: true })
+);
 
 if (config.env !== 'test') {
     app.use(morgan.successHandler);

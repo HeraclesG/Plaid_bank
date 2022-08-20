@@ -72,7 +72,7 @@ module.exports = {
     plaidEnv: 'sandbox',
     // product: 'payment_initiation',
     product: 'auth,transactions',
-    countryCode: 'GB',
+    countryCode: 'US',
     redirectUri: '',
     androidPackageName: '',
   },
