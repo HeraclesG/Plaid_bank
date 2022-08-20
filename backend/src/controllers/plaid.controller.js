@@ -102,8 +102,7 @@ const exchangePublicToken = catchAsync(async(req, res, next)=>{
   // FOR DEMO PURPOSES ONLY
   // Store access_token in DB instead of session storage
   req.session.access_token = exchangeResponse.data.access_token;
-  console.log(req.session)
-  res.json(true);
+  res.json(exchangeResponse.data);
 })
 
 const setProcessorToken = catchAsync(async (req, res, next) => {
@@ -144,9 +143,7 @@ const setProcessorToken = catchAsync(async (req, res, next) => {
 });
 
 const getBalance = catchAsync(async(req, res, next)=>{
-  console.log(req.session)
-  const access_token = req.session.access_token;
-  console.log(access_token)
+  const access_token = req.body.access_token;
   const balanceResponse = await client.accountsBalanceGet({ access_token });
   res.json({
     Balance: balanceResponse.data,

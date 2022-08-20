@@ -20,7 +20,7 @@ const app = express();
 app.use(
   // FOR DEMO PURPOSES ONLY
   // Use an actual secret key in production
-  session({ secret: "bosco", saveUninitialized: true, resave: true })
+  session({ secret: "orocash", saveUninitialized: true, resave: true })
 );
 
 if (config.env !== 'test') {
