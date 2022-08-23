@@ -9,8 +9,8 @@ export default function SplashScreen({navigation}) {
           <View style={styles.title}>
               <Text style={styles.oro}>
                 ORO
-                  <Text style={styles.pay}>
-                      pay
+                  <Text style={styles.cash}>
+                      cash
                   </Text>
               </Text>
           </View>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     fontSize:theme.fontSize.title,
     fontWeight:theme.fontWeight.normal,
   },
-  pay:{
+  cash:{
     color:theme.colors.whiteColor,
   },
   product:{

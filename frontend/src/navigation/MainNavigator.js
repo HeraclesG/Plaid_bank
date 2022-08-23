@@ -9,6 +9,11 @@ import { useState } from 'react';
 
 import SplashScreen from '../screen/SplashScreen'
 import HomeScreen from '../screen/HomeScreen'
+import AddmoneyScreen from '../screen/AddmoneyScreen'
+import TransferScreen from '../screen/TransferScreen'
+import AddmoneystepScreen from '../screen/AddmoneystepScreen'
+import TransactioncompScreen from '../screen/TransactioncompScreen'
+import TransfertoScreen from '../screen/TransfertoScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -17,7 +22,7 @@ return (
   <Stack.Navigator>
       <Stack.Screen
           name="MainScreen"
-          component={MaineScreen}
+          component={MainScreen}
           options={{ headerShown: false }}
       />
   </Stack.Navigator>
