@@ -57,7 +57,7 @@ export default function AddmoneystepScreen({navigation}) {
       <Text style={styles.subtitle}>
          Wallet balance after transaction: $405.00
       </Text>
-      <Button onPress={()=>{}}  color={theme.colors.backgroundColor} style={styles.Sign}>
+      <Button onPress={()=>{navigation.navigate('TransactioncompScreen');}}  color={theme.colors.backgroundColor} style={styles.Sign}>
         <Text style={styles.bttext}>
           Add Money
         </Text>

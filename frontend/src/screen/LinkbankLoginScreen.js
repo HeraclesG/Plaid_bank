@@ -56,15 +56,17 @@ export default function LinkbankLoginScreen({navigation}) {
             autoCapitalize="none"
           />
         </View>
-        <Button onPress={()=>{navigation.navigate('WelcomeScreen');}}  color={theme.colors.backgroundColor} style={styles.Sign}>
-          Submit
+        <Button onPress={()=>{navigation.navigate('WelcomeScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
+          <Text style={styles.bttext}>
+            Submit
+          </Text>
         </Button>
         <View style={styles.footer}>
           <Text style={styles.desc}>
             Dont have a bank account?
             <TouchableOpacity>
               <Text style={styles.redir}>
-                Create withoutbank
+                Create without bank
               </Text>
             </TouchableOpacity>
           </Text>
@@ -113,10 +115,19 @@ const styles = StyleSheet.create({
   desc:{
     color:theme.colors.whiteColor,
   },
-  Sign:{
-    marginVertical:25,
+  mannual:{
     backgroundColor:theme.colors.yellowtextColor,
-    paddingVertical:5,
+    fontSize:theme.fontSize.subtitle1,
+    marginVertical:20,
+    paddingVertical:12,
+    paddingHorizontal:10,
+    borderRadius:10,
+  },
+  bttext: {
+    textAlign:'center',
+    fontWeight: theme.fontWeight.bold,
+    fontSize: 18,
+    lineHeight: 22,
   },
   redir:{
     paddingLeft:5,

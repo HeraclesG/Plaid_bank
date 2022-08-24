@@ -8,11 +8,11 @@ import { User } from '../module/user/User'
 import { userStore } from '../module/user/UserStore'
 import Button from '../components/Button';
 
-export default function TransactioncompScreen() {
+export default function TransactioncompScreen({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={()=>{}} style={{paddingHorizontal:19,}}>
+        <TouchableOpacity onPress={()=>{navigation.goBack}} style={{paddingHorizontal:19,}}>
             <Svg
               width={22}
               height={20}
@@ -64,11 +64,15 @@ export default function TransactioncompScreen() {
           Wallet balance after transaction: $405.00
         </Text>
         <View style={styles.buttons}>
-            <Button onPress={()=>{navigation.navigate('LoginScreen');}}  color={theme.colors.whiteColor}  style={styles.Login} >
-                Log In
+            <Button onPress={()=>{navigation.navigate('LoginScreen');}}  color={theme.colors.whiteColor}  style={styles.mannual} >
+             <Text style={[styles.bttext,{color:theme.colors.whiteColor}]}>
+                Do it Later
+              </Text>
             </Button>
-            <Button onPress={()=>{navigation.navigate('SignupScreen');}}  color={theme.colors.backgroundColor} style={styles.Sign}>
-                Sign Up
+            <Button onPress={()=>{navigation.navigate('SignupScreen');}}  color={theme.colors.backgroundColor} style={[styles.Sign]}>
+                <Text style={[styles.bttext,{paddingHorizontal:50}]}>
+                    Yes
+                </Text>
             </Button>
        </View>
       </View>
@@ -136,8 +140,22 @@ const styles = StyleSheet.create({
     borderColor:theme.colors.whiteColor,
     paddingVertical:5,
   },
+  mannual:{
+    borderColor:theme.colors.whiteColor,
+    paddingVertical:12,
+    paddingHorizontal:20,
+    borderRadius:10,
+  },
+  bttext: {
+    textAlign:'center',
+    fontWeight: theme.fontWeight.bold,
+    fontSize: 18,
+    lineHeight: 22,
+  },
   Sign:{
-    backgroundColor:theme.colors.yellowtextColor, 
-    paddingVertical:5,
-  }
+    backgroundColor:theme.colors.yellowtextColor,
+    paddingVertical:12,
+    paddingHorizontal:10,
+    borderRadius:10,
+  },
 });
