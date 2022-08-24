@@ -79,8 +79,10 @@ export default function LoginScreen({navigation}) {
           />
           <Text style={styles.label}>Remember Me</Text>
         </View>
-        <Button onPress={login}  color={theme.colors.backgroundColor} style={styles.Sign}>
-          Log In
+        <Button onPress={login}  color={theme.colors.backgroundColor} style={styles.mannual}>
+          <Text style={styles.bttext}>
+           Log In
+          </Text>
         </Button>
       </View>
       <View style={styles.footer}>
@@ -123,9 +125,18 @@ const styles = StyleSheet.create({
   inputgroup:{
     marginBottom:10,
   },
-  Sign:{
+  mannual:{
     backgroundColor:theme.colors.yellowtextColor,
-    paddingVertical:5,
+    marginVertical:20,
+    paddingVertical:12,
+    paddingHorizontal:10,
+    borderRadius:10,
+  },
+  bttext: {
+    textAlign:'center',
+    fontWeight: theme.fontWeight.bold,
+    fontSize: 18,
+    lineHeight: 22,
   },
   body:{
     marginVertical:'auto',
@@ -133,6 +144,7 @@ const styles = StyleSheet.create({
   },
   checkboxContainer: {
     flexDirection: "row",
+    marginLeft:10,
     marginBottom: 20,
   },
   checkbox:{
@@ -144,8 +156,7 @@ const styles = StyleSheet.create({
   },
   footer:{
     marginBottom:82,
-    textAlign:'center',
-    
+    textAlign:'center', 
     fontSize:theme.fontSize.smallSize,
     fontWeight:theme.fontWeight.normal,
   },

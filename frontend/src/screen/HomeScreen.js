@@ -6,7 +6,7 @@ import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg";
 import HomeCard from '../components/HomeCard';
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({navigation, onView}) {
   const data= [
     {id:1, avatar:"avatar.jpg",name:"Lisa Benson", date:'04 August, 2022',  money: "25.95"},
     {id:2, avatar:"avatar.jpg",name:"Cody Christian", date:'21 July, 2022',  money: "40.21"},
@@ -64,7 +64,7 @@ export default function HomeScreen({navigation}) {
       </ImageBackground>
       <View style={styles.group0}>
         <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={()=>{navigation.navigate('AddmoneyScreen');}}>
             <Svg
               width={20}
               height={20}
@@ -100,7 +100,7 @@ export default function HomeScreen({navigation}) {
           </Text>
         </View>
         <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={()=>{navigation.navigate('TransferScreen');}}>
             <Svg
               width={25}
               height={24}
@@ -161,6 +161,16 @@ export default function HomeScreen({navigation}) {
         </View>
       </View>
       <View style={styles.body}>
+        <View style={styles.row}>
+          <Text style={styles.recent}>
+             Recent Activity
+          </Text>
+          <TouchableOpacity onPress={()=>{onView(1)}}>
+            <Text style={styles.all}>
+              View All
+            </Text>
+          </TouchableOpacity>
+        </View>
       <FlatList style={styles.list}
           data={data}
           keyExtractor= {(item) => {
@@ -299,6 +309,24 @@ const styles = StyleSheet.create({
     marginTop:190,
     backgroundColor:theme.colors.homebackgroundColor,
   },
+  row:{
+    height:60,
+    display:'flex',
+    flexDirection:'row',
+    justifyContent:'space-between',
+    alignItems:'center',
+    paddingHorizontal:17,
+   },
+   recent:{
+    color:theme.colors.blackColor,
+    fontSize:theme.fontSize.subtitle1,
+    fontWeight:theme.fontWeight.normal,
+   },
+   all:{
+    color:theme.colors.lightgreytextColor,
+    fontSize:theme.fontSize.content0,
+    fontWeight:theme.fontWeight.normal,
+   },
   list:{
     marginHorizontal:17,
   }

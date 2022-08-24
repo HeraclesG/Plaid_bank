@@ -28,9 +28,9 @@ export default function AddmoneyScreen({navigation}) {
               How would you like to add money?
           </Text>
         </View>
-        <Button onPress={()=>{navigation.navigate('LinkbankLoginScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
+        <Button onPress={()=>{navigation.navigate('AddmoneystepScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
           <View style={styles.row}>
-             <Text>
+             <Text style={styles.text}>
                 Direct Bank Transfer
              </Text>
              <View style={styles.svg}>
@@ -48,10 +48,10 @@ export default function AddmoneyScreen({navigation}) {
              </View>
           </View>
         </Button>
-        <Button onPress={()=>{navigation.navigate('LinkbankLoginScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
+        <Button onPress={()=>{}}  color={theme.colors.backgroundColor} style={styles.mannual}>
           <View style={styles.row}>
-             <Text>
-                Direct Bank Transfer
+             <Text style={styles.text}>
+              Credit Card
              </Text>
              <View style={styles.svg}>
                  <Svg
@@ -68,10 +68,10 @@ export default function AddmoneyScreen({navigation}) {
              </View>
           </View>
         </Button>
-        <Button onPress={()=>{navigation.navigate('LinkbankLoginScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
+        <Button onPress={()=>{}}  color={theme.colors.backgroundColor} style={styles.mannual}>
           <View style={styles.row}>
-             <Text>
-                Direct Bank Transfer
+             <Text style={styles.text}>
+               Cryptocurrency Transfer
              </Text>
              <View style={styles.svg}>
                  <Svg
@@ -88,10 +88,10 @@ export default function AddmoneyScreen({navigation}) {
              </View>
           </View>
         </Button>
-        <Button onPress={()=>{navigation.navigate('LinkbankLoginScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
+        <Button onPress={()=>{}}  color={theme.colors.backgroundColor} style={styles.mannual}>
           <View style={styles.row}>
-             <Text>
-                Direct Bank Transfer
+             <Text style={styles.text}>
+              Foreign Transfer
              </Text>
              <View style={styles.svg}>
                  <Svg
@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
     flex:1,
     backgroundColor:theme.colors.backgroundColor,
     paddingHorizontal:19,
-    paddingVertical:45
+    paddingTop:45,
+    paddingBottom:130,
   },
   header:{
     textAlign:'center',
@@ -128,16 +129,17 @@ const styles = StyleSheet.create({
     fontSize:theme.fontSize.subtitle0,
     fontWeight:theme.fontWeight.bold,
     marginVertical:20,
-    marginBottom:100,
+    marginBottom:46,
     width:280,
     textAlign:'left'
   },
   mannual:{
     backgroundColor:theme.colors.yellowtextColor,
     marginVertical:20,
-    paddingVertical:0,
+    paddingVertical:10,
     paddingHorizontal:10,
-    borderRadius:30,
+    borderRadius:20,
+    justifyContent:'space-between'
   },
   svg:{
     marginLeft:10,
@@ -150,7 +152,13 @@ const styles = StyleSheet.create({
     backgroundColor:theme.colors.backgroundColor,
     borderRadius:'100%',
   },
+  text: {
+    fontWeight: theme.fontWeight.normal,
+    fontSize: 18,
+    lineHeight: 22,
+  },
   row:{
+    width:'100%',
     height:60,
     display:'flex',
     flexDirection:'row',

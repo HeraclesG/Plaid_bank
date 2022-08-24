@@ -160,8 +160,10 @@ export default function SignupScreen({navigation}) {
             autoCapitalize="none"
           />
         </View>
-        <Button onPress={()=>{navigation.navigate('LinkbankScreen');}}  color={theme.colors.backgroundColor} style={styles.Sign}>
-          Sign Up
+        <Button onPress={()=>{navigation.navigate('LinkbankScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
+            <Text style={styles.bttext}>
+              Sign Up
+            </Text>
         </Button>
       </View>
       <View style={styles.footer}>
@@ -198,10 +200,18 @@ const styles = StyleSheet.create({
   inputgroup:{
     marginBottom:10,
   },
-  Sign:{
-    marginVertical:50,
+  mannual:{
     backgroundColor:theme.colors.yellowtextColor,
-    paddingVertical:5,
+    marginVertical:20,
+    paddingVertical:10,
+    paddingHorizontal:10,
+    borderRadius:10,
+  },
+  bttext: {
+    textAlign:'center',
+    fontWeight: theme.fontWeight.bold,
+    fontSize: 18,
+    lineHeight: 22,
   },
   body:{
     marginVertical:'auto',

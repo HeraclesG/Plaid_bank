@@ -6,6 +6,7 @@ export const theme = {
     ...DefaultTheme.colors, 
     backgroundColor:'#141414',
     blackColor:'#00000',
+    searchborderColor:"#BABABA",
     homebackgroundColor:'#EFEFEF',
     yellowtextColor:'#C6A15A',
     greytextColor:'#ADADAD',

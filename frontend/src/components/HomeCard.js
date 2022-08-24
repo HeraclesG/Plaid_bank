@@ -9,7 +9,7 @@ export default function HomeCard({item}) {
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.avatergroup}>
-          <Image style={styles.avatar} source={require('../assets/'+item.avatar)} />
+          <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
           <View style={styles.dategroup}>
             <Text style={styles.name}>
               {item.name}

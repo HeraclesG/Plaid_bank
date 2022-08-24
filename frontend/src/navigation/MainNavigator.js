@@ -7,22 +7,58 @@ import Svg, { Path, Circle } from "react-native-svg"
 import { theme } from '../core/theme';
 import { useState } from 'react';
 
-import SplashScreen from '../screen/SplashScreen'
-import HomeScreen from '../screen/HomeScreen'
-import AddmoneyScreen from '../screen/AddmoneyScreen'
-import TransferScreen from '../screen/TransferScreen'
-import AddmoneystepScreen from '../screen/AddmoneystepScreen'
-import TransactioncompScreen from '../screen/TransactioncompScreen'
-import TransfertoScreen from '../screen/TransfertoScreen'
+import SplashScreen from '../screen/SplashScreen';
+import HomeScreen from '../screen/HomeScreen';
+import AddmoneyScreen from '../screen/AddmoneyScreen';
+import TransferScreen from '../screen/TransferScreen';
+import AddmoneystepScreen from '../screen/AddmoneystepScreen';
+import TransactioncompScreen from '../screen/TransactioncompScreen';
+import TransfertoScreen from '../screen/TransfertoScreen';
+import TransactionhistoryScreen from '../screen/TransactionhistoryScreen';
 
 const Stack = createNativeStackNavigator()
 
 export function MainNavigator() {
 return (
   <Stack.Navigator>
+    <Stack.Screen
+          name="MaineScreen"
+          component={MaineScreen}
+          options={{ headerShown: false }}
+      />
       <Stack.Screen
-          name="MainScreen"
-          component={MainScreen}
+          name="HomeScreen"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+      />
+       <Stack.Screen
+          name="AddmoneyScreen"
+          component={AddmoneyScreen}
+          options={{ headerShown: false }}
+      />
+       <Stack.Screen
+          name="TransferScreen"
+          component={TransferScreen}
+          options={{ headerShown: false }}
+      />
+       <Stack.Screen
+          name="AddmoneystepScreen"
+          component={AddmoneystepScreen}
+          options={{ headerShown: false }}
+      />
+       <Stack.Screen
+          name="TransactioncompScreen"
+          component={TransactioncompScreen}
+          options={{ headerShown: false }}
+      />
+       <Stack.Screen
+          name="TransfertoScreen"
+          component={TransfertoScreen}
+          options={{ headerShown: false }}
+      />
+       <Stack.Screen
+          name="TransactionhistoryScreen"
+          component={TransactionhistoryScreen}
           options={{ headerShown: false }}
       />
   </Stack.Navigator>
@@ -31,11 +67,28 @@ return (
 const Tab = createBottomTabNavigator();
 function MaineScreen() {
  const [index, setIndex]=useState(0);
+ const [num,setNumber]=useState(0);
+ const onChnage=(val)=>{
+   if(num==val){
+    setNumber(0);
+   }
+   else{
+    setNumber(val);
+   }
+ }
+ const changeHomeScreen=(val,navigation)=>{
+   switch(val){
+    case 0: return <HomeScreen navigation={navigation} onView={(val)=>{onChnage(val)}} />
+    case 1: return <TransactionhistoryScreen onView={(val)=>{onChnage(val)}}/>
+    case 2: return <HomeScreen onView={(val)=>{onChnage(val)}} />
+   }
+ }
   return (
         <Tab.Navigator
               screenListeners={{
                 state: (e) => {
                     setIndex(e.data.state.index);
+                    setNumber(0);
                 },
             }}
             screenOptions={{
@@ -52,7 +105,7 @@ function MaineScreen() {
         >
           <Tab.Screen 
               name="HomeScreen" 
-              component={HomeScreen}
+              component={({navigation})=>changeHomeScreen(num,navigation)}
               options={{
                   tabBarIcon: ({ color, size }) => (
                     <View style={index==0?styles.active:''}>

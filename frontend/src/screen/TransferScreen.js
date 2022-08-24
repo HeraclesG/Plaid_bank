@@ -31,9 +31,9 @@ export default function TransferScreen({navigation}) {
             to transfer money from?
           </Text>
         </View>
-        <Button onPress={()=>{}}  color={theme.colors.backgroundColor} style={styles.mannual}>
+        <Button onPress={()=>{navigation.navigate('TransfertoScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
           <View style={styles.row}>
-             <Text>
+             <Text style={styles.bttext}>
                Cash Wallet Transfer
              </Text>
              <View style={styles.svg}>
@@ -53,7 +53,7 @@ export default function TransferScreen({navigation}) {
         </Button>
         <Button onPress={()=>{navigation.navigate('LinkbankLoginScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
           <View style={styles.row}>
-             <Text>
+             <Text style={styles.bttext}>
                 Cryptocurrency Transfer
              </Text>
              <View style={styles.svg}>
@@ -96,9 +96,15 @@ const styles = StyleSheet.create({
   mannual:{
     backgroundColor:theme.colors.yellowtextColor,
     marginVertical:20,
-    paddingVertical:0,
+    paddingVertical:10,
     paddingHorizontal:10,
-    borderRadius:30,
+    borderRadius:20,
+  },
+  bttext: {
+    textAlign:'center',
+    fontWeight: theme.fontWeight.bold,
+    fontSize: 18,
+    lineHeight: 22,
   },
   svg:{
     marginLeft:10,

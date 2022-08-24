@@ -1,16 +1,14 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
-import { Button as PaperButton } from 'react-native-paper'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 import { theme } from '../core/theme'
 
 export default function Button({ mode, style, ...props }) {
   return (
-    <PaperButton
+    <TouchableOpacity
       style={[
         styles.button,
         style,
       ]}
-      labelStyle={styles.text}
       mode={mode}
       {...props}
     />

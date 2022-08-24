@@ -21,9 +21,9 @@ export default function App() {
 }
 
 const NavigatorSwitch = observer(() => {console.log(userStore.user);
-  if (false/*!userStore.user*/) {   //auth funcc
+  if (!userStore.user) {   //auth funcc
     return <LoginNavigator />
-  }else if(false/*userStore.user.permission==1*/){
+  }else if(userStore.user.permission==1){
     return <PinNavigator />
   }else{
     return <MainNavigator />

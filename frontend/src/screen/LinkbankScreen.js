@@ -35,13 +35,17 @@ export default function LinkbankScreen({navigation}) {
           </Text>
         </View>
         <Button onPress={()=>{}}  color={theme.colors.backgroundColor} style={styles.plaid}>
-         <Image source={require('../assets/Link.png')} style={styles.iconSend}  />
+         <Image source={require('../assets/link.png')} style={styles.iconSend}  />
         </Button>
         <Button onPress={()=>{navigation.navigate('LinkbankLoginScreen');}}  color={theme.colors.backgroundColor} style={styles.mannual}>
-          Manually Link
+          <Text style={styles.bttext}>
+           Manually Link
+          </Text>
         </Button>
-        <Button onPress={()=>{navigation.navigate('WelcomeScreen');}}  color={theme.colors.whiteColor} style={styles.without}>
+        <Button onPress={()=>{navigation.navigate('WelcomeScreen');}}   style={styles.without}>
+        <Text style={[styles.bttext,{color:theme.colors.whiteColor}]}>
           Continue Without Linking
+        </Text>
         </Button>
         <View style={styles.footer}>
           <Text style={styles.desc}>
@@ -100,20 +104,30 @@ const styles = StyleSheet.create({
   plaid:{
     backgroundColor:theme.colors.yellowtextColor,
     marginVertical:20,
-    paddingVertical:0,
+    paddingVertical:10,
   },
   mannual:{
     backgroundColor:theme.colors.yellowtextColor,
-    paddingVertical:5,
+    fontSize:theme.fontSize.subtitle1,
     marginVertical:20,
+    paddingVertical:12,
+    paddingHorizontal:10,
+    borderRadius:10,
+  },
+  bttext: {
+    textAlign:'center',
+    fontWeight: theme.fontWeight.bold,
+    fontSize: 18,
+    lineHeight: 22,
   },
   without:{
     borderColor:theme.colors.whiteColor,
     backgroundColor:theme.colors.backgroundColor,
     fontSize:theme.fontSize.subtitle1,
-    paddingHorizontal:0,
-    paddingVertical:5,
     marginVertical:20,
+    paddingVertical:12,
+    paddingHorizontal:10,
+    borderRadius:10,
   },
   redir:{
     paddingLeft:5,

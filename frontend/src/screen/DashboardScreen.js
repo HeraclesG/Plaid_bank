@@ -20,11 +20,15 @@ export default function DashboardScreen({navigation}) {
         
        </View>
        <View style={styles.buttons}>
-            <Button onPress={()=>{navigation.navigate('LoginScreen');}}  color={theme.colors.whiteColor}  style={styles.Login} >
-                Log In
+            <Button onPress={()=>{navigation.navigate('LoginScreen');}}  style={styles.Login} >
+              <Text style={[styles.bttext,{color:theme.colors.whiteColor}]}>
+                  Log In
+              </Text>
             </Button>
             <Button onPress={()=>{navigation.navigate('SignupScreen');}}  color={theme.colors.backgroundColor} style={styles.Sign}>
-                Sign Up
+                <Text style={styles.bttext}>
+                  Sign Up
+                </Text>
             </Button>
        </View>
     </View>
@@ -66,5 +70,11 @@ const styles = StyleSheet.create({
   },
   Sign:{
     backgroundColor:theme.colors.yellowtextColor, 
-  }
+  },
+  bttext: {
+    textAlign:'center',
+    fontWeight: theme.fontWeight.bold,
+    fontSize: 18,
+    lineHeight: 22,
+  },
 });

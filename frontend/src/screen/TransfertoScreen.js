@@ -1,8 +1,7 @@
-
 import React,{useState} from 'react';
-import { StyleSheet, Text,TouchableOpacity, Image, View} from 'react-native';
+import { StyleSheet, Text,TouchableOpacity, FlatList, Image, View} from 'react-native';
 import { theme } from '../core/theme';
-import Svg, { Path,Circle, FlatList } from "react-native-svg"
+import Svg, { Path,Circle } from "react-native-svg"
 import Button from '../components/Button';
 import PaymentCard from '../components/PaymentCard';
 
@@ -10,8 +9,6 @@ export default function TransfertoScreen({navigation}) {
   const data= [
     {id:1, avatar:"avatar.jpg",name:"Lisa Benson", bank:'04 August, 2022'},
     {id:2, avatar:"avatar.jpg",name:"Cody Christian", bank:'21 July, 2022'},
-    {id:3, avatar:"avatar.jpg",name:"Abby Grahm", bank:'16 July, 2022'},
-    {id:4, avatar:"avatar.jpg",name:"Grace Jones", bank:'08 July, 2022'},
   ];
   return (
     <View style={styles.container}>
@@ -28,7 +25,7 @@ export default function TransfertoScreen({navigation}) {
             />
           </Svg>
       </TouchableOpacity>
-      <View >
+      <View>
         <View style={styles.header}>                      
           <Text style={styles.title}>
             Where would you like
@@ -46,7 +43,7 @@ export default function TransfertoScreen({navigation}) {
             const item = list.item;
             return (
               <PaymentCard item={item}/>
-            )
+            );
           }}/>
         <View style={styles.footer}>
           <Svg
@@ -94,12 +91,13 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'row',
     alignItems:'center',
-    marginTop:50,
+    marginTop:20,
+    marginLeft:17,
    },
    text:{
     color:theme.colors.whiteColor,
     fontSize:theme.fontSize.subtitle1,
     fontWeight:theme.fontWeight.normal,
-    marginLeft:50
+    marginLeft:30
   },
 });

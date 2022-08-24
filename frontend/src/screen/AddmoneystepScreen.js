@@ -4,8 +4,6 @@ import { StyleSheet, Image, Text,TouchableOpacity , View} from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg"
 import Keyboard from '../components/Keyboard';
-import { User } from '../module/user/User'
-import { userStore } from '../module/user/UserStore'
 import Button from '../components/Button';
 
 export default function AddmoneystepScreen({navigation}) {
@@ -21,7 +19,7 @@ export default function AddmoneystepScreen({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={()=>{}}>
+        <TouchableOpacity onPress={navigation.goBack}>
             <Svg
               width={22}
               height={20}
@@ -60,7 +58,9 @@ export default function AddmoneystepScreen({navigation}) {
          Wallet balance after transaction: $405.00
       </Text>
       <Button onPress={()=>{}}  color={theme.colors.backgroundColor} style={styles.Sign}>
-        Submit
+        <Text style={styles.bttext}>
+          Add Money
+        </Text>
       </Button>
       <Keyboard add={addPin} del={delPin}/>
     </View>
@@ -121,8 +121,16 @@ const styles = StyleSheet.create({
     letterSpacing:1.5
   },
   Sign:{
-    marginVertical:25,
     backgroundColor:theme.colors.yellowtextColor,
-    paddingVertical:5,
+    marginVertical:20,
+    paddingVertical:20,
+    paddingHorizontal:10,
+    borderRadius:10,
+  },
+  bttext: {
+    textAlign:'center',
+    fontWeight: theme.fontWeight.bold,
+    fontSize: 18,
+    lineHeight: 22,
   },
 });

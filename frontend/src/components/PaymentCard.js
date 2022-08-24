@@ -8,13 +8,13 @@ export default function PaymentCard({item}) {
   return (
     <View style={styles.container}>
       <View style={styles.avatergroup}>
-        <Image style={styles.avatar} source={require('../assets/'+item.avatar)} />
+        <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
         <View style={styles.dategroup}>
           <Text style={styles.name}>
             {item.name}
           </Text>
-          <Text style={styles.bank}>
-            {item.date}
+          <Text style={styles.date}>
+            {item.bank}
           </Text>
         </View>
       </View>
@@ -30,12 +30,11 @@ const styles = StyleSheet.create({
   avatar:{
     width:53,
     height:37,
-    borderRadius:'5'
+    borderRadius:5
  },
  avatergroup:{
   display:'flex',
   flexDirection:'row',
-  justifyContent:'center',
   alignItems:'center'
  },
  dategroup:{
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
   fontWeight:theme.fontWeight.normal
  },
  underline:{
-  marginTop:5,
+  marginTop:10,
   backgroundColor:theme.colors.underlineColor,
   height:1,
  }
