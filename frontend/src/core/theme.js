@@ -18,6 +18,7 @@ export const theme = {
     pinbackColor:'#242424',
     bottomColor:'#111111',
     underlineColor:'#E2E2E2',
+    borderColor:'#C6A15A',
     description:'blue',
     bottomColor:'#242424',
     error:'red',

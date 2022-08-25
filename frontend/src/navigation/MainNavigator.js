@@ -15,6 +15,8 @@ import AddmoneystepScreen from '../screen/AddmoneystepScreen';
 import TransactioncompScreen from '../screen/TransactioncompScreen';
 import TransfertoScreen from '../screen/TransfertoScreen';
 import TransactionhistoryScreen from '../screen/TransactionhistoryScreen';
+import ProfileScreen from '../screen/ProfileScreen';
+import ProfileeditScreen from '../screen/ProfileeditScreen';
 
 const Stack = createNativeStackNavigator()
 
@@ -23,7 +25,7 @@ return (
   <Stack.Navigator>
     <Stack.Screen
           name="MaineScreen"
-          component={MaineScreen}
+          component={ProfileeditScreen}
           options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -192,8 +194,8 @@ function MaineScreen() {
               }}
           />
           <Tab.Screen 
-              name="Profile" 
-              component={SplashScreen} 
+              name="ProfileScreen" 
+              component={ProfileScreen} 
               options={{
                   tabBarIcon: ({ color, size }) => (
                     <View style={index==4?styles.active:''}>

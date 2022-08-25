@@ -3,9 +3,6 @@ import React,{useState} from 'react';
 import { StyleSheet, Image, Text,TouchableOpacity , View} from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
-import Keyboard from '../components/Keyboard';
-import { User } from '../module/user/User'
-import { userStore } from '../module/user/UserStore'
 import Button from '../components/Button';
 
 export default function TransactioncompScreen({navigation}) {
@@ -26,7 +23,7 @@ export default function TransactioncompScreen({navigation}) {
             </Svg>
         </TouchableOpacity>
         <Text style={styles.text}>
-          Add Money
+          Transaction Complete
         </Text>
       </View>
       <View style={{margin:'auto'}}>
