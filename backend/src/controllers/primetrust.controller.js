@@ -7,7 +7,6 @@ const createUser = catchAsync(async (req, res) => {
   const { email, name, password } = req.body;
   await axios({
     method: "POST",
-    headers: { "X-Idempotent-ID": "a94128fa-187a-44ba-b2d0-a2a9bbf9988b" },
     data: {
       data: {
         type: "user",
@@ -35,7 +34,6 @@ const createJwt = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   await axios({
     method: "POST",
-    headers: { "X-Idempotent-ID": "a94128fa-187a-44ba-b2d0-a2a9bbf9988b" },
     params: {
       email,
       password,
@@ -57,7 +55,6 @@ const openAccount = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   await axios({
     method: "POST",
-    headers: { "X-Idempotent-ID": "a94128fa-187a-44ba-b2d0-a2a9bbf9988b" },
     params: {
       email,
       password,
@@ -75,8 +72,29 @@ const openAccount = catchAsync(async (req, res) => {
     });
 });
 
+const accountPolicy = catchAsync(async (req, res) => {
+  await axios({
+    method: "GET",
+    headers: {
+      authorization:
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdXRoX3NlY3JldCI6IjBhMDdjZDAyLTlhNzAtNDkzZS1hYjU5LWUxNjZkZDdiMDlkYyIsInVzZXJfZ3JvdXBzIjpbXSwibm93IjoxNjYxNDA1Mzk4LCJleHAiOjE2NjIwMTAxOTh9.4tBzk45vuAmOWiY6HfgXYDllxzQ91VnFyJzf0IKPAxk",
+    },
+    url: "https://api.primetrust.com/v2/account-aggregate-policies",
+    // url: "https://sandbox.primetrust.com/v2/users",
+  })
+    .then((response) => {
+      console.log("response", response.data);
+      res.send(response.data);
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]?.title);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.title });
+    });
+});
+
 module.exports = {
   createUser,
   createJwt,
+  accountPolicy,
   openAccount,
 };
