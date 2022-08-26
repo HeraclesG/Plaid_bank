@@ -17,6 +17,11 @@ import TransfertoScreen from '../screen/TransfertoScreen';
 import TransactionhistoryScreen from '../screen/TransactionhistoryScreen';
 import ProfileScreen from '../screen/ProfileScreen';
 import ProfileeditScreen from '../screen/ProfileeditScreen';
+import WalletnumberScreen from '../screen/WalletnumberScreen';
+import PrivacyScreen from '../screen/PrivacyScreen';
+import ChangepasswordScreen from '../screen/ChangepasswordScreen';
+import ChangepinScreen from '../screen/ChangepinScreen';
+import HelpScreen from '../screen/HelpScreen';
 
 const Stack = createNativeStackNavigator()
 
@@ -25,7 +30,7 @@ return (
   <Stack.Navigator>
     <Stack.Screen
           name="MaineScreen"
-          component={ProfileeditScreen}
+          component={HelpScreen}
           options={{ headerShown: false }}
       />
       <Stack.Screen

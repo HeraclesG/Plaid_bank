@@ -7,7 +7,7 @@ import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 import Svg, { Path, Circle } from "react-native-svg"
 
-export default function ProfileeditScreen({navigation}) {
+export default function ChangepinScreen({navigation}) {
   const [isSelected, setSelection] = useState(false);
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
@@ -28,59 +28,25 @@ export default function ProfileeditScreen({navigation}) {
             </Svg>
         </TouchableOpacity>
         <Text style={styles.text}>
-           Profile
+          Change PIN
         </Text>
       </View>
       <View style={styles.body}>
-        <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
-        <Text style={styles.name}>
-          Change Profile Picture
-        </Text>
-        <View style={styles.doublegroup}>
-          <View style={[styles.inputgroup,{width:'45%'}]}> 
-            <Text style={styles.label}>First Name</Text>
-            <TextInput
-              placeholder="Enter First Name"
-              returnKeyType="next"
-              value={email.value}
-              onChangeText={(text) => setEmail({ value: text, error: '' })}
-              error={!!email.error}
-              errorText={email.error}
-              autoCapitalize="none"
-            />
-          </View>
-          <View style={[styles.inputgroup,{width:'45%'}]}> 
-            <Text style={styles.label}>Last Name</Text>
-            <TextInput
-              placeholder="Enter Last Name"
-              returnKeyType="next"
-              value={email.value}
-              onChangeText={(text) => setEmail({ value: text, error: '' })}
-              error={!!email.error}
-              errorText={email.error}
-              autoCapitalize="none"
-            />
-          </View>
-        </View>
         <View style={styles.inputgroup}> 
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>Current PIN</Text>
           <TextInput
-            placeholder="example@email.com"
+            placeholder="Enter your current PIN number"
             returnKeyType="next"
             value={email.value}
             onChangeText={(text) => setEmail({ value: text, error: '' })}
             error={!!email.error}
             errorText={email.error}
-            autoCapitalize="none"
-            autoCompleteType="email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
           />
         </View>
         <View style={styles.inputgroup}> 
-          <Text style={styles.label}>Phone Number</Text>
+          <Text style={styles.label}>New PIN</Text>
           <TextInput
-            placeholder="(000)-000-0000"
+            placeholder="PIN number must be four digits long"
             returnKeyType="next"
             value={password.value}
             onChangeText={(text) => setPassword({ value: text, error: '' })}
@@ -89,36 +55,10 @@ export default function ProfileeditScreen({navigation}) {
             autoCapitalize="none"
           />
         </View>
-        <View style={styles.doublegroup}>
-          <View style={[styles.inputgroup,{width:'45%'}]}> 
-            <Text style={styles.label}>City</Text>
-            <TextInput
-              placeholder="Enter City"
-              returnKeyType="next"
-              value={email.value}
-              onChangeText={(text) => setEmail({ value: text, error: '' })}
-              error={!!email.error}
-              errorText={email.error}
-              autoCapitalize="none"
-            />
-          </View>
-          <View style={[styles.inputgroup,{width:'45%'}]}> 
-            <Text style={styles.label}>State</Text>
-            <TextInput
-              placeholder="Enter State"
-              returnKeyType="next"
-              value={email.value}
-              onChangeText={(text) => setEmail({ value: text, error: '' })}
-              error={!!email.error}
-              errorText={email.error}
-              autoCapitalize="none"
-            />
-          </View>
-        </View>
         <View style={styles.inputgroup}> 
-          <Text style={styles.label}>Country</Text>
+          <Text style={styles.label}>Confirm New Password</Text>
           <TextInput
-            placeholder="Enter Country"
+            placeholder="Re-enter your PIN"
             returnKeyType="next"
             value={password.value}
             onChangeText={(text) => setPassword({ value: text, error: '' })}
@@ -140,6 +80,7 @@ export default function ProfileeditScreen({navigation}) {
 
 const styles = StyleSheet.create({
   container:{
+    flex:1,
     paddingVertical:98,
     paddingHorizontal:23,
     backgroundColor:theme.colors.backgroundColor
@@ -201,6 +142,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   body:{
+    marginTop:60,
     marginVertical:'auto',
     width:'100%'
   },
