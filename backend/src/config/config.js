@@ -1,7 +1,7 @@
-const dotenv = require('dotenv');
-const path = require('path');
+const dotenv = require("dotenv");
+const path = require("path");
 
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 // const process.envSchema = Joi.object()
 //   .keys({
@@ -35,7 +35,9 @@ module.exports = {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
   mongoose: {
-    url: process.env.MONGODB_URL + (process.env.NODE_ENV === 'test' ? '-test' : ''),
+    url:
+      process.env.MONGODB_URL +
+      (process.env.NODE_ENV === "test" ? "-test" : ""),
     options: {
       useCreateIndex: true,
       useNewUrlParser: true,
@@ -46,8 +48,10 @@ module.exports = {
     secret: process.env.JWT_SECRET,
     accessExpirationMinutes: process.env.JWT_ACCESS_EXPIRATION_MINUTES,
     refreshExpirationDays: process.env.JWT_REFRESH_EXPIRATION_DAYS,
-    resetPasswordExpirationMinutes: process.env.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
-    verifyEmailExpirationMinutes: process.env.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES,
+    resetPasswordExpirationMinutes:
+      process.env.JWT_RESET_PASSWORD_EXPIRATION_MINUTES,
+    verifyEmailExpirationMinutes:
+      process.env.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES,
   },
   email: {
     smtp: {
@@ -62,18 +66,19 @@ module.exports = {
   },
   wyre: {
     url: `https://api.testwyre.com`,
-    referrerAccountId: 'AC_MN9RTYNT34T',
-    secretKey: 'TEST-SK-XE78UJN6-2XP9X3EJ-QDJWYVXE-X364Y2BR',
-    apiKey: 'TEST-AK-8F37UZU3-EJGN9FE6-4AZ3DN8U-B3Z6H8ND',
+    referrerAccountId: "AC_MN9RTYNT34T",
+    secretKey: "TEST-SK-XE78UJN6-2XP9X3EJ-QDJWYVXE-X364Y2BR",
+    apiKey: "TEST-AK-8F37UZU3-EJGN9FE6-4AZ3DN8U-B3Z6H8ND",
   },
   plaid: {
-    secret: 'f6822d0e2c7816641d20127585b233',
-    clientId: '62f1f56b97d5700014286c61',
-    plaidEnv: 'sandbox',
+    apihost: "https://sandbox.plaid.com",
+    secret: "f6822d0e2c7816641d20127585b233",
+    clientId: "62f1f56b97d5700014286c61",
+    plaidEnv: "sandbox",
     // product: 'payment_initiation',
-    product: 'auth,transactions',
-    countryCode: 'US',
-    redirectUri: '',
-    androidPackageName: '',
+    product: "auth,transactions",
+    countryCode: "US",
+    redirectUri: "",
+    androidPackageName: "",
   },
 };
