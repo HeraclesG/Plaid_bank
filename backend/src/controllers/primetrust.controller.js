@@ -32,6 +32,7 @@ const createUser = catchAsync(async (req, res) => {
 
 const createJwt = catchAsync(async (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password)
   await axios({
     method: "POST",
     params: {
@@ -51,7 +52,7 @@ const createJwt = catchAsync(async (req, res) => {
     });
 });
 
-const openAccount = catchAsync(async (req, res) => {
+const agreementPreviews = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   await axios({
     method: "POST",
@@ -96,5 +97,5 @@ module.exports = {
   createUser,
   createJwt,
   accountPolicy,
-  openAccount,
+  agreementPreviews
 };

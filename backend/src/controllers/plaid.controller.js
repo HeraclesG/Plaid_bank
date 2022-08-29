@@ -144,7 +144,7 @@ const setProcessorToken = catchAsync(async (req, res) => {
   res.send(processorTokenResponse.data);
 });
 
-const getBalance = catchAsync(async (req, res, next) => {
+const getBalance = catchAsync(async (req, res) => {
   const access_token = req.body.access_token;
   const balanceResponse = await client.accountsBalanceGet({ access_token });
   res.json({
