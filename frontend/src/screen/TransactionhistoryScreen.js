@@ -1,17 +1,17 @@
 
-import React,{useState} from 'react';
-import { StyleSheet, Image, Text,TouchableOpacity, FlatList, View} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Image, Text, TouchableOpacity, FlatList, View } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import HomeCard from '../components/HomeCard';
 
-export default function TransactionhistoryScreen({navigation, onView}) {
-  const data= [
-    {id:1, avatar:"avatar.jpg",name:"Lisa Benson", date:'04 August, 2022',  money: "25.95"},
-    {id:2, avatar:"avatar.jpg",name:"Cody Christian", date:'21 July, 2022',  money: "40.21"},
-    {id:3, avatar:"avatar.jpg",name:"Abby Grahm", date:'16 July, 2022',  money: "100.00"},
-    {id:4, avatar:"avatar.jpg",name:"Grace Jones", date:'08 July, 2022',  money: "5.95"},
+export default function TransactionhistoryScreen({ navigation, onView }) {
+  const data = [
+    { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
+    { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
+    { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
+    { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
   ];
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
@@ -19,18 +19,18 @@ export default function TransactionhistoryScreen({navigation, onView}) {
     <View style={styles.container}>
       <View>
         <View style={styles.header}>
-          <TouchableOpacity onPress={()=>{onView(1)}}>
-              <Svg
-                width={22}
-                height={20}
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <Path
-                  d="M20.333 8.667H4.52l4.84-5.814a1.335 1.335 0 1 0-2.053-1.706l-6.667 8c-.045.063-.085.13-.12.2 0 .066 0 .106-.093.173-.06.153-.092.316-.094.48.002.164.033.327.094.48 0 .067 0 .107.093.173.035.07.075.137.12.2l6.667 8a1.333 1.333 0 0 0 1.026.48 1.333 1.333 0 0 0 1.027-2.186l-4.84-5.814h15.813a1.333 1.333 0 1 0 0-2.666Z"
-                  fill="#000"
-                />
-              </Svg>
+          <TouchableOpacity onPress={() => { onView(1) }}>
+            <Svg
+              width={22}
+              height={20}
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <Path
+                d="M20.333 8.667H4.52l4.84-5.814a1.335 1.335 0 1 0-2.053-1.706l-6.667 8c-.045.063-.085.13-.12.2 0 .066 0 .106-.093.173-.06.153-.092.316-.094.48.002.164.033.327.094.48 0 .067 0 .107.093.173.035.07.075.137.12.2l6.667 8a1.333 1.333 0 0 0 1.026.48 1.333 1.333 0 0 0 1.027-2.186l-4.84-5.814h15.813a1.333 1.333 0 1 0 0-2.666Z"
+                fill="#000"
+              />
+            </Svg>
           </TouchableOpacity>
           <Text style={styles.text}>
             Transaction History
@@ -49,6 +49,8 @@ export default function TransactionhistoryScreen({navigation, onView}) {
           </Svg>
         </View>
         <Searchbar
+          icon={<></>}
+          inputStyle={{ fontSize: theme.fontSize.smallSize }}
           style={styles.searchbar}
           elevation={0}
           placeholder="Type a name, username, or phone number "
@@ -56,18 +58,18 @@ export default function TransactionhistoryScreen({navigation, onView}) {
           value={searchQuery}
         />
         <FlatList style={styles.list}
-            data={data}
-            keyExtractor= {(item) => {
-              return item.id;
-            }}
-            renderItem={(list) => {
-              const item = list.item;
-              return (
-                <HomeCard item={item}/>
-              )
-            }}/>
+          data={data}
+          keyExtractor={(item) => {
+            return item.id;
+          }}
+          renderItem={(list) => {
+            const item = list.item;
+            return (
+              <HomeCard item={item} />
+            )
+          }} />
         <Text style={styles.subtitle}>
-            no more transactions
+          no more transactions
         </Text>
       </View>
     </View>
@@ -75,46 +77,46 @@ export default function TransactionhistoryScreen({navigation, onView}) {
 }
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    backgroundColor:theme.colors.whiteColor,
-    paddingHorizontal:19,
-    paddingVertical:45,
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.whiteColor,
+    paddingHorizontal: 19,
+    paddingVertical: 45,
   },
-  header:{
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center'
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  avatar:{
-    width:50,
-    height:50,
-    borderRadius:'50%'
- },
- text:{
-    textAlign:'center',
-    color:theme.colors.blackColor,
-    fontSize:theme.fontSize.subtitle,
-    fontWeight:theme.fontWeight.normal,
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 50
   },
-  searchbar:{
-    marginVertical:40,
-    shadowColor:theme.colors.whiteColor,
-    borderColor:theme.colors.searchborderColor,
-    borderWidth:1,
-    borderRadius:5,
+  text: {
+    textAlign: 'center',
+    color: theme.colors.blackColor,
+    fontSize: theme.fontSize.subtitle,
+    fontWeight: theme.fontWeight.normal,
   },
-  list:{
-   
+  searchbar: {
+    marginVertical: 40,
+    shadowColor: theme.colors.whiteColor,
+    borderColor: theme.colors.searchborderColor,
+    borderWidth: 1,
+    borderRadius: 10,
   },
-  subtitle:{
-    marginTop:20,
-    textAlign:'center',
-    color:theme.colors.lightgreytextColor,
-    fontSize:theme.fontSize.content,
-    fontWeight:theme.fontWeight.small,
-    opacity:0.66,
-    letterSpacing:1.5
+  list: {
+
+  },
+  subtitle: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: theme.colors.lightgreytextColor,
+    fontSize: theme.fontSize.content,
+    fontWeight: theme.fontWeight.normal,
+    opacity: 0.66,
+    letterSpacing: 1.5
   },
 });

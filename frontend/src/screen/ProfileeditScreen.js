@@ -1,20 +1,21 @@
 
 import { StatusBar } from 'expo-status-bar';
-import React,{useState} from 'react';
-import { StyleSheet, Text, Image,TouchableOpacity , View} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, Image, TouchableOpacity, View, ScrollView } from 'react-native';
 import { theme } from '../core/theme';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 import Svg, { Path, Circle } from "react-native-svg"
 
-export default function ProfileeditScreen({navigation}) {
+export default function ProfileeditScreen({ navigation }) {
   const [isSelected, setSelection] = useState(false);
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={()=>{navigation.goBack}} style={{paddingHorizontal:19,}}>
+      <ScrollView>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={navigation.goBack} style={{ paddingHorizontal: 19, }}>
             <Svg
               width={22}
               height={20}
@@ -26,211 +27,216 @@ export default function ProfileeditScreen({navigation}) {
                 fill="#fff"
               />
             </Svg>
-        </TouchableOpacity>
-        <Text style={styles.text}>
-           Profile
-        </Text>
-      </View>
-      <View style={styles.body}>
-        <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
-        <Text style={styles.name}>
-          Change Profile Picture
-        </Text>
-        <View style={styles.doublegroup}>
-          <View style={[styles.inputgroup,{width:'45%'}]}> 
-            <Text style={styles.label}>First Name</Text>
+          </TouchableOpacity>
+          <Text style={styles.text}>
+            Profile
+          </Text>
+        </View>
+        <View style={styles.body}>
+          <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
+          <Text style={styles.name}>
+            Change Profile Picture
+          </Text>
+          <View style={styles.doublegroup}>
+            <View style={[styles.inputgroup, { width: '45%' }]}>
+              <Text style={styles.label}>First Name</Text>
+              <TextInput
+                placeholder="Enter First Name"
+                returnKeyType="next"
+                value={email.value}
+                onChangeText={(text) => setEmail({ value: text, error: '' })}
+                error={!!email.error}
+                errorText={email.error}
+                autoCapitalize="none"
+              />
+            </View>
+            <View style={[styles.inputgroup, { width: '45%' }]}>
+              <Text style={styles.label}>Last Name</Text>
+              <TextInput
+                placeholder="Enter Last Name"
+                returnKeyType="next"
+                value={email.value}
+                onChangeText={(text) => setEmail({ value: text, error: '' })}
+                error={!!email.error}
+                errorText={email.error}
+                autoCapitalize="none"
+              />
+            </View>
+          </View>
+          <View style={styles.inputgroup}>
+            <Text style={styles.label}>Email</Text>
             <TextInput
-              placeholder="Enter First Name"
+              placeholder="example@email.com"
               returnKeyType="next"
               value={email.value}
               onChangeText={(text) => setEmail({ value: text, error: '' })}
               error={!!email.error}
               errorText={email.error}
               autoCapitalize="none"
+              autoCompleteType="email"
+              textContentType="emailAddress"
+              keyboardType="email-address"
             />
           </View>
-          <View style={[styles.inputgroup,{width:'45%'}]}> 
-            <Text style={styles.label}>Last Name</Text>
+          <View style={styles.inputgroup}>
+            <Text style={styles.label}>Phone Number</Text>
             <TextInput
-              placeholder="Enter Last Name"
+              placeholder="(000)-000-0000"
               returnKeyType="next"
-              value={email.value}
-              onChangeText={(text) => setEmail({ value: text, error: '' })}
+              value={password.value}
+              onChangeText={(text) => setPassword({ value: text, error: '' })}
               error={!!email.error}
               errorText={email.error}
               autoCapitalize="none"
             />
           </View>
-        </View>
-        <View style={styles.inputgroup}> 
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            placeholder="example@email.com"
-            returnKeyType="next"
-            value={email.value}
-            onChangeText={(text) => setEmail({ value: text, error: '' })}
-            error={!!email.error}
-            errorText={email.error}
-            autoCapitalize="none"
-            autoCompleteType="email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
-          />
-        </View>
-        <View style={styles.inputgroup}> 
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            placeholder="(000)-000-0000"
-            returnKeyType="next"
-            value={password.value}
-            onChangeText={(text) => setPassword({ value: text, error: '' })}
-            error={!!email.error}
-            errorText={email.error}
-            autoCapitalize="none"
-          />
-        </View>
-        <View style={styles.doublegroup}>
-          <View style={[styles.inputgroup,{width:'45%'}]}> 
-            <Text style={styles.label}>City</Text>
+          <View style={styles.doublegroup}>
+            <View style={[styles.inputgroup, { width: '45%' }]}>
+              <Text style={styles.label}>City</Text>
+              <TextInput
+                placeholder="Enter City"
+                returnKeyType="next"
+                value={email.value}
+                onChangeText={(text) => setEmail({ value: text, error: '' })}
+                error={!!email.error}
+                errorText={email.error}
+                autoCapitalize="none"
+              />
+            </View>
+            <View style={[styles.inputgroup, { width: '45%' }]}>
+              <Text style={styles.label}>State</Text>
+              <TextInput
+                placeholder="Enter State"
+                returnKeyType="next"
+                value={email.value}
+                onChangeText={(text) => setEmail({ value: text, error: '' })}
+                error={!!email.error}
+                errorText={email.error}
+                autoCapitalize="none"
+              />
+            </View>
+          </View>
+          <View style={styles.inputgroup}>
+            <Text style={styles.label}>Country</Text>
             <TextInput
-              placeholder="Enter City"
+              placeholder="Enter Country"
               returnKeyType="next"
-              value={email.value}
-              onChangeText={(text) => setEmail({ value: text, error: '' })}
+              value={password.value}
+              onChangeText={(text) => setPassword({ value: text, error: '' })}
               error={!!email.error}
               errorText={email.error}
               autoCapitalize="none"
             />
           </View>
-          <View style={[styles.inputgroup,{width:'45%'}]}> 
-            <Text style={styles.label}>State</Text>
-            <TextInput
-              placeholder="Enter State"
-              returnKeyType="next"
-              value={email.value}
-              onChangeText={(text) => setEmail({ value: text, error: '' })}
-              error={!!email.error}
-              errorText={email.error}
-              autoCapitalize="none"
-            />
-          </View>
-        </View>
-        <View style={styles.inputgroup}> 
-          <Text style={styles.label}>Country</Text>
-          <TextInput
-            placeholder="Enter Country"
-            returnKeyType="next"
-            value={password.value}
-            onChangeText={(text) => setPassword({ value: text, error: '' })}
-            error={!!email.error}
-            errorText={email.error}
-            autoCapitalize="none"
-          />
-        </View>
 
-        <Button onPress={()=>{}}  color={theme.colors.backgroundColor} style={styles.mannual}>
+          <Button onPress={() => { }} color={theme.colors.backgroundColor} style={styles.mannual}>
             <Text style={styles.bttext}>
               Save
             </Text>
-        </Button>
-      </View>
+          </Button>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container:{
-    paddingVertical:98,
-    paddingHorizontal:23,
-    backgroundColor:theme.colors.backgroundColor
+  container: {
+    paddingHorizontal: 23,
+    backgroundColor: theme.colors.backgroundColor,
+    flexDirection: 'row-reverse',
   },
-  header:{
-    width:'100%',
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center',
+  header: {
+    marginTop: 98,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
- text:{ 
-    position:'absolute',
-    width:'100%',
-    textAlign:'center',
-    color:theme.colors.whiteColor,
-    fontSize:theme.fontSize.subtitle,
-    fontWeight:theme.fontWeight.normal,
+  text: {
+    position: 'absolute',
+    width: '100%',
+    textAlign: 'center',
+    color: theme.colors.whiteColor,
+    fontSize: theme.fontSize.subtitle,
+    fontWeight: theme.fontWeight.normal,
   },
-  title:{
-    color:theme.colors.thickyellowColor,
-    fontSize:theme.fontSize.title1,
-    fontWeight:theme.fontWeight.small
+  title: {
+    color: theme.colors.thickyellowColor,
+    fontSize: theme.fontSize.title1,
+    fontWeight: theme.fontWeight.small
   },
-  avatar:{
-    width:80,
-    height:80,
-    borderRadius:'50%',
-    marginHorizontal:'auto',
-    marginTop:50,
- },
- name:{
-  textAlign:'center',
-    color:theme.colors.whiteColor,
-    marginVertical:5,
-    fontSize:theme.fontSize.content0,
-    fontWeight:theme.fontWeight.bold,
- },
-  subtitle:{
-    color:theme.colors.whiteColor,
-    fontSize:theme.fontSize.subtitle,
-    fontWeight:theme.fontWeight.small,
-    opacity:0.66
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 50,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 50,
   },
-  inputgroup:{
-    marginBottom:10,
+  name: {
+    textAlign: 'center',
+    color: theme.colors.whiteColor,
+    marginVertical: 5,
+    fontSize: theme.fontSize.content0,
+    fontWeight: theme.fontWeight.bold,
   },
-  mannual:{
-    backgroundColor:theme.colors.yellowtextColor,
-    marginVertical:20,
-    paddingVertical:10,
-    paddingHorizontal:10,
-    borderRadius:10,
+  subtitle: {
+    color: theme.colors.whiteColor,
+    fontSize: theme.fontSize.subtitle,
+    fontWeight: theme.fontWeight.small,
+    opacity: 0.66
+  },
+  inputgroup: {
+    marginBottom: 10,
+  },
+  mannual: {
+    backgroundColor: theme.colors.yellowtextColor,
+    marginVertical: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 10,
   },
   bttext: {
-    textAlign:'center',
+    textAlign: 'center',
     fontWeight: theme.fontWeight.bold,
     fontSize: 18,
     lineHeight: 22,
   },
-  body:{
-    marginVertical:'auto',
-    width:'100%'
+  body: {
+    marginVertical: 'auto',
+    width: '100%',
+
   },
   checkboxContainer: {
     flexDirection: "row",
     marginBottom: 20,
   },
-  checkbox:{
-    alignSelf:'center'
+  checkbox: {
+    alignSelf: 'center'
   },
   label: {
     margin: 8,
-    color:theme.colors.whiteColor
+    color: theme.colors.whiteColor
   },
-  footer:{
-    textAlign:'center',
-    fontSize:theme.fontSize.smallSize,
-    fontWeight:theme.fontWeight.normal,
+  footer: {
+    marginBottom: 98,
+    textAlign: 'center',
+    fontSize: theme.fontSize.smallSize,
+    fontWeight: theme.fontWeight.normal,
   },
-  desc:{
-    color:theme.colors.whiteColor,
-    
+  desc: {
+    color: theme.colors.whiteColor,
+
   },
-  redir:{
-    paddingLeft:5,
-    color:theme.colors.thickyellowColor,
+  redir: {
+    paddingLeft: 5,
+    color: theme.colors.thickyellowColor,
   },
-  doublegroup:{
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between'
+  doublegroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   }
 });

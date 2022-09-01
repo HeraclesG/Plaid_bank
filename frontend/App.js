@@ -1,31 +1,45 @@
-import { StatusBar } from 'expo-status-bar';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow strict-local
+ */
+
 import React from 'react';
-import { MainNavigator } from './src/navigation/MainNavigator'
-import { PinNavigator } from './src/navigation/PinNavigator'
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { observer } from 'mobx-react-lite';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from 'react-native';
 import { LoginNavigator } from './src/navigation/LoginNavigator';
+import { NavigationContainer } from '@react-navigation/native';
 import { useInitUser, userStore } from './src/module/user/UserStore';
+import { MainNavigator } from './src/navigation/MainNavigator';
+import { PinNavigator } from './src/navigation/PinNavigator'
+import { observer } from 'mobx-react-lite';
 
-export default function App() {
-  useInitUser()
+
+
+export default App = () => {
+  useInitUser();
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar style="auto" />
-        <NavigatorSwitch />
-      </NavigationContainer>
-    </SafeAreaProvider>
-  )
-}
-
-const NavigatorSwitch = observer(() => {console.log(userStore.user);
+    <NavigationContainer>
+      <NavigatorSwitch />
+    </NavigationContainer>
+  );
+};
+const NavigatorSwitch = observer(() => {
+  // console.log(userStore.user);
   if (!userStore.user) {   //auth funcc
     return <LoginNavigator />
-  }else if(userStore.user.permission==1){
+  } else if (userStore.user.permission == 1) {
     return <PinNavigator />
-  }else{
+  } else {
     return <MainNavigator />
   }
 })

@@ -1,15 +1,14 @@
 import React from 'react'
 import { Button as PaperButton } from 'react-native-paper'
 import { theme } from '../core/theme'
-import { StyleSheet, Text,TouchableOpacity , View} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Path } from "react-native-svg"
 
-export default function Keyboard({add,del}) {
-  function onPress(val){
-    if(val=='del')
-    {
+export default function Keyboard({ add, del }) {
+  function onPress(val) {
+    if (val == 'del') {
       del();
-    }else{
+    } else {
       add(val);
     }
   }
@@ -17,21 +16,21 @@ export default function Keyboard({add,del}) {
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('1')}}>
+          <TouchableOpacity onPress={() => { onPress('1') }}>
             <Text style={styles.buttonLabel}>
               1
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('2')}}>
+          <TouchableOpacity onPress={() => { onPress('2') }}>
             <Text style={styles.buttonLabel}>
               2
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('3')}}>
+          <TouchableOpacity onPress={() => { onPress('3') }}>
             <Text style={styles.buttonLabel}>
               3
             </Text>
@@ -40,21 +39,21 @@ export default function Keyboard({add,del}) {
       </View>
       <View style={styles.row}>
         <View style={styles.button}>
-         <TouchableOpacity onPress={()=>{onPress('4')}}>
+          <TouchableOpacity onPress={() => { onPress('4') }}>
             <Text style={styles.buttonLabel}>
               4
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-         <TouchableOpacity onPress={()=>{onPress('5')}}>
+          <TouchableOpacity onPress={() => { onPress('5') }}>
             <Text style={styles.buttonLabel}>
               5
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('6')}}>
+          <TouchableOpacity onPress={() => { onPress('6') }}>
             <Text style={styles.buttonLabel}>
               6
             </Text>
@@ -63,21 +62,21 @@ export default function Keyboard({add,del}) {
       </View>
       <View style={styles.row}>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('7')}}>
+          <TouchableOpacity onPress={() => { onPress('7') }}>
             <Text style={styles.buttonLabel}>
               7
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('8')}}>
+          <TouchableOpacity onPress={() => { onPress('8') }}>
             <Text style={styles.buttonLabel}>
               8
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('9')}}>
+          <TouchableOpacity onPress={() => { onPress('9') }}>
             <Text style={styles.buttonLabel}>
               9
             </Text>
@@ -86,21 +85,21 @@ export default function Keyboard({add,del}) {
       </View>
       <View style={styles.row}>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('•')}}>
+          <TouchableOpacity onPress={() => { onPress('•') }}>
             <Text style={styles.buttonLabel}>
-               •
+              •
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('0')}}>
+          <TouchableOpacity onPress={() => { onPress('0') }}>
             <Text style={styles.buttonLabel}>
               0
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.button}>
-          <TouchableOpacity onPress={()=>{onPress('del')}}>
+          <TouchableOpacity onPress={() => { onPress('del') }}>
             <Text style={styles.buttonLabel}>
               <Svg
                 width={40}
@@ -123,12 +122,12 @@ export default function Keyboard({add,del}) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius:10,
-    marginTop:40,
+    borderRadius: 10,
+    marginTop: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:  theme.colors.pinbackColor,
-    paddingVertical:30,
+    backgroundColor: theme.colors.pinbackColor,
+    paddingVertical: 30,
   },
   input: {
     borderWidth: 1,
@@ -143,18 +142,18 @@ const styles = StyleSheet.create({
     paddingTop: 13,
     paddingBottom: 13,
     fontSize: 20,
-    color:theme.colors.whiteColor,
-    fontStyle:theme.fontSize.title2,
-    fontWeight:theme.fontWeight.normal,
+    color: theme.colors.whiteColor,
+    fontSize: theme.fontSize.title2,
+    fontWeight: theme.fontWeight.normal,
   },
   button: {
     width: "33.333333333%",
   },
-  row:{
-    flexDirection: "row", 
-    width:'100%',
-    height:90,
-    justifyContent:'center',
-    alignItems:'center',
+  row: {
+    flexDirection: "row",
+    width: '100%',
+    height: 90,
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 })
