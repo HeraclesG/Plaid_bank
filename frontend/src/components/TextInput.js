@@ -6,6 +6,7 @@ export default function TextInput({ errorText, description, ...props }) {
   return (
     <View style={styles.container}>
       <Input
+        placeholderTextColor="rgba(255, 255, 255, 0.25)"
         style={styles.input}
         selectionColor={theme.colors.textinputbackColor}
         activeOutlineColor={theme.colors.thickyellowColor}
@@ -27,14 +28,14 @@ const styles = StyleSheet.create({
     marginVertical: 7,
   },
   input: {
-    backgroundColor:'rgba(20, 20, 20, 0.96)',
-    opacity:0.96,
-    borderRadius:10,
-    padding:12,
-    fontSize:theme.fontSize.content,
-    borderColor:theme.colors.textinputbackColor,
-    borderWidth:2,
-    color:theme.colors.whiteColor
+    backgroundColor: theme.colors.inputColor,
+    opacity: 0.96,
+    borderRadius: 10,
+    padding: 10,
+    fontSize: theme.fontSize.content,
+    borderColor: theme.colors.textinputbackColor,
+    borderWidth: 2,
+    color: theme.colors.whiteColor
   },
   description: {
     fontSize: 30,

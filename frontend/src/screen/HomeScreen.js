@@ -1,70 +1,86 @@
 
-import { StatusBar } from 'expo-status-bar';
-import React,{useState} from 'react';
-import {ImageBackground,FlatList , StyleSheet, TouchableOpacity, Text,ScrollView, Image, View} from 'react-native';
+import React, { useState, useRef } from 'react';
+import RBSheet from "react-native-raw-bottom-sheet";
+import { ImageBackground, FlatList, StyleSheet, TouchableOpacity, Text, ScrollView, Image, View } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg";
 import HomeCard from '../components/HomeCard';
+import SortModal from '../components/SortModal';
 
-export default function HomeScreen({navigation, onView}) {
-  const data= [
-    {id:1, avatar:"avatar.jpg",name:"Lisa Benson", date:'04 August, 2022',  money: "25.95"},
-    {id:2, avatar:"avatar.jpg",name:"Cody Christian", date:'21 July, 2022',  money: "40.21"},
-    {id:3, avatar:"avatar.jpg",name:"Abby Grahm", date:'16 July, 2022',  money: "100.00"},
-    {id:4, avatar:"avatar.jpg",name:"Grace Jones", date:'08 July, 2022',  money: "5.95"},
+export default function HomeScreen({ navigation, onView }) {
+  const data = [
+    { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
+    { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
+    { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
+    { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
   ];
+  const refRBSheet = useRef();
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <ImageBackground source={require('../assets/background.png')} resizeMode="stretch" style={styles.header}>
-          <View style={styles.subgroup}>
-             <View style={styles.avatargroup}>
-                <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
-                <View style={styles.textgroup}>
-                  <Text style={styles.name}>Hello John</Text>
-                  <Text style={styles.welcome}>Welcome Back</Text>
-                </View>
-             </View>
-             <View style={styles.notificationgroup}>
-                <Svg
-                  width={27}
-                  height={30}
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <Path
-                    d="M24 17.379V12c0-4.825-3.277-8.89-7.718-10.113A2.985 2.985 0 0 0 13.5 0c-1.269 0-2.343.78-2.783 1.887C6.277 3.111 3 7.174 3 12v5.379l-2.56 2.56A1.494 1.494 0 0 0 0 21v3a1.5 1.5 0 0 0 1.5 1.5h24A1.5 1.5 0 0 0 27 24v-3a1.494 1.494 0 0 0-.44-1.06L24 17.378Zm0 5.121H3v-.879l2.56-2.56A1.494 1.494 0 0 0 6 18v-6c0-4.136 3.364-7.5 7.5-7.5S21 7.864 21 12v6c0 .399.157.78.44 1.06L24 21.622v.879ZM13.5 30a4.47 4.47 0 0 0 4.227-3H9.273a4.47 4.47 0 0 0 4.227 3Z"
-                    fill="#fff"
-                  />
-                </Svg>
-                <Text style={styles.notify}>
-                  1
-                </Text>
-             </View>
+        <View style={styles.subgroup}>
+          <View style={styles.avatargroup}>
+            <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
+            <View style={styles.textgroup}>
+              <Text style={styles.name}>Hello John</Text>
+              <Text style={styles.welcome}>Welcome Back</Text>
+            </View>
           </View>
-          <TouchableOpacity style={styles.cashwallet}>
-            <Text style={styles.cahshtext}>Cash Wallet</Text>
+          <View style={styles.notificationgroup}>
             <Svg
-              width={15}
-              height={9}
+              width={27}
+              height={30}
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <Path
-                d="M.311 1.211c.2-.191.47-.299.751-.299.282 0 .552.108.751.3l5.26 5.053 5.26-5.054c.2-.186.468-.289.747-.286.278.002.545.11.742.299.197.189.308.445.31.713a1 1 0 0 1-.297.718L7.824 8.43c-.2.191-.47.299-.751.299-.282 0-.552-.108-.751-.3L.312 2.656A1.001 1.001 0 0 1 0 1.933c0-.27.112-.53.311-.722Z"
+                d="M24 17.379V12c0-4.825-3.277-8.89-7.718-10.113A2.985 2.985 0 0 0 13.5 0c-1.269 0-2.343.78-2.783 1.887C6.277 3.111 3 7.174 3 12v5.379l-2.56 2.56A1.494 1.494 0 0 0 0 21v3a1.5 1.5 0 0 0 1.5 1.5h24A1.5 1.5 0 0 0 27 24v-3a1.494 1.494 0 0 0-.44-1.06L24 17.378Zm0 5.121H3v-.879l2.56-2.56A1.494 1.494 0 0 0 6 18v-6c0-4.136 3.364-7.5 7.5-7.5S21 7.864 21 12v6c0 .399.157.78.44 1.06L24 21.622v.879ZM13.5 30a4.47 4.47 0 0 0 4.227-3H9.273a4.47 4.47 0 0 0 4.227 3Z"
                 fill="#fff"
               />
             </Svg>
-          </TouchableOpacity>
-          <Text style={styles.currentval}>
-            Current Balance
-          </Text>
-          <Text style={styles.currentmoney}>
-            $405.00
-          </Text>
+            <Text style={styles.notify}>
+              1
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.cashwallet} onPress={() => refRBSheet.current.open()}>
+          <Text style={styles.cahshtext}>Cash Wallet</Text>
+          <Svg
+            width={15}
+            height={9}
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <Path
+              d="M.311 1.211c.2-.191.47-.299.751-.299.282 0 .552.108.751.3l5.26 5.053 5.26-5.054c.2-.186.468-.289.747-.286.278.002.545.11.742.299.197.189.308.445.31.713a1 1 0 0 1-.297.718L7.824 8.43c-.2.191-.47.299-.751.299-.282 0-.552-.108-.751-.3L.312 2.656A1.001 1.001 0 0 1 0 1.933c0-.27.112-.53.311-.722Z"
+              fill="#fff"
+            />
+          </Svg>
+        </TouchableOpacity>
+        <RBSheet
+          ref={refRBSheet}
+          height={300}
+          openDuration={250}
+          customStyles={{
+            container: {
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 5
+            }
+          }}
+        >
+          <SortModal />
+        </RBSheet>
+        <Text style={styles.currentval}>
+          Current Balance
+        </Text>
+        <Text style={styles.currentmoney}>
+          $405.00
+        </Text>
       </ImageBackground>
       <View style={styles.group0}>
         <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button} onPress={()=>{navigation.navigate('AddmoneyScreen');}}>
+          <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('AddmoneyScreen'); }}>
             <Svg
               width={20}
               height={20}
@@ -78,11 +94,11 @@ export default function HomeScreen({navigation, onView}) {
             </Svg>
           </TouchableOpacity>
           <Text style={styles.text}>
-             Add
+            Add
           </Text>
         </View>
         <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('SendMoneyScreen'); }}>
             <Svg
               width={23}
               height={24}
@@ -100,7 +116,7 @@ export default function HomeScreen({navigation, onView}) {
           </Text>
         </View>
         <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button} onPress={()=>{navigation.navigate('TransferScreen');}}>
+          <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('TransferScreen'); }}>
             <Svg
               width={25}
               height={24}
@@ -119,8 +135,8 @@ export default function HomeScreen({navigation, onView}) {
         </View>
       </View>
       <View style={styles.group1}>
-      <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button}>
+        <View style={styles.buttonzip}>
+          <TouchableOpacity style={styles.button} onPress={() => { onView(2) }} r>
             <Svg
               width={17}
               height={25}
@@ -163,171 +179,171 @@ export default function HomeScreen({navigation, onView}) {
       <View style={styles.body}>
         <View style={styles.row}>
           <Text style={styles.recent}>
-             Recent Activity
+            Recent Activity
           </Text>
-          <TouchableOpacity onPress={()=>{onView(1)}}>
+          <TouchableOpacity onPress={() => { onView(1) }}>
             <Text style={styles.all}>
               View All
             </Text>
           </TouchableOpacity>
         </View>
-      <FlatList style={styles.list}
+        <FlatList style={styles.list}
           data={data}
-          keyExtractor= {(item) => {
+          keyExtractor={(item) => {
             return item.id;
           }}
           renderItem={(list) => {
             const item = list.item;
             return (
-              <HomeCard item={item}/>
+              <HomeCard item={item} />
             )
-          }}/>
+          }} />
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({ 
-  container:{
-    flex:1,
-    backgroundColor:theme.colors.homebackgroundColor,
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.homebackgroundColor,
   },
-  header:{
-    backgroundColor:theme.colors.backgroundColor,
-    height:350,
-    display:'flex',
-    flexDirection:'column',
+  header: {
+    backgroundColor: theme.colors.backgroundColor,
+    height: 350,
+    display: 'flex',
+    flexDirection: 'column',
   },
-  subgroup:{
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'baseline',
-    marginTop:60,
-    marginHorizontal:30,
+  subgroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginTop: 60,
+    marginHorizontal: 30,
   },
-  avatargroup:{
-    display:'flex',
-    flexDirection:'row',
-    alignItems:'center'
+  avatargroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
   },
-  avatar:{
-     width:50,
-     height:50,
-     borderRadius:'50%'
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 50
   },
-  textgroup:{
-    marginLeft:10,
+  textgroup: {
+    marginLeft: 10,
   },
-  name:{
-    color:theme.colors.greytextColor,
+  name: {
+    color: theme.colors.greytextColor,
   },
-  welcome:{
-    color:theme.colors.whiteColor,
-    fontSize:theme.fontSize.content0
+  welcome: {
+    color: theme.colors.whiteColor,
+    fontSize: theme.fontSize.content0
   },
-  notificationgroup:{
-    position:'relative'
+  notificationgroup: {
+    position: 'relative'
   },
-  notify:{
-    width:22,
-    height:22,
-    fontWeight:theme.fontWeight.bold,
-    backgroundColor:theme.colors.redColor,
-    borderRadius:'100%',
-    color:theme.colors.whiteColor,
-    position:'absolute',
-    textAlign:'center',
-    right:-10,
-    top:-10,
+  notify: {
+    width: 22,
+    height: 22,
+    fontWeight: theme.fontWeight.bold,
+    backgroundColor: theme.colors.redColor,
+    borderRadius: 22,
+    color: theme.colors.whiteColor,
+    position: 'absolute',
+    textAlign: 'center',
+    right: -10,
+    top: -10,
   },
-  cashwallet:{
-    marginTop:20,
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center'
+  cashwallet: {
+    marginTop: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  cahshtext:{
-    color:theme.colors.whiteColor,
-    fontSize:theme.fontSize.content0,
-    fontWeight:theme.fontWeight.normal,
-    marginRight:10,
+  cahshtext: {
+    color: theme.colors.whiteColor,
+    fontSize: theme.fontSize.content0,
+    fontWeight: theme.fontWeight.normal,
+    marginRight: 10,
   },
-  currentval:{
-    marginTop:20,
-    textAlign:'center',
-    color:theme.colors.whiteColor,
-    fontSize:theme.fontSize.subtitle01,
-    fontWeight:theme.fontWeight.normal,
+  currentval: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: theme.colors.whiteColor,
+    fontSize: theme.fontSize.subtitle01,
+    fontWeight: theme.fontWeight.normal,
   },
-  currentmoney:{
-    marginTop:20,
-    textAlign:'center',
-    color:theme.colors.thickyellowColor,
-    fontSize:theme.fontSize.title01,
-    fontWeight:theme.fontWeight.normal,
+  currentmoney: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: theme.colors.thickyellowColor,
+    fontSize: theme.fontSize.title01,
+    fontWeight: theme.fontWeight.normal,
   },
-  group0:{
-    paddingHorizontal:'8%',
-    position:'absolute',
-    width:'100%',
-    top:313,
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-around',
+  group0: {
+    paddingHorizontal: '8%',
+    position: 'absolute',
+    width: '100%',
+    top: 313,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
-  group1:{
-    paddingHorizontal:'23%',
-    position:'absolute',
-    width:'100%',
-    top:427,
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-around',
+  group1: {
+    paddingHorizontal: '23%',
+    position: 'absolute',
+    width: '100%',
+    top: 427,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
-  buttonzip:{
-    display:'flex',
-    flexDirection:'col',
+  buttonzip: {
+    display: 'flex',
+    flexDirection: 'column',
   },
-  button:{
-    width:74,
-    height:74,
-    backgroundColor:theme.colors.pinbackColor,
-    borderRadius:'100%',
-    justifyContent:'center',
-    alignItems:'center'
+  button: {
+    width: 74,
+    height: 74,
+    backgroundColor: theme.colors.pinbackColor,
+    borderRadius: 74,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  text:{
-    marginTop:14,
-    textAlign:'center',
-    color:theme.colors.blackColor,
-    fontSize:theme.fontSize.content0,
-    fontWeight:theme.fontWeight.normal,
+  text: {
+    marginTop: 14,
+    textAlign: 'center',
+    color: theme.colors.blackColor,
+    fontSize: theme.fontSize.content0,
+    fontWeight: theme.fontWeight.normal,
   },
-  body:{
-    marginTop:190,
-    backgroundColor:theme.colors.homebackgroundColor,
+  body: {
+    marginTop: 190,
+    backgroundColor: theme.colors.homebackgroundColor,
   },
-  row:{
-    height:60,
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center',
-    paddingHorizontal:17,
-   },
-   recent:{
-    color:theme.colors.blackColor,
-    fontSize:theme.fontSize.subtitle1,
-    fontWeight:theme.fontWeight.normal,
-   },
-   all:{
-    color:theme.colors.lightgreytextColor,
-    fontSize:theme.fontSize.content0,
-    fontWeight:theme.fontWeight.normal,
-   },
-  list:{
-    marginHorizontal:17,
+  row: {
+    height: 60,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 17,
+  },
+  recent: {
+    color: theme.colors.blackColor,
+    fontSize: theme.fontSize.subtitle1,
+    fontWeight: theme.fontWeight.normal,
+  },
+  all: {
+    color: theme.colors.lightgreytextColor,
+    fontSize: theme.fontSize.content0,
+    fontWeight: theme.fontWeight.normal,
+  },
+  list: {
+    marginHorizontal: 17,
   }
 });

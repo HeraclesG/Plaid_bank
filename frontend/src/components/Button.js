@@ -1,6 +1,5 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
-import { theme } from '../core/theme'
 
 export default function Button({ mode, style, ...props }) {
   return (
@@ -19,8 +18,8 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 15,
     paddingHorizontal: 38,
-    borderWidth:1,
-    borderRadius:10,
+    borderWidth: 1,
+    borderRadius: 10,
   },
   text: {
     fontWeight: 'bold',
