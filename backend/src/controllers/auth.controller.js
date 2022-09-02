@@ -11,6 +11,7 @@ const register = catchAsync(async (req, res) => {
 
   // check the prime trust status and if user is not exist in prime trust, create a new user
   let ptStatus = false;
+  let registerErr = "";
   await axios({
     method: "POST",
     data: {
@@ -50,6 +51,13 @@ const register = catchAsync(async (req, res) => {
         });
       console.log("error", err?.response?.data?.errors[0]?.title);
     });
+
+  if (ptStatus === false) {
+    res
+      .status(httpStatus.INTERNAL_SERVER_ERROR)
+      .send({ message: "Registered User. Input correct password." });
+    return;
+  }
 
   User.create({ ...req.body })
     .then((user) => {

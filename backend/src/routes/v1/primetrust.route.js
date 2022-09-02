@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.route("/create_user").post(primeTrustController.createUser);
 router.route("/create_jwt").post(primeTrustController.createJwt);
+router.route("/get_accounts").get(primeTrustController.getAccounts);
+router.route("/create_individual_account").post(primeTrustController.createIndividualAccount);
 router
   .route("/account_aggregate_policies")
   .get(primeTrustController.accountPolicy);
