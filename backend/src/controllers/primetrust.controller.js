@@ -3,8 +3,6 @@ const { uuid } = require("uuidv4");
 const axios = require("axios");
 const catchAsync = require("../utils/catchAsync");
 
-console.log(uuid());
-
 const createUser = catchAsync(async (req, res) => {
   const { email, name, password } = req.body;
   await axios({
