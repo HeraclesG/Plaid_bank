@@ -1,6 +1,8 @@
 const httpStatus = require("http-status");
 const { uuid } = require("uuidv4");
 const axios = require("axios");
+const fs = require("fs/promises");
+const FormData = require("form-data");
 const catchAsync = require("../utils/catchAsync");
 
 const createUser = catchAsync(async (req, res) => {
@@ -118,6 +120,37 @@ const createIndividualAccount = catchAsync(async (req, res) => {
     });
 });
 
+const uploadDocuments = catchAsync(async (req, res) => {
+  const { isFirst } = req.body;
+  const uploadedFile = await fs.readFile(req.file.path);
+  const form = new FormData();
+  form.append("file", uploadedFile, {
+    "content-type": "application/pdf",
+  });
+  await axios({
+    method: "POST",
+    headers: { Authorization: req.headers.authorization },
+    data: {
+      "contact-id": req.body.contact_id,
+      label: isFirst ? "Front Driver's License" : "Backside Driver's License",
+      description: isFirst
+        ? "Front of Driver's License"
+        : "Back of Driver's License",
+      file: req.file,
+      public: true,
+    },
+    url: "https://sandbox.primetrust.com/v2/uploaded-documents",
+  })
+    .then((response) => {
+      console.log("response", response.data);
+      res.send(response.data);
+    })
+    .catch((err) => {
+      console.log("error", err.response?.data?.errors);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.title });
+    });
+});
+
 const agreementPreviews = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   await axios({
@@ -207,6 +240,7 @@ module.exports = {
   createJwt,
   getAccounts,
   createIndividualAccount,
+  uploadDocuments,
   accountPolicy,
   agreementPreviews,
   createResourceTokens,
