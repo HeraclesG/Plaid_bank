@@ -58,7 +58,7 @@ const getAccounts = catchAsync(async (req, res) => {
   await axios({
     method: "GET",
     headers: { Authorization: req.headers.authorization },
-    url: "https://sandbox.primetrust.com/v2/accounts",
+    url: "https://sandbox.primetrust.com/v2/accounts?filter[status]=opened",
   })
     .then((response) => {
       console.log("response", response.data);
@@ -122,14 +122,18 @@ const createIndividualAccount = catchAsync(async (req, res) => {
 
 const uploadDocuments = catchAsync(async (req, res) => {
   const { isFirst } = req.body;
+  console.log(req.file);
   const uploadedFile = await fs.readFile(req.file.path);
-  const form = new FormData();
-  form.append("file", uploadedFile, {
-    "content-type": "application/pdf",
-  });
+  const formData = new FormData();
+  formData.append("File", uploadedFile);
   await axios({
     method: "POST",
-    headers: { Authorization: req.headers.authorization },
+    headers: {
+      Authorization: req.headers.authorization,
+      // "Content-Type": "multipart/form-data",
+      // Accept: "application/json",
+      // "Access-Control-Allow-Origin": "*",
+    },
     data: {
       "contact-id": req.body.contact_id,
       label: isFirst ? "Front Driver's License" : "Backside Driver's License",
@@ -146,6 +150,7 @@ const uploadDocuments = catchAsync(async (req, res) => {
       res.send(response.data);
     })
     .catch((err) => {
+      // console.log("error", err);
       console.log("error", err.response?.data?.errors);
       res.status(400).send({ message: err.response?.data?.errors[0]?.title });
     });

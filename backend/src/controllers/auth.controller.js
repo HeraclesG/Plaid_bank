@@ -19,7 +19,7 @@ const register = catchAsync(async (req, res) => {
         type: "user",
         attributes: {
           email: req.body.email,
-          name: req.body.userName,
+          name: "Orocash",
           password: req.body.password,
         },
       },
