@@ -1,7 +1,7 @@
 const httpStatus = require("http-status");
 const { uuid } = require("uuidv4");
 const axios = require("axios");
-const fs = require("fs/promises");
+const fs = require("fs");
 const FormData = require("form-data");
 const catchAsync = require("../utils/catchAsync");
 const { User } = require("../models");
@@ -91,7 +91,7 @@ const setAccount = catchAsync(async (req, res) => {
         res.status(400).send({ message: "Invalid user" });
         return;
       }
-      console.log(currentUser)
+      console.log(currentUser);
       currentUser.accountId = accountId;
       const newUser = await currentUser.save();
       console.log(newUser);
@@ -156,26 +156,29 @@ const createIndividualAccount = catchAsync(async (req, res) => {
 const uploadDocuments = catchAsync(async (req, res) => {
   const { isFirst } = req.body;
   console.log(req.file);
-  const uploadedFile = await fs.readFile(req.file.path);
-  const formData = new FormData();
-  formData.append("File", uploadedFile);
+  const uploadedFile = await fs.createReadStream(req.file.path);
+  const uploadedInfo = new FormData();
+  uploadedInfo.append("file", uploadedFile);
+  console.log(uploadedInfo.getHeaders());
   await axios({
     method: "POST",
     headers: {
       Authorization: req.headers.authorization,
+      ...uploadedInfo.getHeaders(),
       // "Content-Type": "multipart/form-data",
       // Accept: "application/json",
       // "Access-Control-Allow-Origin": "*",
     },
-    data: {
-      "contact-id": req.body.contact_id,
-      label: isFirst ? "Front Driver's License" : "Backside Driver's License",
-      description: isFirst
-        ? "Front of Driver's License"
-        : "Back of Driver's License",
-      file: req.file,
-      public: true,
-    },
+    // data: {
+    //   "contact-id": req.body.contact_id,
+    //   label: isFirst ? "Front Driver's License" : "Backside Driver's License",
+    //   description: isFirst
+    //     ? "Front of Driver's License"
+    //     : "Back of Driver's License",
+    //   file: req.file,
+    //   public: true,
+    // },
+    data: uploadedInfo,
     url: "https://sandbox.primetrust.com/v2/uploaded-documents",
   })
     .then((response) => {
@@ -183,7 +186,6 @@ const uploadDocuments = catchAsync(async (req, res) => {
       res.send(response.data);
     })
     .catch((err) => {
-      // console.log("error", err);
       console.log("error", err.response?.data?.errors);
       res.status(400).send({ message: err.response?.data?.errors[0]?.title });
     });

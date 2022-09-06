@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const upload = multer({ dest: "uploads" });
+const fs = require("fs");
 const validate = require("../../middlewares/validate");
 const checkHeader = require("../../middlewares/checkHeader");
 const auth = require("../../middlewares/auth");
