@@ -16,8 +16,17 @@ const register = {
   }),
 };
 
+const login = {
+  body: Joi.object().keys({
+    userName: Joi.string().required(),
+    password: Joi.string().required().custom(password),
+    pin: Joi.string().required().custom(pin),
+  }),
+};
+
 module.exports = {
   register,
+  login
 };
 
 

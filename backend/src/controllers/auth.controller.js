@@ -71,6 +71,39 @@ const register = catchAsync(async (req, res) => {
     });
 });
 
+const login = catchAsync(async (req, res) => {
+  const { userName, password, pin } = req.body;
+  let currentUser = await User.findOne({ userName });
+  if (!currentUser) {
+    res.status(400).send({ message: "User is not registered." });
+    return;
+  }
+
+  if (currentUser.pin != pin) {
+    res.status(400).send({ message: "Pin code is wrong." });
+    return;
+  }
+
+  await axios({
+    method: "POST",
+    params: {
+      email: currentUser.email,
+      password: req.body.password,
+    },
+    url: "https://sandbox.primetrust.com/auth/jwts",
+    // url: "https://sandbox.primetrust.com/v2/users",
+  })
+    .then((response) => {
+      console.log("response", response.data);
+      res.send({ token: response.data.token, user: currentUser });
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]?.title);
+      res.status(400).send({ message: "Input correct Prime Trust credentials" });
+    });
+});
+
 module.exports = {
   register,
+  login,
 };

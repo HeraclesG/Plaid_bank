@@ -4,6 +4,7 @@ const axios = require("axios");
 const fs = require("fs/promises");
 const FormData = require("form-data");
 const catchAsync = require("../utils/catchAsync");
+const { User } = require("../models");
 
 const createUser = catchAsync(async (req, res) => {
   const { email, name, password } = req.body;
@@ -66,6 +67,38 @@ const getAccounts = catchAsync(async (req, res) => {
     })
     .catch((err) => {
       console.log("error", err?.response?.data?.errors[0]?.title);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.title });
+    });
+});
+
+const setAccount = catchAsync(async (req, res) => {
+  const { accountId, userName } = req.body;
+  await axios({
+    method: "GET",
+    headers: { Authorization: req.headers.authorization },
+    url: "https://sandbox.primetrust.com/v2/users",
+  })
+    .then(async (response) => {
+      const email = response.data.data[0].attributes.email;
+      let currentUser = await User.findOne({ userName });
+
+      if (!currentUser) {
+        res.status(400).send({ message: "User is not existed" });
+        return;
+      }
+
+      if (email != currentUser.email) {
+        res.status(400).send({ message: "Invalid user" });
+        return;
+      }
+      console.log(currentUser)
+      currentUser.accountId = accountId;
+      const newUser = await currentUser.save();
+      console.log(newUser);
+      res.send(response.data);
+    })
+    .catch((err) => {
+      console.log("error", err);
       res.status(400).send({ message: err.response?.data?.errors[0]?.title });
     });
 });
@@ -244,6 +277,7 @@ module.exports = {
   createUser,
   createJwt,
   getAccounts,
+  setAccount,
   createIndividualAccount,
   uploadDocuments,
   accountPolicy,
