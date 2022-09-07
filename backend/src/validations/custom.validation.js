@@ -15,7 +15,15 @@ const password = (value, helpers) => {
   return value;
 };
 
+const pin = (value, helpers) => {
+  if (!value.match(/^(\d{4}|\d{6})$/)) {
+    return helpers.message('pin code must be numbers and be less than 4 characters');
+  }
+  return value;
+};
+
 module.exports = {
   objectId,
   password,
+  pin
 };

@@ -112,7 +112,7 @@ const exchangePublicToken = catchAsync(async (req, res) => {
 });
 
 const setProcessorToken = catchAsync(async (req, res) => {
-  const {account_id, public_token, institution_id} = req.body;
+  const { account_id, public_token, institution_id } = req.body;
   // we have to uncomment this
   // const tokenResponse = await axios({
   //   method: "POST",
@@ -134,13 +134,26 @@ const setProcessorToken = catchAsync(async (req, res) => {
       secret: PLAID_SECRET,
       institution_id,
       options: {
+        // webhook: "https://www.genericwebhookurl.com/webhook",
         override_username: "user_good",
         override_password: "pass_good",
       },
     },
     url: `${PLAID_HOST}/sandbox/processor_token/create`,
   });
-  console.log(processorTokenResponse.data);
+
+  // const processorTokenResponse = await axios({
+  //   method: "POST",
+  //   data: {
+  //     client_id: PLAID_CLIENT_ID,
+  //     secret: PLAID_SECRET,
+  //     access_token: accessToken,
+  //     account_id,
+  //     processor: "wyre",
+  //   },
+  //   url: `${PLAID_HOST}/processor/token/create`,
+  // }).then(result=>console.log(result)).catch(err=>console.log(err));
+  // console.log(processorTokenResponse);
   res.send(processorTokenResponse.data);
 });
 
