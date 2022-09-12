@@ -31,6 +31,46 @@ export default function AddmoneyScreen({ navigation }) {
         <Button onPress={() => { navigation.navigate('AddmoneystepScreen'); }} color={theme.colors.backgroundColor} style={styles.mannual}>
           <View style={styles.row}>
             <Text style={styles.text}>
+              Wire Transfer
+            </Text>
+            <View style={styles.svg}>
+              <Svg
+                width={10}
+                height={15}
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <Path
+                  d="M.42.308C.152.506 0 .773 0 1.052c0 .28.151.547.42.744l7.112 5.21-7.111 5.21c-.262.199-.407.465-.404.74.004.277.155.54.421.736.267.195.627.306 1.004.308.376.002.74-.104 1.01-.296L10.58 7.75c.27-.197.421-.465.421-.744 0-.279-.151-.546-.42-.744L2.451.308A1.737 1.737 0 0 0 1.436 0C1.056 0 .69.11.421.308Z"
+                  fill="#fff"
+                />
+              </Svg>
+            </View>
+          </View>
+        </Button>
+        <Button onPress={() => { }} color={theme.colors.backgroundColor} style={styles.mannual}>
+          <View style={styles.row}>
+            <Text style={styles.text}>
+              ACH Transfer
+            </Text>
+            <View style={styles.svg}>
+              <Svg
+                width={10}
+                height={15}
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <Path
+                  d="M.42.308C.152.506 0 .773 0 1.052c0 .28.151.547.42.744l7.112 5.21-7.111 5.21c-.262.199-.407.465-.404.74.004.277.155.54.421.736.267.195.627.306 1.004.308.376.002.74-.104 1.01-.296L10.58 7.75c.27-.197.421-.465.421-.744 0-.279-.151-.546-.42-.744L2.451.308A1.737 1.737 0 0 0 1.436 0C1.056 0 .69.11.421.308Z"
+                  fill="#fff"
+                />
+              </Svg>
+            </View>
+          </View>
+        </Button>
+        {/* <Button onPress={() => { navigation.navigate('AddmoneystepScreen'); }} color={theme.colors.backgroundColor} style={styles.mannual}>
+          <View style={styles.row}>
+            <Text style={styles.text}>
               Direct Bank Transfer
             </Text>
             <View style={styles.svg}>
@@ -107,7 +147,7 @@ export default function AddmoneyScreen({ navigation }) {
               </Svg>
             </View>
           </View>
-        </Button>
+        </Button> */}
       </View>
     </View>
   );

@@ -2,47 +2,82 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../core/theme';
-import Svg, { Path } from "react-native-svg";
 import Keyboard from '../components/Keyboard';
 import { User } from '../module/user/User'
 import { userStore } from '../module/user/UserStore'
-
+import axios from 'axios';
+import { PRIME_TRUST_URL, SERVER_URL } from '@env';
+import Svg, { Path, Circle } from "react-native-svg"
+import Modal from 'react-native-modal';
 
 export default function PinScreen({ navigation }) {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleOpenModalPress = () => setIsModalVisible(true);
+  const handleCloseModalPress = () => setIsModalVisible(false);
+  const [message, setMessage] = useState('error');
   const [pins, setPins] = useState([]);
   function addPin(val) {
     if (pins.length < 4) {
       setPins([...pins, val]);
       if (pins.length == 3) {
-        IsOk();
+        pinLogin(val);
       }
     }
 
   }
-  function IsOk() {
-    pinLogin();
-  }
   const goBack = () => {
     userStore.logout();
   }
-  const pinLogin = () => {
-    // if (email === '') {
-    //   Alert.alert('Warning', 'Please input Login');
-    //   return;
-    // }
-    // if (password === '') {
-    //   Alert.alert('Warning', 'Please input password');
-    //   return;
-    // }
-    const loginResponse = {
-      ...userStore.user,
-      userId: userStore.user.id,
-      permission: 2,
-    }
-
-    const user = User.fromJson(loginResponse, loginResponse.email)
-    userStore.setUser(user);
+  const pinLogin = async (val) => {
+    await axios({
+      method: "POST",
+      data: {
+        userName: userStore.user.username,
+        pin: pins.join('') + val
+      },
+      url: `${SERVER_URL}v1/auth/login`,
+    })
+      .then((response) => {
+        Ispending(response.data.currentUser.accountId);
+        // const loginResponse = {
+        //   ...userStore.user,
+        //   userId: response.data.currentUser.accountId,
+        //   permission: 2,
+        // }
+        // const user = User.fromJson(loginResponse, loginResponse.email)
+        // userStore.setUser(user);
+      })
+      .catch((err) => {
+        console.log("error", err);
+        setMessage('wrong pincode');
+        handleOpenModalPress();
+      });
   }
+  const Ispending = async (accountid) => {
+    console.log(userStore.user.authToken);
+    await axios({
+      method: "GET",
+      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
+      url: `${PRIME_TRUST_URL}v2/accounts/${userStore.user.id}`,
+    })
+      .then((response) => {
+        if (response.data.data.attributes.status === 'pending') {
+          console.log('goback');
+          goBack();
+          return;
+        }
+        const loginResponse = {
+          ...userStore.user,
+          userId: accountid,
+          permission: 2,
+        }
+        const user = User.fromJson(loginResponse, loginResponse.email)
+        userStore.setUser(user);
+      })
+      .catch((err) => {
+        console.log("error", err);
+      });
+  };
   function delPin(val) {
     const mid = [...pins];
     mid.pop();
@@ -77,6 +112,26 @@ export default function PinScreen({ navigation }) {
         <Text style={[styles.pin, { backgroundColor: (pins.length > 2 ? theme.colors.whiteColor : theme.colors.greytextColor) }]}>{pins.length > 2 ? "•" : ""}</Text>
         <Text style={[styles.pin, { backgroundColor: (pins.length > 3 ? theme.colors.whiteColor : theme.colors.greytextColor) }]}>{pins.length > 3 ? "•" : ""}</Text>
       </View>
+      <Modal isVisible={isModalVisible} hasBackdrop={true} >
+        <View style={styles.modal}>
+          <TouchableOpacity onPress={() => {
+            handleCloseModalPress()
+          }} style={{ paddingHorizontal: 19, position: 'absolute', paddingTop: 19 }}>
+            <Svg
+              width={14}
+              height={16}
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <Path
+                d="M13.73 14.03a1.097 1.097 0 0 1-.15 1.583 1.19 1.19 0 0 1-.745.261 1.18 1.18 0 0 1-.897-.405L7 9.726 2.063 15.44c-.23.267-.562.405-.896.405a1.19 1.19 0 0 1-.746-.26 1.097 1.097 0 0 1-.15-1.585l5.21-6.03-5.21-5.998A1.097 1.097 0 0 1 .42.387 1.194 1.194 0 0 1 2.063.53L7 6.242 11.936.53A1.196 1.196 0 0 1 13.58.385c.495.398.562 1.107.15 1.585l-5.21 6.029 5.211 6.03Z"
+                fill="#121244"
+              />
+            </Svg>
+          </TouchableOpacity>
+          <Text style={styles.message}>{message}</Text>
+        </View>
+      </Modal>
       <Keyboard add={addPin} del={delPin} />
     </View>
   );
@@ -126,5 +181,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textAlign: 'center',
     paddingTop: -15,
+  },
+  redir: {
+    paddingLeft: 5,
+    color: theme.colors.thickyellowColor,
+  },
+  modal: {
+    width: '88%',
+    position: 'absolute',
+    bottom: 70,
+    height: 200,
+    marginLeft: '6%',
+    borderRadius: 15,
+    backgroundColor: theme.colors.whiteColor,
+    borderRadius: 25,
+  },
+  message: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    marginTop: 75,
+    color: theme.colors.backgroundColor,
+    fontSize: theme.fontSize.subtitle01
   }
 });

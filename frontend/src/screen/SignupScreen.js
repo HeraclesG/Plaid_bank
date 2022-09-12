@@ -9,9 +9,14 @@ import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import axios from 'axios';
 import { User } from '../module/user/User'
 import { userStore } from '../module/user/UserStore'
+import Svg, { Path, Circle } from "react-native-svg"
+import Modal from 'react-native-modal';
 
 export default function SignupScreen({ navigation }) {
-  const [isSelected, setSelection] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleOpenModalPress = () => setIsModalVisible(true);
+  const handleCloseModalPress = () => setIsModalVisible(false);
+  const [message, setMessage] = useState('error');
   const [email, setEmail] = useState({ value: '', error: '' })
   const [conpassword, setConPassword] = useState({ value: '', error: '' })
   const [username, setUsername] = useState('');
@@ -34,22 +39,23 @@ export default function SignupScreen({ navigation }) {
     setConpin({ value: value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''), error: '' });
   };
   const validate = () => {
-    // if (email.value == '' || password == '' || pin == '') {
-    //   alert('please enterr all data');
-    //   return;
-    // }
-    // if (!validateEmail(email.value)) {
-    //   setEmail({ value: email.value, error: 'invalid email' });
-    //   return;
-    // }
-    // if (password !== conpassword.value) {
-    //   setConPassword({ value: conpassword.value, error: 'not match password' });
-    //   return;
-    // }
-    // if (pin !== conpin.value) {
-    //   setConpin({ value: conpin.value, error: 'not match pin' });
-    //   return;
-    // }
+    if (email.value == '' || password == '' || pin == '') {
+      setMessage('please enter all data');
+      handleOpenModalPress();
+      return;
+    }
+    if (!validateEmail(email.value)) {
+      setEmail({ value: email.value, error: 'invalid email' });
+      return;
+    }
+    if (password !== conpassword.value) {
+      setConPassword({ value: conpassword.value, error: 'not match password' });
+      return;
+    }
+    if (pin !== conpin.value) {
+      setConpin({ value: conpin.value, error: 'not match pin' });
+      return;
+    }
     getToken();
   }
   const validateEmail = (email) => {
@@ -57,21 +63,22 @@ export default function SignupScreen({ navigation }) {
     return re.test(email);
   };
   const getToken = async () => {
-    await fetch(
+    await axios(
       // `${PRIME_TRUST_URL}auth/jwts?email=${email.value}&password=${password}`,
-      `${PRIME_TRUST_URL}auth/jwts?email=dragondev93@gmail.com&password=aaaAAA111@`,
       {
-        method: 'post',
+        url: `${PRIME_TRUST_URL}auth/jwts?email=${email.value}&password=${password}`,
+        //`${PRIME_TRUST_URL}auth/jwts?email=blackhole.rsb@gmail.com&password=aaaAAA111222@`,
+        method: 'POST',
         headers: {
           'content-type': 'application/json',
-          // 'Username': email,
-          // 'Password': password.value,
+
         },//flm reference
       }
-    ).then(res => res.json()).then((data) => {
+    ).then((data) => {
+      console.log('11111', data.data);
       const loginResponse = {
-        userId: 1,
-        authToken: data.token,
+        userId: pin,
+        authToken: data.data.token,
         username: username,
         permission: 0,
       };
@@ -89,28 +96,30 @@ export default function SignupScreen({ navigation }) {
           attributes: {
             email: email.value,
             name: username,
-            password: password.value,
+            password: password,
           },
         },
       },
       url: `${PRIME_TRUST_URL}v2/users`,
     })
       .then((response) => {
+        console.log('createuser', response.data);
         getToken();
       })
       .catch((err) => {
-        console.log("error", err?.response?.data?.errors[0]?.title);
-        res.status(400).send({ message: err.response?.data?.errors[0]?.title });
+        console.log("createusererror", err?.response?.data?.errors[0]?.title);
+        setMessage('creatuser error');
+        handleOpenModalPress();
       });
   };
   return (
     <ScrollView contentContainerStyle={{ paddingVertical: 110 }} style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>
-          Welcome
+          Set up your account
         </Text>
         <Text style={styles.subtitle}>
-          Let’s sign you up.
+          This information must be accurate
         </Text>
       </View>
       <View style={styles.body}>
@@ -166,6 +175,7 @@ export default function SignupScreen({ navigation }) {
         <View style={styles.inputgroup}>
           <Text style={styles.label}>PIN</Text>
           <TextInput
+            secureTextEntry={true}
             placeholder="PIN number must be 4 digits "
             keyboardType='numeric'
             returnKeyType="next"
@@ -178,6 +188,7 @@ export default function SignupScreen({ navigation }) {
         <View style={styles.inputgroup}>
           <Text style={styles.label}>Confirm PIN</Text>
           <TextInput
+            secureTextEntry={true}
             placeholder="Re-enter your PIN number"
             returnKeyType="next"
             keyboardType='numeric'
@@ -188,6 +199,26 @@ export default function SignupScreen({ navigation }) {
             autoCapitalize="none"
           />
         </View>
+        <Modal isVisible={isModalVisible} hasBackdrop={true} >
+          <View style={styles.modal}>
+            <TouchableOpacity onPress={() => {
+              handleCloseModalPress()
+            }} style={{ paddingHorizontal: 19, position: 'absolute', paddingTop: 19 }}>
+              <Svg
+                width={14}
+                height={16}
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <Path
+                  d="M13.73 14.03a1.097 1.097 0 0 1-.15 1.583 1.19 1.19 0 0 1-.745.261 1.18 1.18 0 0 1-.897-.405L7 9.726 2.063 15.44c-.23.267-.562.405-.896.405a1.19 1.19 0 0 1-.746-.26 1.097 1.097 0 0 1-.15-1.585l5.21-6.03-5.21-5.998A1.097 1.097 0 0 1 .42.387 1.194 1.194 0 0 1 2.063.53L7 6.242 11.936.53A1.196 1.196 0 0 1 13.58.385c.495.398.562 1.107.15 1.585l-5.21 6.029 5.211 6.03Z"
+                  fill="#121244"
+                />
+              </Svg>
+            </TouchableOpacity>
+            <Text style={styles.message}>{message}</Text>
+          </View>
+        </Modal>
         <Button onPress={() => { validate() }} color={theme.colors.backgroundColor} style={styles.mannual}>
           <Text style={styles.bttext}>
             Next
@@ -277,5 +308,22 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between'
+  },
+  modal: {
+    width: '88%',
+    position: 'absolute',
+    bottom: 70,
+    height: 200,
+    marginLeft: '6%',
+    borderRadius: 15,
+    backgroundColor: theme.colors.whiteColor,
+    borderRadius: 25,
+  },
+  message: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    marginTop: 75,
+    color: theme.colors.backgroundColor,
+    fontSize: theme.fontSize.subtitle01
   }
 });

@@ -6,28 +6,32 @@ import Svg, { Path, Circle } from "react-native-svg"
 import Button from '../components/Button';
 import DocumentPicker from 'react-native-document-picker';
 import { userStore } from '../module/user/UserStore';
+import Modal from 'react-native-modal';
 
 export default function FileuploadScreen({ navigation }) {
   const [selected, setSelected] = useState(['', '']);
-  const [sort, setSort] = useState(true);
+  const [success, setSuccess] = useState(false);
   const [front, setFront] = useState(null);
   const [back, setBack] = useState(null);
-  const [message, setMessage] = useState('aaa');
-
+  const [message, setMessage] = useState('error');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleOpenModalPress = () => setIsModalVisible(true);
+  const handleCloseModalPress = () => setIsModalVisible(false);
   const selectFront = async () => {
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
       });
-      setMessage('res : ' + JSON.stringify(res));
+      // setMessage('res : ' + JSON.stringify(res));
       setFront(res);
       setSelected(['selected', selected[1]]);
     } catch (err) {
       setFront(null);
       if (DocumentPicker.isCancel(err)) {
-        setMessage('Canceled');
+        // setMessage('Canceled');
       } else {
-        setMessage('Unknown Error: ' + JSON.stringify(err));
+        setMessage('file upload false');
+        handleOpenModalPress();
         throw err;
       }
     }
@@ -45,7 +49,8 @@ export default function FileuploadScreen({ navigation }) {
       if (DocumentPicker.isCancel(err)) {
         setMessage('Canceled');
       } else {
-        setMessage('Unknown Error: ' + JSON.stringify(err));
+        setMessage('file upload false');
+        handleOpenModalPress();
         throw err;
       }
     }
@@ -97,10 +102,21 @@ export default function FileuploadScreen({ navigation }) {
               'Content-Type': 'multipart/form-data; ',
             },
           }
-        ).then(res => res.json()).then((data1) => { console.log(data1) }).catch(err => { console.log('error', err); return; });
-      }).catch(err => { console.log('error', err); return; });
+        ).then(res => res.json()).then((data1) => {
+          setMessage('Please wait until verify');
+          setSuccess(true);
+          handleOpenModalPress();
+        }).catch(err => {
+          setMessage('File upload falied');
+          handleOpenModalPress(); return;
+        });
+      }).catch(err => {
+        setMessage('File upload falied');
+        handleOpenModalPress(); return;
+      });
     } else {
       setMessage('Please Select File first');
+      handleOpenModalPress();
     }
 
   };
@@ -125,9 +141,9 @@ export default function FileuploadScreen({ navigation }) {
             KYC file upload
           </Text>
         </View>
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-          <View style={{ width: '45%', displa: 'flex', alignItems: 'center' }}>
-            <Text style={{ color: theme.colors.whiteColor }}>front</Text>
+        <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+          <View style={{ width: '80%', displa: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: 'auto' }}>
+            <Text style={{ color: theme.colors.whiteColor }}>Front</Text>
             <TouchableOpacity style={styles.upload} onPress={selectFront}>
               <Svg
                 width={20}
@@ -143,8 +159,8 @@ export default function FileuploadScreen({ navigation }) {
             </TouchableOpacity>
             <Text style={{ color: theme.colors.whiteColor }}>{selected[0]}</Text>
           </View>
-          <View style={{ width: '45%', displa: 'flex', alignItems: 'center' }}>
-            <Text style={{ color: theme.colors.whiteColor }}>back</Text>
+          <View style={{ width: '80%', displa: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: 'auto' }}>
+            <Text style={{ color: theme.colors.whiteColor }}>Back</Text>
             <TouchableOpacity style={styles.upload} onPress={selectBack}>
               <Svg
                 width={20}
@@ -162,6 +178,30 @@ export default function FileuploadScreen({ navigation }) {
           </View>
         </View>
       </View>
+      <Modal isVisible={isModalVisible} hasBackdrop={true} >
+        <View style={styles.modal}>
+          <TouchableOpacity onPress={() => {
+            if (success) {
+              navigation.navigate('DashboardScreen');
+            } else {
+              handleCloseModalPress()
+            }
+          }} style={{ paddingHorizontal: 19, position: 'absolute', paddingTop: 19 }}>
+            <Svg
+              width={14}
+              height={16}
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <Path
+                d="M13.73 14.03a1.097 1.097 0 0 1-.15 1.583 1.19 1.19 0 0 1-.745.261 1.18 1.18 0 0 1-.897-.405L7 9.726 2.063 15.44c-.23.267-.562.405-.896.405a1.19 1.19 0 0 1-.746-.26 1.097 1.097 0 0 1-.15-1.585l5.21-6.03-5.21-5.998A1.097 1.097 0 0 1 .42.387 1.194 1.194 0 0 1 2.063.53L7 6.242 11.936.53A1.196 1.196 0 0 1 13.58.385c.495.398.562 1.107.15 1.585l-5.21 6.029 5.211 6.03Z"
+                fill="#121244"
+              />
+            </Svg>
+          </TouchableOpacity>
+          <Text style={styles.message}>{message}</Text>
+        </View>
+      </Modal>
       <Button onPress={() => { uploadImage(); }} color={theme.colors.backgroundColor} style={styles.mannual}>
         <Text style={styles.bttext}>
           Upload
@@ -224,15 +264,32 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   upload: {
-    backgroundColor: theme.colors.backgroundColor,
+    backgroundColor: theme.colors.thickgreytextColor,
     borderStyle: 'dashed',
     borderColor: theme.colors.whiteColor,
     borderWidth: 1,
     borderRadius: 5,
     width: '100%',
-    height: 100,
+    height: 165,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  modal: {
+    width: '88%',
+    position: 'absolute',
+    bottom: 70,
+    height: 200,
+    marginLeft: '6%',
+    borderRadius: 15,
+    backgroundColor: theme.colors.whiteColor,
+    borderRadius: 25,
+  },
+  message: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    marginTop: 75,
+    color: theme.colors.backgroundColor,
+    fontSize: theme.fontSize.subtitle01
   }
 });

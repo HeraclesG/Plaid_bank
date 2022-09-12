@@ -15,22 +15,47 @@ import * as RNLocalize from "react-native-localize";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import PhoneInput from "react-native-phone-number-input";
 import CountryPicker from "react-native-region-country-picker";
+import { Picker } from '@react-native-picker/picker';
+import Svg, { Path, Circle } from "react-native-svg"
+import Modal from 'react-native-modal';
 // import { CountryDropdown, RegionDropdown, CountryRegionData } from 'react-country-region-selector';
 
 export default function KycScreen({ navigation }) {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleOpenModalPress = () => setIsModalVisible(true);
+  const handleCloseModalPress = () => setIsModalVisible(false);
+  const [message, setMessage] = useState('error');
   const [isSelected, setSelection] = useState(false);
   const [firstname, setfirst] = useState('');
   const [lastname, setLast] = useState('');
   const [birth, setBirth] = useState('');
   const [taxid, setTaxid] = useState('');
-  const [taxco, setTaxico] = useState('');
+  const [street_1, setSt1] = useState('');
+  const [street_2, setSt2] = useState('');
+  const [city, setCity] = useState('');
+  const [postalcode, setPostalCode] = useState('');
   const [phonenumber, setPhonenumber] = useState('');
-  const [phoneco, setPhoneco] = useState('');
+  const [phoneco, setPhoneco] = useState('US');
   const phoneInput = useRef();
-  const countryPickerRef = useRef();
+  let countryPickerRef = useRef();
   const [formattedValue, setFormattedValue] = useState("");
-  const [country, setCountry] = useState('');
-  const [region, setRegion] = useState('');
+  const [country, setCountry] = useState('US');
+  const [region, setRegion] = useState();
+  const [isreg, setIsreg] = useState(true);
+  const onTextChanged = (value) => {
+    setTaxid(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
+  };
+  const onpostalCode = (value) => {
+    setPostalCode(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
+  };
+  const validate = () => {
+    if (firstname === '' || lastname === '' || birth === '' || taxid === '' || street_1 === '' | street_2 === '' || city === '' || postalcode === '' | phoneco === '' || phonenumber === '' || country === '') {
+      setMessage('please enter all data');
+      handleOpenModalPress();
+      return;
+    }
+    createIndividualAccount();
+  }
   const createIndividualAccount = async () => {
     await axios({
       method: "POST",
@@ -41,26 +66,26 @@ export default function KycScreen({ navigation }) {
           attributes: {
             "account-type": "custodial",
             name: "Dragon Account",
-            "authorized-signature": "John Connor",
+            "authorized-signature": `${firstname} ${lastname}`,
             owner: {
               "contact-type": "natural_person",
-              name: "John Connor",
-              email: "dragondev93@gmail.com",
-              "date-of-birth": "1971-01-01",
-              "tax-id-number": "111223333",
-              "tax-country": "US",
+              name: `${firstname} ${lastname}`,
+              email: userStore.user.email,
+              "date-of-birth": birth,
+              "tax-id-number": taxid,
+              "tax-country": country,
               "primary-phone-number": {
-                country: "US",
-                number: "123456789",
+                country: phoneco,
+                number: phonenumber,
                 sms: true,
               },
               "primary-address": {
-                "street-1": "NaKaKu",
-                "street-2": "Apt 260",
-                "postal-code": "89145",
-                city: "Las Vegas",
-                region: "NV",
-                country: "US",
+                "street-1": street_1,
+                "street-2": street_2,
+                "postal-code": postalcode,
+                city: city,
+                region: region,
+                country: country,
               },
             },
           },
@@ -84,6 +109,8 @@ export default function KycScreen({ navigation }) {
       })
       .catch((err) => {
         console.log("error", err?.response?.data?.errors);
+        setMessage(err?.response?.data?.errors[0].detail);
+        handleOpenModalPress();
         // res.status(400).send({ message: err.response?.data?.errors[0]?.title });
       });
   };
@@ -92,22 +119,22 @@ export default function KycScreen({ navigation }) {
     await axios({
       method: "POST",
       data: {
-        firstName: 'John',
-        lastName: 'Connor',
+        firstName: firstname,
+        lastName: lastName,
         userName: userStore.user.username,
-        email: 'dragondev93@gmail.com',
-        birthday: "1971-01-01",
-        taxIdNum: '111223333',
-        taxCountry: 'US',
-        phone: '123456789',
-        city: 'Las Vegas',
-        region: 'NV',
-        country: 'US',
-        postalCode: '89145',
-        street1: 'NaKaKu',
-        street2: 'Apt 260',
+        email: userStore.user.email,
+        birthday: birth,
+        taxIdNum: taxid,
+        taxCountry: country,
+        phone: phonenumber,
+        city: city,
+        region: region,
+        country: country,
+        postalCode: postalcode,
+        street1: street_1,
+        street2: street_2,
         accountId,
-        pin: '1234',
+        pin: userStore.user.id,
       },
       url: `http://localhost:4000/v1/auth/register`,
     })
@@ -116,6 +143,8 @@ export default function KycScreen({ navigation }) {
       })
       .catch((err) => {
         console.log("error", err);
+        setMessage('register backend error');
+        handleOpenModalPress();
       });
 
   }
@@ -208,37 +237,74 @@ export default function KycScreen({ navigation }) {
           <Text style={styles.label}>Tax Id</Text>
           <TextInput
             placeholder="taxid"
+            keyboardType='numeric'
             returnKeyType="next"
             value={taxid}
-            onChangeText={(text) => setTaxico(text)}
+            onChangeText={(text) => onTextChanged(text)}
             autoCapitalize="none"
           />
         </View>
         <View style={styles.inputgroup}>
-          <Text style={styles.label}>Tax Country</Text>
+          <Text style={styles.label}>Street 1</Text>
           <TextInput
-            placeholder="Enter Country"
+            placeholder="Enter street1"
             returnKeyType="next"
-            value={taxco}
-            onChangeText={(text) => setTaxico(text)}
+            value={street_1}
+            onChangeText={(text) => setSt1(text)}
             autoCapitalize="none"
           />
         </View>
+        <View style={styles.inputgroup}>
+          <Text style={styles.label}>Street 2</Text>
+          <TextInput
+            placeholder="Enter street2"
+            returnKeyType="next"
+            value={street_2}
+            onChangeText={(text) => setSt2(text)}
+            autoCapitalize="none"
+          />
+        </View>
+        <View style={styles.inputgroup}>
+          <Text style={styles.label}>city</Text>
+          <TextInput
+            placeholder="Enter city"
+            returnKeyType="next"
+            value={city}
+            onChangeText={(text) => setCity(text)}
+            autoCapitalize="none"
+          />
+        </View>
+        <View style={styles.inputgroup}>
+          <Text style={styles.label}>postalCode</Text>
+          <TextInput
+            placeholder="Enter postalCode"
+            keyboardType='numeric'
+            returnKeyType="next"
+            value={postalcode}
+            onChangeText={(text) => onpostalCode(text)}
+            autoCapitalize="none"
+          />
+        </View>
+        <Text style={styles.label}>Phone Number</Text>
         <PhoneInput
           ref={phoneInput}
           defaultValue={phonenumber}
           value={phonenumber}
-          defaultCode={RNLocalize.getCountry()}
+          defaultCode={phoneco}
           onChangeText={(text) => {
             setPhonenumber(text);
-            console.log('aa', phonenumber);
+            console.log('phone:', phonenumber);
+          }}
+          onChangeCountry={(text) => {
+            setPhoneco(text.cca2);
           }}
           layout="first"
           containerStyle={{
             width: '100%',
             height: 49,
             borderRadius: 10,
-            backgroundColor: theme.colors.textinputbackColor
+            backgroundColor: theme.colors.textinputbackColor,
+            marginBottom: 20,
           }}
           textContainerStyle={{ paddingVertical: 0, borderRadius: 10, backgroundColor: theme.colors.textinputbackColor }}
           codeTextStyle={{ paddingVertical: 0, color: theme.colors.whiteColor }}
@@ -249,13 +315,14 @@ export default function KycScreen({ navigation }) {
           withDarkTheme
           withShadow
         />
-        {/* <CountryPicker
+        <Text style={styles.label}>Country</Text>
+        <CountryPicker
           countryPickerRef={(ref) => {
             countryPickerRef = ref;
           }}
           enable={true}
           darkMode={false}
-          countryCode={"US"}
+          countryCode={country}
           containerConfig={{
             showFlag: true,
             showCallingCode: true,
@@ -269,7 +336,13 @@ export default function KycScreen({ navigation }) {
             showCountryCode: true,
           }}
           onSelectCountry={(data) => {
-            console.log("DATA", data);
+            console.log(data.code);
+            if (data.code == 'US') {
+              setIsreg(true);
+            } else {
+              setIsreg(false);
+            }
+            setCountry(data.code);
           }}
           onInit={(data) => {
             console.log("DATA", data);
@@ -281,11 +354,33 @@ export default function KycScreen({ navigation }) {
             console.log("Close");
           }}
           containerStyle={{
-            container: {},
-            flagStyle: {},
-            callingCodeStyle: {},
-            countryCodeStyle: {},
-            countryNameStyle: {},
+            container: {
+              paddingHorizontal: '4%',
+              width: '100%',
+              height: 49,
+              backgroundColor: theme.colors.textinputbackColor,
+              borderRadius: 10,
+              marginBottom: 20,
+            },
+            flagStyle: {
+              fontSize: 20,
+              textAlign: 'center',
+            },
+            callingCodeStyle: {
+              paddingHorizontal: 'auto',
+              textAlign: 'center',
+              color: theme.colors.whiteColor,
+            },
+            countryCodeStyle: {
+              paddingHorizontal: 'auto',
+              textAlign: 'center',
+              color: theme.colors.whiteColor
+            },
+            countryNameStyle: {
+              paddingHorizontal: 'auto',
+              textAlign: 'center',
+              color: theme.colors.whiteColor
+            },
           }}
           modalStyle={{
             container: {},
@@ -303,8 +398,62 @@ export default function KycScreen({ navigation }) {
           searchPlaceholder={"Search"}
           showCloseButton={true}
           showModalTitle={true}
-        />; */}
-        <Button onPress={() => { createIndividualAccount(); }} color={theme.colors.backgroundColor} style={styles.mannual}>
+        />
+        {isreg ? <Text style={styles.label}>Region</Text> : <Text></Text>}
+        <View
+          style={{ width: '100%', height: 49, marginBottom: 10, borderRadius: 10, overflow: 'hidden', }}>
+          {isreg ? <Picker
+            style={{ backgroundColor: theme.colors.textinputbackColor, width: '100%', height: 49, color: theme.colors.whiteColor }}
+            selectedValue={region}
+            themeVariant='dark'
+            onValueChange={(itemValue, itemIndex) =>
+              setRegion(itemValue)
+            }>
+            <Picker.Item label="Alabama" value="AL" />
+            <Picker.Item label="Alaska" value="AK" />
+            <Picker.Item label="American Samoa" value="AS" />
+            <Picker.Item label="Arizona" value="AZ" />
+            <Picker.Item label="Arkansas" value="AR" />
+            <Picker.Item label="Caliornia" value="CA" />
+            <Picker.Item label="Colorado" value="CO" />
+            <Picker.Item label="Connecticut" value="CT" />
+            <Picker.Item label="Delaware" value="DE" />
+            <Picker.Item label="District Of Columbia" value="DC" />
+            <Picker.Item label="Federated States Of Micronesia" value="FM" />
+            {/* <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" /> */}
+          </Picker> : <View></View>}
+        </View>
+        <Modal isVisible={isModalVisible} hasBackdrop={true} >
+          <View style={styles.modal}>
+            <TouchableOpacity onPress={() => {
+              handleCloseModalPress()
+            }} style={{ paddingHorizontal: 19, position: 'absolute', paddingTop: 19 }}>
+              <Svg
+                width={14}
+                height={16}
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <Path
+                  d="M13.73 14.03a1.097 1.097 0 0 1-.15 1.583 1.19 1.19 0 0 1-.745.261 1.18 1.18 0 0 1-.897-.405L7 9.726 2.063 15.44c-.23.267-.562.405-.896.405a1.19 1.19 0 0 1-.746-.26 1.097 1.097 0 0 1-.15-1.585l5.21-6.03-5.21-5.998A1.097 1.097 0 0 1 .42.387 1.194 1.194 0 0 1 2.063.53L7 6.242 11.936.53A1.196 1.196 0 0 1 13.58.385c.495.398.562 1.107.15 1.585l-5.21 6.029 5.211 6.03Z"
+                  fill="#121244"
+                />
+              </Svg>
+            </TouchableOpacity>
+            <Text style={styles.message}>{message}</Text>
+          </View>
+        </Modal>
+        <Button onPress={() => { validate(); }} color={theme.colors.backgroundColor} style={styles.mannual}>
           <Text style={styles.bttext}>
             Next
           </Text>
@@ -326,7 +475,7 @@ export default function KycScreen({ navigation }) {
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
-    </ScrollView>
+    </ScrollView >
   );
 }
 
@@ -400,5 +549,22 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between'
+  },
+  modal: {
+    width: '88%',
+    position: 'absolute',
+    bottom: 70,
+    height: 200,
+    marginLeft: '6%',
+    borderRadius: 15,
+    backgroundColor: theme.colors.whiteColor,
+    borderRadius: 25,
+  },
+  message: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    marginTop: 75,
+    color: theme.colors.backgroundColor,
+    fontSize: theme.fontSize.subtitle01
   }
 });
