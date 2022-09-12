@@ -95,7 +95,7 @@ const login = catchAsync(async (req, res) => {
   }
 
   // we don't need complex login logic in this MVP version. because we are using only prime trust apis now.
-  res.send({ currentUser });
+  res.send({ email: currentUser.email });
   // await axios({
   //   method: "POST",
   //   params: {
