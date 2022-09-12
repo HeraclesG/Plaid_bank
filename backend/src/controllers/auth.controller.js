@@ -72,7 +72,7 @@ const register = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
-  const { userName, password, pin } = req.body;
+  const { userName,  pin } = req.body;
   let currentUser = await User.findOne({ userName });
   if (!currentUser) {
     res.status(400).send({ message: "User is not registered." });
