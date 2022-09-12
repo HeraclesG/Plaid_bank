@@ -16,7 +16,6 @@ class UserStore {
     this.user = user
     LocalStorage.setUser(user)
   }
-
   logout() {
     this.user = undefined
     LocalStorage.clearUser()
