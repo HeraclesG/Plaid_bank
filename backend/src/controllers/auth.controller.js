@@ -71,6 +71,16 @@ const register = catchAsync(async (req, res) => {
     });
 });
 
+const getUser = catchAsync(async(req, res)=>{
+  const {userName} = req.body;
+  let currentUser = await User.findOne({ userName });
+  if (!currentUser) {
+    res.status(400).send({ message: "User is not registered." });
+    return;
+  }
+  res.send({ currentUser });
+})
+
 const login = catchAsync(async (req, res) => {
   const { userName,  pin } = req.body;
   let currentUser = await User.findOne({ userName });
@@ -108,4 +118,5 @@ const login = catchAsync(async (req, res) => {
 module.exports = {
   register,
   login,
+  getUser
 };

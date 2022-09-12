@@ -30,9 +30,16 @@ const login = {
   }),
 };
 
+const getUser = {
+  body: Joi.object().keys({
+    userName: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   register,
-  login
+  login,
+  getUser
 };
 
 
