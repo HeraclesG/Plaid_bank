@@ -10,7 +10,6 @@ const register = {
     birthday: Joi.string().required(),
     taxIdNum: Joi.string().required(),
     taxCountry: Joi.string().required(),
-    taxIdNum: Joi.string().required(),
     phone: Joi.string().required(),
     city: Joi.string().required(),
     region: Joi.string().required(),
@@ -19,6 +18,7 @@ const register = {
     street1: Joi.string().required(),
     street2: Joi.string().required(),
     pin: Joi.string().required().custom(pin),
+    accountId: Joi.string().required(),
   }),
 };
 

@@ -84,23 +84,25 @@ const login = catchAsync(async (req, res) => {
     return;
   }
 
-  await axios({
-    method: "POST",
-    params: {
-      email: currentUser.email,
-      password: req.body.password,
-    },
-    url: "https://sandbox.primetrust.com/auth/jwts",
-    // url: "https://sandbox.primetrust.com/v2/users",
-  })
-    .then((response) => {
-      console.log("response", response.data);
-      res.send({ token: response.data.token, user: currentUser });
-    })
-    .catch((err) => {
-      console.log("error", err?.response?.data?.errors[0]?.title);
-      res.status(400).send({ message: "Input correct Prime Trust credentials" });
-    });
+  // we don't need complex login logic in this MVP version. because we are using only prime trust apis now.
+  res.send({ currentUser });
+  // await axios({
+  //   method: "POST",
+  //   params: {
+  //     email: currentUser.email,
+  //     password: req.body.password,
+  //   },
+  //   url: "https://sandbox.primetrust.com/auth/jwts",
+  //   // url: "https://sandbox.primetrust.com/v2/users",
+  // })
+  //   .then((response) => {
+  //     console.log("response", response.data);
+  //     res.send({ token: response.data.token, user: currentUser });
+  //   })
+  //   .catch((err) => {
+  //     console.log("error", err?.response?.data?.errors[0]?.title);
+  //     res.status(400).send({ message: "Input correct Prime Trust credentials" });
+  //   });
 });
 
 module.exports = {
