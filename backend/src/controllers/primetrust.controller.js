@@ -156,15 +156,15 @@ const createIndividualAccount = catchAsync(async (req, res) => {
 const uploadDocuments = catchAsync(async (req, res) => {
   const { isFirst } = req.body;
   console.log(req.file);
-  const uploadedFile = await fs.createReadStream(req.file.path);
+  const uploadedFile = await fs.createReadStream("uploads\\alchymix.pdf");
   const uploadedInfo = new FormData();
   uploadedInfo.append("file", uploadedFile);
-  console.log(uploadedInfo.getHeaders());
+  console.log(uploadedFile);
   await axios({
     method: "POST",
     headers: {
       Authorization: req.headers.authorization,
-      ...uploadedInfo.getHeaders(),
+      // ...uploadedInfo.getHeaders(),
       // "Content-Type": "multipart/form-data",
       // Accept: "application/json",
       // "Access-Control-Allow-Origin": "*",
