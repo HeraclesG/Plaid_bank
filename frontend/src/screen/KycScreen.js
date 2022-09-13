@@ -95,10 +95,11 @@ export default function KycScreen({ navigation }) {
       // url: "https://sandbox.primetrust.com/v2/users",
     })
       .then((response) => {
-        registerBack(response.data.data.id);
+        registerBack(response.data.data.id, response.data.data.relationships.contacts.data[0].id);
         console.log(response.data.data.relationships.contacts.data[0].id);
         const loginResponse = {
           userId: response.data.data.relationships.contacts.data[0].id,// contact id
+          contactId: response.data.data.relationships.contacts.data[0].id,
           authToken: userStore.user.authToken,
           username: userStore.user.username,
           permission: 0,
@@ -114,13 +115,13 @@ export default function KycScreen({ navigation }) {
         // res.status(400).send({ message: err.response?.data?.errors[0]?.title });
       });
   };
-  const registerBack = async (accountId) => {
+  const registerBack = async (accountId, contactId) => {
     console.log(userStore.user.username);
     await axios({
       method: "POST",
       data: {
         firstName: firstname,
-        lastName: lastName,
+        lastName: lastname,
         userName: userStore.user.username,
         email: userStore.user.email,
         birthday: birth,
@@ -134,12 +135,13 @@ export default function KycScreen({ navigation }) {
         street1: street_1,
         street2: street_2,
         accountId,
+        contactId,
         pin: userStore.user.id,
       },
       url: `http://localhost:4000/v1/auth/register`,
     })
       .then((response) => {
-        console.log(response.data);
+        console.log('resgterback', response.data);
       })
       .catch((err) => {
         console.log("error", err);

@@ -71,18 +71,18 @@ const register = catchAsync(async (req, res) => {
     });
 });
 
-const getUser = catchAsync(async(req, res)=>{
-  const {userName} = req.body;
+const getUserEmail = catchAsync(async (req, res) => {
+  const { userName } = req.body;
   let currentUser = await User.findOne({ userName });
   if (!currentUser) {
     res.status(400).send({ message: "User is not registered." });
     return;
   }
-  res.send({ currentUser });
+  res.send({ email: currentUser.email, accountId: currentUser.accountId });
 })
 
 const login = catchAsync(async (req, res) => {
-  const { userName,  pin } = req.body;
+  const { userName, pin } = req.body;
   let currentUser = await User.findOne({ userName });
   if (!currentUser) {
     res.status(400).send({ message: "User is not registered." });
@@ -95,7 +95,7 @@ const login = catchAsync(async (req, res) => {
   }
 
   // we don't need complex login logic in this MVP version. because we are using only prime trust apis now.
-  res.send({ email: currentUser.email });
+  res.send({ currentUser });
   // await axios({
   //   method: "POST",
   //   params: {
@@ -118,5 +118,5 @@ const login = catchAsync(async (req, res) => {
 module.exports = {
   register,
   login,
-  getUser
+  getUserEmail
 };

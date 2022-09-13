@@ -20,3 +20,4 @@ frontend/yarn.lock
 frontend/package-lock.json
 
 frontend/.expo
+frontend/android/app/build

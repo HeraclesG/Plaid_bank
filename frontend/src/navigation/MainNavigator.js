@@ -27,7 +27,7 @@ import ContactScreen from '../screen/ContactScreen';
 import CryptoScreen from '../screen/CryptoScreen';
 import QrcodeScreen from '../screen/QrcodeScreen';
 import SatisticsScreen from '../screen/SatisticsScreen';
-
+import AchScreen from '../screen/AchScreen';
 
 const Stack = createNativeStackNavigator()
 
@@ -62,6 +62,11 @@ export function MainNavigator() {
       <Stack.Screen
         name="PaymentScreen"
         component={PaymentScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AchScreen"
+        component={AchScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

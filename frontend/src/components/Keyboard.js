@@ -85,7 +85,8 @@ export default function Keyboard({ add, del }) {
       </View>
       <View style={styles.row}>
         <View style={styles.button}>
-          <TouchableOpacity onPress={() => { onPress('•') }}>
+          {/* onPress('•') */}
+          <TouchableOpacity onPress={() => { }}>
             <Text style={styles.buttonLabel}>
               •
             </Text>

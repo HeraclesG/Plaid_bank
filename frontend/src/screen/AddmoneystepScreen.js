@@ -5,16 +5,60 @@ import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg"
 import Keyboard from '../components/Keyboard';
 import Button from '../components/Button';
+import axios from 'axios';
+import { userStore } from '../module/user/UserStore';
+import { PRIME_TRUST_URL, SERVER_URL } from '@env';
+import Modal from 'react-native-modal';
 
 export default function AddmoneystepScreen({ navigation }) {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const handleOpenModalPress = () => setIsModalVisible(true);
+  const handleCloseModalPress = () => setIsModalVisible(false);
+  const [message, setMessage] = useState('error');
   const [val, setVal] = useState(20);
+  const fundsTransfer = async () => {
+    await axios({
+      method: "POST",
+      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
+      data: {
+        "data": {
+          "type": "contributions",
+          "attributes": {
+            "amount": val,
+            "contact-id": userStore.user.contactId,
+            "funds-transfer-method-id": "{{funds-transfer-method-id}}",
+            "account-id": userStore.user.id,
+          }
+        }
+      },
+      url: `${PRIME_TRUST_URL}v2/contributions?include=funds-transfer`,
+    })
+      .then((response) => {
+
+      })
+      .catch((err) => {
+        setMessage(err?.response?.data?.errors[0].detail);
+        handleOpenModalPress();
+      });
+  }
   function addPin(mon) {
-    const mid = val + mon;
-    setVal(mid);
+    if (val != '0') {
+      const mid = val + mon;
+      setVal(mid);
+    } else {
+      const mid = mon;
+      setVal(mid);
+    }
   }
   function delPin() {
-    const mid = val.toString().slice(0, -1);
-    setVal(mid);
+    if (val.length != 1) {
+      const mid = val.toString().slice(0, -1);
+      setVal(mid);
+    } else {
+      const mid = '0';
+      setVal(mid);
+    }
+
   }
   return (
     <View style={styles.container} >
@@ -58,6 +102,26 @@ export default function AddmoneystepScreen({ navigation }) {
         <Text style={styles.subtitle}>
           Wallet balance after transaction: $405.00
         </Text>
+        <Modal isVisible={isModalVisible} hasBackdrop={true} >
+          <View style={styles.modal}>
+            <TouchableOpacity onPress={() => {
+              handleCloseModalPress()
+            }} style={{ paddingHorizontal: 19, position: 'absolute', paddingTop: 19 }}>
+              <Svg
+                width={14}
+                height={16}
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <Path
+                  d="M13.73 14.03a1.097 1.097 0 0 1-.15 1.583 1.19 1.19 0 0 1-.745.261 1.18 1.18 0 0 1-.897-.405L7 9.726 2.063 15.44c-.23.267-.562.405-.896.405a1.19 1.19 0 0 1-.746-.26 1.097 1.097 0 0 1-.15-1.585l5.21-6.03-5.21-5.998A1.097 1.097 0 0 1 .42.387 1.194 1.194 0 0 1 2.063.53L7 6.242 11.936.53A1.196 1.196 0 0 1 13.58.385c.495.398.562 1.107.15 1.585l-5.21 6.029 5.211 6.03Z"
+                  fill="#121244"
+                />
+              </Svg>
+            </TouchableOpacity>
+            <Text style={styles.message}>{message}</Text>
+          </View>
+        </Modal>
         <Button onPress={() => { navigation.navigate('TransactioncompScreen'); }} color={theme.colors.backgroundColor} style={styles.Sign}>
           <Text style={styles.bttext}>
             Add Money
@@ -135,4 +199,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 22,
   },
+  modal: {
+    width: '88%',
+    position: 'absolute',
+    bottom: 70,
+    height: 200,
+    marginLeft: '6%',
+    borderRadius: 15,
+    backgroundColor: theme.colors.whiteColor,
+    borderRadius: 25,
+  },
+  message: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    marginTop: 75,
+    color: theme.colors.backgroundColor,
+    fontSize: theme.fontSize.subtitle01
+  }
 });

@@ -48,7 +48,7 @@ export default function AddmoneyScreen({ navigation }) {
             </View>
           </View>
         </Button>
-        <Button onPress={() => { }} color={theme.colors.backgroundColor} style={styles.mannual}>
+        <Button onPress={() => { navigation.navigate('AchScreen'); }} color={theme.colors.backgroundColor} style={styles.mannual}>
           <View style={styles.row}>
             <Text style={styles.text}>
               ACH Transfer

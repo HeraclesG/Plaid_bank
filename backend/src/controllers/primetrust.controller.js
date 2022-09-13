@@ -117,7 +117,7 @@ const createIndividualAccount = catchAsync(async (req, res) => {
           owner: {
             "contact-type": "natural_person",
             name: "John Connor",
-            email: "dragondev93@gmail.com",
+            email: "blackhole.rsb@gmail.com",
             "date-of-birth": "1971-01-01",
             "tax-id-number": "111223333",
             "tax-country": "US",
