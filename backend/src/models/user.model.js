@@ -87,6 +87,10 @@ const userSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
+    contactId:{
+      type: String,
+      trim: true,
+    },
     // password: {
     //   type: String,
     //   required: true,
