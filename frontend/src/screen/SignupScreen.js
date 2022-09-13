@@ -78,7 +78,7 @@ export default function SignupScreen({ navigation }) {
       console.log('11111', data.data);
       const loginResponse = {
         userId: pin,
-        cotactId: '1',
+        contactId: '1',
         authToken: data.data.token,
         username: username,
         permission: 0,

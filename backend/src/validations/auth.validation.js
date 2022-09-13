@@ -19,6 +19,7 @@ const register = {
     street2: Joi.string().required(),
     pin: Joi.string().required().custom(pin),
     accountId: Joi.string().required(),
+    contactId: Joi.string().required(),
   }),
 };
 

@@ -26,21 +26,21 @@ export default function KycScreen({ navigation }) {
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [message, setMessage] = useState('error');
   const [isSelected, setSelection] = useState(false);
-  const [firstname, setfirst] = useState('');
-  const [lastname, setLast] = useState('');
-  const [birth, setBirth] = useState('');
-  const [taxid, setTaxid] = useState('');
-  const [street_1, setSt1] = useState('');
-  const [street_2, setSt2] = useState('');
-  const [city, setCity] = useState('');
-  const [postalcode, setPostalCode] = useState('');
-  const [phonenumber, setPhonenumber] = useState('');
+  const [firstname, setfirst] = useState('aaa');
+  const [lastname, setLast] = useState('bbb');
+  const [birth, setBirth] = useState('1999-2-4');
+  const [taxid, setTaxid] = useState('111222333');
+  const [street_1, setSt1] = useState('wewr');
+  const [street_2, setSt2] = useState('werwer');
+  const [city, setCity] = useState('adsfsdf');
+  const [postalcode, setPostalCode] = useState('19450');
+  const [phonenumber, setPhonenumber] = useState('1234567890');
   const [phoneco, setPhoneco] = useState('US');
   const phoneInput = useRef();
   let countryPickerRef = useRef();
   const [formattedValue, setFormattedValue] = useState("");
   const [country, setCountry] = useState('US');
-  const [region, setRegion] = useState();
+  const [region, setRegion] = useState('AL');
   const [isreg, setIsreg] = useState(true);
   const onTextChanged = (value) => {
     setTaxid(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
@@ -97,16 +97,6 @@ export default function KycScreen({ navigation }) {
       .then((response) => {
         registerBack(response.data.data.id, response.data.data.relationships.contacts.data[0].id);
         console.log(response.data.data.relationships.contacts.data[0].id);
-        const loginResponse = {
-          userId: response.data.data.relationships.contacts.data[0].id,// contact id
-          contactId: response.data.data.relationships.contacts.data[0].id,
-          authToken: userStore.user.authToken,
-          username: userStore.user.username,
-          permission: 0,
-        };
-        const user = User.fromJson(loginResponse, userStore.user.email);
-        userStore.setUser(user);
-        navigation.navigate('FileuploadScreen');
       })
       .catch((err) => {
         console.log("error", err?.response?.data?.errors);
@@ -116,7 +106,7 @@ export default function KycScreen({ navigation }) {
       });
   };
   const registerBack = async (accountId, contactId) => {
-    console.log(userStore.user.username);
+    console.log(userStore.user.id);
     await axios({
       method: "POST",
       data: {
@@ -141,11 +131,20 @@ export default function KycScreen({ navigation }) {
       url: `http://localhost:4000/v1/auth/register`,
     })
       .then((response) => {
-        console.log('resgterback', response.data);
+        const loginResponse = {
+          userId: contactId,// contact id
+          contactId: contactId,
+          authToken: userStore.user.authToken,
+          username: userStore.user.username,
+          permission: 0,
+        };
+        const user = User.fromJson(loginResponse, userStore.user.email);
+        userStore.setUser(user);
+        navigation.navigate('FileuploadScreen');
       })
       .catch((err) => {
         console.log("error", err);
-        setMessage('register backend error');
+        setMessage(err.response.data.message);
         handleOpenModalPress();
       });
 
