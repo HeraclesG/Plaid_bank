@@ -6,8 +6,10 @@ const FormData = require("form-data");
 const catchAsync = require("../utils/catchAsync");
 const { User } = require("../models");
 const config = require("../config/config");
+const { deserializeUser } = require("passport");
 
 const { ptToken } = config.jwt;
+const primeTrustUrl = config.primeTrust.url;
 
 const createUser = catchAsync(async (req, res) => {
   const { email, name, password } = req.body;
@@ -23,8 +25,7 @@ const createUser = catchAsync(async (req, res) => {
         },
       },
     },
-    url: "https://sandbox.primetrust.com/v2/users",
-    // url: "https://sandbox.primetrust.com/v2/users",
+    url: `${primeTrustUrl}/v2/users`,
   })
     .then((response) => {
       console.log("response", response.data);
@@ -45,7 +46,7 @@ const createJwt = catchAsync(async (req, res) => {
       email,
       password,
     },
-    url: "https://sandbox.primetrust.com/auth/jwts",
+    url: `${primeTrustUrl}/auth/jwts`,
   })
     .then((response) => {
       console.log("response", response.data);
@@ -62,7 +63,7 @@ const getAccounts = catchAsync(async (req, res) => {
   await axios({
     method: "GET",
     headers: { Authorization: ptToken },
-    url: "https://sandbox.primetrust.com/v2/accounts?filter[status]=opened",
+    url: `${primeTrustUrl}/v2/accounts?filter[status]=opened`,
   })
     .then((response) => {
       console.log("response", response.data);
@@ -79,7 +80,7 @@ const setAccount = catchAsync(async (req, res) => {
   await axios({
     method: "GET",
     headers: { Authorization: ptToken },
-    url: "https://sandbox.primetrust.com/v2/users",
+    url: `${primeTrustUrl}/v2/users`,
   })
     .then(async (response) => {
       const email = response.data.data[0].attributes.email;
@@ -143,8 +144,7 @@ const createIndividualAccount = catchAsync(async (req, res) => {
         },
       },
     },
-    url: "https://sandbox.primetrust.com/v2/accounts?include=owners,contacts,webhook-config",
-    // url: "https://sandbox.primetrust.com/v2/users",
+    url: `${primeTrustUrl}/v2/accounts?include=owners,contacts,webhook-config`,
   })
     .then((response) => {
       console.log("response", response.data);
@@ -157,37 +157,58 @@ const createIndividualAccount = catchAsync(async (req, res) => {
 });
 
 const uploadDocuments = catchAsync(async (req, res) => {
-  const { type } = req.body;
-  let isFirst = true
-  console.log(req.file);
+  if (!req.file) {
+    res.status(400).send({ message: "Please upload a file" });
+    return;
+  }
+  const { type, contactId } = req.body;
+  let label = "";
+  let description = "";
+  switch (type) {
+    case "driverBack":
+      label = "Back of Driver's License";
+      description = "Backside Driver's License";
+      break;
+    case "driverFront":
+      label = "Front of Driver's License";
+      description = "Frontside Driver's License";
+      break;
+    case "governmentId":
+      label = "Government ID";
+      description = "Government ID";
+      break;
+    case "passport":
+      label = "Passport";
+      description = "Passport";
+      break;
+    case "residencePermitFront":
+      label = "Front of Residence Permit";
+      description = "Frontside Residence Permit";
+      break;
+    case "residencePermitBack":
+      label = "Back of Residence Permit";
+      description = "Backside Residence Permit";
+      break;
+    case "utilityBill":
+      label = "Utility Bill";
+      description = "Utility Bill";
+      break;
+  }
   const uploadedFile = fs.createReadStream(req.file.path);
   const uploadedInfo = new FormData();
   uploadedInfo.append("file", uploadedFile);
-  uploadedInfo.append("contact-id", "2b57d19e-f993-4490-b1a2-8dd976b95f7f");
-  uploadedInfo.append("description", "Front of Driver's License");
-  uploadedInfo.append("label", "Front Driver's License");
+  uploadedInfo.append("contact-id", contactId);
+  uploadedInfo.append("description", description);
+  uploadedInfo.append("label", label);
   uploadedInfo.append("public", "true");
   // console.log(uploadedFile);
   await axios({
     method: "POST",
     headers: {
       Authorization: ptToken,
-      // ...uploadedInfo.getHeaders(),
-      // "Content-Type": "multipart/form-data",
-      // Accept: "application/json",
-      // "Access-Control-Allow-Origin": "*",
     },
-    // data: {
-      // "contact-id": "2b57d19e-f993-4490-b1a2-8dd976b95f7f",
-      // label: !isFirst ? "Front Driver's License" : "Backside Driver's License",
-      // description: !isFirst
-      //   ? "Front of Driver's License"
-      //   : "Back of Driver's License",
-      // file: req.file,
-      // public: true,
-    // },
     data: uploadedInfo,
-    url: "https://sandbox.primetrust.com/v2/uploaded-documents",
+    url: `${primeTrustUrl}/v2/uploaded-documents`,
   })
     .then((response) => {
       // console.log("response", response.data);
@@ -195,7 +216,7 @@ const uploadDocuments = catchAsync(async (req, res) => {
     })
     .catch((err) => {
       console.log("error", err.response?.data?.errors);
-      res.status(400).send({ message: err.response?.data?.errors[0]?.title });
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
     });
 });
 
@@ -207,8 +228,7 @@ const agreementPreviews = catchAsync(async (req, res) => {
       email,
       password,
     },
-    url: "https://sandbox.primetrust.com/auth/jwts",
-    // url: "https://sandbox.primetrust.com/v2/users",
+    url: `${primeTrustUrl}/auth/jwts`,
   })
     .then((response) => {
       console.log("response", response.data);
@@ -226,8 +246,7 @@ const accountPolicy = catchAsync(async (req, res) => {
     headers: {
       authorization: ptToken,
     },
-    url: "https://sandbox.primetrust.com/v2/account-aggregate-policies",
-    // url: "https://sandbox.primetrust.com/v2/users",
+    url: `${primeTrustUrl}/v2/account-aggregate-policies`,
   })
     .then((response) => {
       console.log("response", response.data);
@@ -253,8 +272,7 @@ const createResourceTokens = catchAsync(async (req, res) => {
         },
       },
     },
-    url: "https://sandbox.primetrust.com/v2/resource-tokens",
-    // url: "https://sandbox.primetrust.com/v2/users",
+    url: `${primeTrustUrl}/v2/resource-tokens`,
   })
     .then((response) => {
       console.log("response", response.data);
@@ -269,8 +287,7 @@ const createResourceTokens = catchAsync(async (req, res) => {
 const getResourceTokens = catchAsync(async (req, res) => {
   await axios({
     method: "GET",
-    url: "https://sandbox.primetrust.com/v2/resource-tokens",
-    // url: "https://sandbox.primetrust.com/v2/users",
+    url: `${primeTrustUrl}/v2/resource-tokens`,
   })
     .then((response) => {
       console.log("response", response.data);

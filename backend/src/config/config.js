@@ -71,6 +71,9 @@ module.exports = {
     secretKey: "TEST-SK-XE78UJN6-2XP9X3EJ-QDJWYVXE-X364Y2BR",
     apiKey: "TEST-AK-8F37UZU3-EJGN9FE6-4AZ3DN8U-B3Z6H8ND",
   },
+  primeTrust: {
+    url: "https://sandbox.primetrust.com",
+  },
   plaid: {
     apihost: "https://sandbox.plaid.com",
     secret: "f6822d0e2c7816641d20127585b233",

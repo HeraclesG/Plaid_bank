@@ -7,8 +7,14 @@ const setAccount = {
   }),
 };
 
-module.exports = {
-  setAccount,
+const uploadDocuments = {
+  body: Joi.object().keys({
+    type: Joi.string().required(),
+    contactId: Joi.string().required(),
+  }),
 };
 
-
+module.exports = {
+  setAccount,
+  uploadDocuments,
+};

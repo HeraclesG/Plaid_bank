@@ -7,6 +7,7 @@ const config = require("../config/config");
 const { tokenService } = require("../services");
 
 const { ptToken } = config.jwt;
+const primeTrustUrl = config.primeTrust.url;
 
 const register = catchAsync(async (req, res) => {
   if (await User.isEmailTaken(req.body.email)) {
@@ -49,8 +50,7 @@ const register = catchAsync(async (req, res) => {
     data: {
       data,
     },
-    url: "https://sandbox.primetrust.com/v2/accounts?include=owners,contacts,webhook-config",
-    // url: "https://sandbox.primetrust.com/v2/users",
+    url: `${primeTrustUrl}/v2/accounts?include=owners,contacts,webhook-config`,
   })
     .then((response) => {
       console.log(
@@ -107,7 +107,7 @@ const login = catchAsync(async (req, res) => {
     await axios({
       method: "GET",
       headers: { Authorization: ptToken },
-      url: `https://sandbox.primetrust.com/v2/accounts/${currentUser.accountId}`,
+      url: `${primeTrustUrl}/v2/accounts/${currentUser.accountId}`,
     })
       .then(async (res) => {
         if (res.data.data.attributes.status !== "opened") {

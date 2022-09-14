@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 var storage = multer.diskStorage({
-  destination: "./uploads/",
+  // destination: "./uploads/",
   filename: function (req, file, cb) {
     //req.body is empty...
     //How could I get the new_file_name property sent from client here?
@@ -13,7 +13,7 @@ const fs = require("fs");
 const validate = require("../../middlewares/validate");
 const checkHeader = require("../../middlewares/checkHeader");
 const auth = require("../../middlewares/auth");
-const authValidation = require("../../validations/primetrust.validation");
+const primeTrustValidation = require("../../validations/primetrust.validation");
 const primeTrustController = require("../../controllers/primetrust.controller");
 
 const router = express.Router();
@@ -24,15 +24,12 @@ router.route("/get_accounts").get(primeTrustController.getAccounts);
 router.post(
   "/set_account",
   checkHeader,
-  validate(authValidation.setAccount),
+  validate(primeTrustValidation.setAccount),
   primeTrustController.setAccount
 );
 router
   .route("/create_individual_account")
   .post(primeTrustController.createIndividualAccount);
-router
-  .route("/upload_documents")
-  .post(upload.single("kycdoc"), primeTrustController.uploadDocuments);
 router
   .route("/account_aggregate_policies")
   .get(primeTrustController.accountPolicy);
@@ -43,5 +40,13 @@ router.route("/get_resource_token").get(primeTrustController.getResourceTokens);
 router
   .route("/create_resource_token")
   .post(primeTrustController.createResourceTokens);
+
+//real api
+router.post(
+  "/upload_documents",
+  upload.single("kycdoc"),
+  validate(primeTrustValidation.uploadDocuments),
+  primeTrustController.uploadDocuments
+);
 
 module.exports = router;
