@@ -10,7 +10,7 @@ const setAccount = {
 const uploadDocuments = {
   body: Joi.object().keys({
     type: Joi.string().required(),
-    contactId: Joi.string().required(),
+    userId: Joi.string().required(),
   }),
 };
 

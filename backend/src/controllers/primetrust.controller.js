@@ -161,7 +161,14 @@ const uploadDocuments = catchAsync(async (req, res) => {
     res.status(400).send({ message: "Please upload a file" });
     return;
   }
-  const { type, contactId } = req.body;
+
+  const user = await User.findOne({ _id: req.body.userId });
+  if(!user) {
+    res.status(400).send({ message: "Invalid User." });
+    return;
+  }
+  console.log(user);
+  const { type } = req.body;
   let label = "";
   let description = "";
   switch (type) {
@@ -197,7 +204,7 @@ const uploadDocuments = catchAsync(async (req, res) => {
   const uploadedFile = fs.createReadStream(req.file.path);
   const uploadedInfo = new FormData();
   uploadedInfo.append("file", uploadedFile);
-  uploadedInfo.append("contact-id", contactId);
+  uploadedInfo.append("contact-id", user.contactId);
   uploadedInfo.append("description", description);
   uploadedInfo.append("label", label);
   uploadedInfo.append("public", "true");
