@@ -49,4 +49,18 @@ router.post(
   primeTrustController.uploadDocuments
 );
 
+router.post(
+  "/deposit_fund",
+  auth(),
+  validate(primeTrustValidation.depositFund),
+  primeTrustController.depositFund
+);
+
+router.post(
+  "/get_fund_balance",
+  auth(),
+  // validate(primeTrustValidation.uploadDocuments),
+  primeTrustController.getFundBalance
+);
+
 module.exports = router;

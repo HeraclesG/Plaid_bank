@@ -163,7 +163,7 @@ const uploadDocuments = catchAsync(async (req, res) => {
   }
 
   const user = await User.findOne({ _id: req.body.userId });
-  if(!user) {
+  if (!user) {
     res.status(400).send({ message: "Invalid User." });
     return;
   }
@@ -306,6 +306,84 @@ const getResourceTokens = catchAsync(async (req, res) => {
     });
 });
 
+const depositFund = catchAsync(async (req, res) => {
+  let fundsTransferMethodId = "";
+  await axios({
+    method: "POST",
+    headers: {
+      Authorization: ptToken,
+    },
+    data: {
+      data: {
+        type: "funds-transfer-methods",
+        attributes: {
+          "contact-id": req.user.contactId,
+          "bank-account-name": req.body.bankAccountName,
+          "routing-number": req.body.routingNumber,
+          "bank-account-type": "checking",
+          "bank-account-number": req.body.bankAccountNumber,
+          "ach-check-type": "personal",
+          "funds-transfer-type": "ach",
+        },
+      },
+    },
+    url: `${primeTrustUrl}/v2/funds-transfer-methods`,
+  })
+    .then(async (response) => {
+      console.log(req.user.accountId);
+      fundsTransferMethodId = response.data.data.id;
+      await axios({
+        method: "POST",
+        headers: {
+          Authorization: ptToken,
+        },
+        data: {
+          data: {
+            type: "contributions",
+            attributes: {
+              amount: req.body.amount,
+              "contact-id": req.user.contactId,
+              "funds-transfer-method-id": fundsTransferMethodId,
+              "account-id": req.user.accountId,
+            },
+          },
+        },
+        url: `${primeTrustUrl}/v2/contributions?include=funds-transfer`,
+      }).then(async (resp1) => {
+        res.send(resp1.data);
+        //settle deposit -- we have to remove this in real production
+        await axios({
+          method: "POST",
+          headers: {
+            Authorization: ptToken,
+          },
+          url: `${primeTrustUrl}/v2/funds-transfers/${resp1.data.included[0].id}/sandbox/settle`,
+        });
+      });
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
+const getFundBalance = catchAsync(async (req, res) => {
+  await axios({
+    method: "GET",
+    headers: {
+      Authorization: ptToken,
+    },
+    url: `${primeTrustUrl}/v2/account-cash-totals?account.id=${req.user.accountId}`,
+  })
+    .then((response) => {
+      res.send({ amount: response.data.data[0].attributes.settled });
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]?.title);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.title });
+    });
+});
+
 module.exports = {
   createUser,
   createJwt,
@@ -317,4 +395,6 @@ module.exports = {
   agreementPreviews,
   createResourceTokens,
   getResourceTokens,
+  depositFund,
+  getFundBalance,
 };

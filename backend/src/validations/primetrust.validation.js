@@ -14,7 +14,17 @@ const uploadDocuments = {
   }),
 };
 
+const depositFund = {
+  body: Joi.object().keys({
+    bankAccountName: Joi.string().required(),
+    bankAccountNumber: Joi.string().required(),
+    routingNumber: Joi.string().required(),
+    amount: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   setAccount,
   uploadDocuments,
+  depositFund,
 };
