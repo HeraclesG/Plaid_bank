@@ -4,12 +4,13 @@ import { StyleSheet, Image, Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import Button from '../components/Button';
+import { userStore } from '../module/user/UserStore';
 
 export default function TransactioncompScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => { navigation.goBack }} style={{ paddingHorizontal: 19, }}>
+        <TouchableOpacity onPress={navigation.goBack} style={{ zIndex: 1, paddingHorizontal: 19, zIndex: 1 }}>
           <Svg
             width={22}
             height={20}
@@ -50,7 +51,7 @@ export default function TransactioncompScreen({ navigation }) {
           You successfully added
         </Text>
         <Text style={styles.currentmoney}>
-          $20.00
+          ${userStore.user.midprice}
         </Text>
         <Text style={styles.currentval}>
           to your account
@@ -61,19 +62,19 @@ export default function TransactioncompScreen({ navigation }) {
           Make another transaction?
         </Text>
         <View style={styles.buttons}>
-          <Button onPress={() => { navigation.navigate('LoginScreen'); }} color={theme.colors.whiteColor} style={styles.mannual} >
+          <Button onPress={() => { navigation.navigate('MaineScreen'); }} color={theme.colors.whiteColor} style={styles.mannual} >
             <Text style={[styles.bttext, { color: theme.colors.whiteColor }]}>
               Do it Later
             </Text>
           </Button>
-          <Button onPress={() => { navigation.navigate('SignupScreen'); }} color={theme.colors.backgroundColor} style={[styles.Sign]}>
+          <Button onPress={() => { navigation.navigate('AddmoneystepScreen'); }} color={theme.colors.backgroundColor} style={[styles.Sign]}>
             <Text style={[styles.bttext, { paddingHorizontal: 50 }]}>
               Yes
             </Text>
           </Button>
         </View>
       </View>
-    </View>
+    </View >
   );
 }
 

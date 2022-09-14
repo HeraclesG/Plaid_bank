@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Image, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg"
@@ -7,6 +7,7 @@ import Keyboard from '../components/Keyboard';
 import Button from '../components/Button';
 import axios from 'axios';
 import { userStore } from '../module/user/UserStore';
+import { User } from '../module/user/User';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Modal from 'react-native-modal';
 
@@ -15,7 +16,31 @@ export default function AddmoneystepScreen({ navigation }) {
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [message, setMessage] = useState('error');
-  const [val, setVal] = useState(20);
+  const [val, setVal] = useState(0);
+  const [currentval, setCurrentVal] = useState('');
+  useEffect(() => {
+    setVal('0');
+    accountCash();
+  }, [])
+  const accountCash = async () => {
+    console.log(userStore)
+    console.log(`${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`)
+    await axios({
+      method: "GET",
+      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
+      url: `${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`,
+    })
+      .then((response) => {
+        setCurrentVal(response.data.data[0].attributes['contingent-hold']);
+        console.log(response);
+      })
+      .catch((err) => {
+        console.log(err?.response?.data?.errors);
+        setMessage(err?.response?.data?.errors[0].detail);
+
+        handleOpenModalPress();
+      });
+  }
   const fundsTransfer = async () => {
     await axios({
       method: "POST",
@@ -26,7 +51,7 @@ export default function AddmoneystepScreen({ navigation }) {
           "attributes": {
             "amount": val,
             "contact-id": userStore.user.contactId,
-            "funds-transfer-method-id": "{{funds-transfer-method-id}}",
+            "funds-transfer-method-id": userStore.user.midvalue,
             "account-id": userStore.user.id,
           }
         }
@@ -34,29 +59,56 @@ export default function AddmoneystepScreen({ navigation }) {
       url: `${PRIME_TRUST_URL}v2/contributions?include=funds-transfer`,
     })
       .then((response) => {
+        console.log(userStore.user.authToken);
+        const loginResponse = {
+          ...userStore.user,
+          midprice: val,
+        }
+        const user = User.fromJson(loginResponse, loginResponse.email)
+        userStore.setUser(user);
+        Aprove(response.data.included[0].id);
+        navigation.navigate('TransactioncompScreen');
+      })
+      .catch((err) => {
+        console.log(err?.response?.data?.errors);
+        setMessage(err?.response?.data?.errors[0].detail);
+        handleOpenModalPress();
+      });
+  }
+  const Aprove = async (fundId) => {
+    await axios({
+      method: "POST",
+      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
+      url: `${PRIME_TRUST_URL}v2/funds-transfers/${fundId}/sandbox/settle`,
+    })
+      .then((response) => {
+        console.log(response);
 
       })
       .catch((err) => {
-        setMessage(err?.response?.data?.errors[0].detail);
-        handleOpenModalPress();
+        console.log(err?.response?.data?.errors);
       });
   }
   function addPin(mon) {
     if (val != '0') {
       const mid = val + mon;
       setVal(mid);
+      setCurrentVal(Number(currentval) + Number(mid));
     } else {
       const mid = mon;
       setVal(mid);
+      setCurrentVal(Number(currentval) + Number(mid));
     }
   }
   function delPin() {
     if (val.length != 1) {
       const mid = val.toString().slice(0, -1);
+      setCurrentVal(Number(currentval) + Number(mid));
       setVal(mid);
     } else {
       const mid = '0';
       setVal(mid);
+      setCurrentVal(Number(currentval) + Number(mid));
     }
 
   }
@@ -100,7 +152,7 @@ export default function AddmoneystepScreen({ navigation }) {
           ${val}.00
         </Text>
         <Text style={styles.subtitle}>
-          Wallet balance after transaction: $405.00
+          Wallet balance after transaction: ${currentval}
         </Text>
         <Modal isVisible={isModalVisible} hasBackdrop={true} >
           <View style={styles.modal}>
@@ -122,7 +174,7 @@ export default function AddmoneystepScreen({ navigation }) {
             <Text style={styles.message}>{message}</Text>
           </View>
         </Modal>
-        <Button onPress={() => { navigation.navigate('TransactioncompScreen'); }} color={theme.colors.backgroundColor} style={styles.Sign}>
+        <Button onPress={() => { fundsTransfer(); }} color={theme.colors.backgroundColor} style={styles.Sign}>
           <Text style={styles.bttext}>
             Add Money
           </Text>

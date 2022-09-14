@@ -4,15 +4,48 @@ import { StyleSheet, Image, Text, TouchableOpacity, FlatList, View } from 'react
 import { Searchbar } from 'react-native-paper';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
-import HomeCard from '../components/HomeCard';
+import SendCard from '../components/SendCard';
+import axios from 'axios';
+import { userStore } from '../module/user/UserStore';
+import { User } from '../module/user/User';
 
 export default function SendMoneyScreen({ navigation }) {
-  const data = [
-    { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
-    { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
-    { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
-    { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
-  ];
+  const getEmail = async () => {
+    if (searchQuery === '') {
+      Alert.alert('Warning', 'Please input query');
+      return;
+    }
+    await axios({
+      method: "POST",
+      data: {
+        userName: searchQuery,
+      },
+      url: `http://localhost:4000/v1/auth/getUserEmail`,
+    })
+      .then((response) => {
+        console.log('getemail', response);
+        setData([{ id: 1, avatar: "avatar.jpg", name: searchQuery, date: response.data.email, money: "" },]);
+        const loginResponse = {
+          ...userStore.user,
+          midvalue: response.data.accountId,
+        }
+        const user = User.fromJson(loginResponse, loginResponse.email)
+        userStore.setUser(user);
+        // primeLogin(response.data.email, response.data.accountId, response.data.contactId);
+      })
+      .catch((err) => {
+        console.log("error", err);
+        setMessage('login backend error');
+        handleOpenModalPress();
+      });
+  }
+  // const data = [
+  //   { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
+  //   { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
+  //   { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
+  //   { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
+  // ];
+  const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
   return (
@@ -49,10 +82,15 @@ export default function SendMoneyScreen({ navigation }) {
           </Svg>
         </View>
         <Searchbar
+          // icon={<></>}
+          icon='search'
+          inputStyle={{ fontSize: theme.fontSize.smallSize }}
           style={styles.searchbar}
           elevation={0}
+          onIconPress={() => { getEmail() }}
           placeholder="Type a name, username, or phone number "
           onChangeText={onChangeSearch}
+          on
           value={searchQuery}
         />
         <FlatList style={styles.list}
@@ -63,11 +101,13 @@ export default function SendMoneyScreen({ navigation }) {
           renderItem={(list) => {
             const item = list.item;
             return (
-              <HomeCard item={item} />
+              <TouchableOpacity onPress={() => { navigation.navigate('SendMoneystepScreen') }}>
+                <SendCard item={item} />
+              </TouchableOpacity>
             )
           }} />
-      </View>
-    </View>
+      </View >
+    </View >
   );
 }
 

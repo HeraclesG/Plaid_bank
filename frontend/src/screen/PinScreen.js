@@ -41,7 +41,7 @@ export default function PinScreen({ navigation }) {
         Ispending(response.data.currentUser.accountId);
         // const loginResponse = {
         //   ...userStore.user,
-        //   userId: response.data.currentUser.accountId,
+        //   id: response.data.currentUser.accountId,
         //   permission: 2,
         // }
         // const user = User.fromJson(loginResponse, loginResponse.email)
@@ -68,7 +68,7 @@ export default function PinScreen({ navigation }) {
         }
         const loginResponse = {
           ...userStore.user,
-          userId: accountid,
+          id: accountid,
           permission: 2,
         }
         const user = User.fromJson(loginResponse, loginResponse.email)

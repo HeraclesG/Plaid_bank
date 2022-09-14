@@ -34,7 +34,7 @@ export default App = () => {
   );
 };
 const NavigatorSwitch = observer(() => {
-  // console.log(userStore.user);
+  console.log(userStore.user);
   if (!userStore.user || userStore.user.permission == 0) {   //auth funcc
     return <LoginNavigator />
   } else if (userStore.user.permission == 1) {

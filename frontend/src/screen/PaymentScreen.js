@@ -18,7 +18,7 @@ export default function PaymentScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => { navigation.goBack() }} style={{ paddingHorizontal: 19, }}>
+        <TouchableOpacity onPress={() => { navigation.goBack() }} style={{ paddingHorizontal: 19, zIndex: 1 }}>
           <Svg
             width={22}
             height={20}
