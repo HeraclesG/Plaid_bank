@@ -4,6 +4,7 @@ const catchAsync = require("../utils/catchAsync");
 const { User } = require("../models");
 const ApiError = require("../utils/ApiError");
 const config = require("../config/config");
+const { tokenService } = require("../services");
 
 const { ptToken } = config.jwt;
 
@@ -97,7 +98,6 @@ const getUserEmail = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const currentUser = await User.findOne({ email });
-  console.log(currentUser);
   if (!currentUser || !(await currentUser.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email or password");
   }
@@ -125,29 +125,15 @@ const login = catchAsync(async (req, res) => {
     verified = true;
   }
 
+  const token = await tokenService.generateAuthTokens(currentUser);
+
   if (!verified) {
     res.status(400).send({ message: "Your account is not opened." });
     return;
   }
+
   // we don't need complex login logic in this MVP version. because we are using only prime trust apis now.
-  res.send({ currentUser });
-  // await axios({
-  //   method: "POST",
-  //   params: {
-  //     email: currentUser.email,
-  //     password: req.body.password,
-  //   },
-  //   url: "https://sandbox.primetrust.com/auth/jwts",
-  //   // url: "https://sandbox.primetrust.com/v2/users",
-  // })
-  //   .then((response) => {
-  //     console.log("response", response.data);
-  //     res.send({ token: response.data.token, user: currentUser });
-  //   })
-  //   .catch((err) => {
-  //     console.log("error", err?.response?.data?.errors[0]?.title);
-  //     res.status(400).send({ message: "Input correct Prime Trust credentials" });
-  //   });
+  res.send({ currentUser, token });
 });
 
 module.exports = {

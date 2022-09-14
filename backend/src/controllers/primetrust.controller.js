@@ -5,6 +5,9 @@ const fs = require("fs");
 const FormData = require("form-data");
 const catchAsync = require("../utils/catchAsync");
 const { User } = require("../models");
+const config = require("../config/config");
+
+const { ptToken } = config.jwt;
 
 const createUser = catchAsync(async (req, res) => {
   const { email, name, password } = req.body;
@@ -58,7 +61,7 @@ const getAccounts = catchAsync(async (req, res) => {
   console.log(req.headers.authorization);
   await axios({
     method: "GET",
-    headers: { Authorization: req.headers.authorization },
+    headers: { Authorization: ptToken },
     url: "https://sandbox.primetrust.com/v2/accounts?filter[status]=opened",
   })
     .then((response) => {
@@ -75,7 +78,7 @@ const setAccount = catchAsync(async (req, res) => {
   const { accountId, userName } = req.body;
   await axios({
     method: "GET",
-    headers: { Authorization: req.headers.authorization },
+    headers: { Authorization: ptToken },
     url: "https://sandbox.primetrust.com/v2/users",
   })
     .then(async (response) => {
@@ -106,7 +109,7 @@ const setAccount = catchAsync(async (req, res) => {
 const createIndividualAccount = catchAsync(async (req, res) => {
   await axios({
     method: "POST",
-    headers: { Authorization: req.headers.authorization },
+    headers: { Authorization: ptToken },
     data: {
       data: {
         type: "account",
@@ -154,35 +157,40 @@ const createIndividualAccount = catchAsync(async (req, res) => {
 });
 
 const uploadDocuments = catchAsync(async (req, res) => {
-  const { isFirst } = req.body;
+  const { type } = req.body;
+  let isFirst = true
   console.log(req.file);
-  const uploadedFile = await fs.createReadStream("uploads\\alchymix.pdf");
+  const uploadedFile = fs.createReadStream(req.file.path);
   const uploadedInfo = new FormData();
   uploadedInfo.append("file", uploadedFile);
-  console.log(uploadedFile);
+  uploadedInfo.append("contact-id", "2b57d19e-f993-4490-b1a2-8dd976b95f7f");
+  uploadedInfo.append("description", "Front of Driver's License");
+  uploadedInfo.append("label", "Front Driver's License");
+  uploadedInfo.append("public", "true");
+  // console.log(uploadedFile);
   await axios({
     method: "POST",
     headers: {
-      Authorization: req.headers.authorization,
+      Authorization: ptToken,
       // ...uploadedInfo.getHeaders(),
       // "Content-Type": "multipart/form-data",
       // Accept: "application/json",
       // "Access-Control-Allow-Origin": "*",
     },
     // data: {
-    //   "contact-id": req.body.contact_id,
-    //   label: isFirst ? "Front Driver's License" : "Backside Driver's License",
-    //   description: isFirst
-    //     ? "Front of Driver's License"
-    //     : "Back of Driver's License",
-    //   file: req.file,
-    //   public: true,
+      // "contact-id": "2b57d19e-f993-4490-b1a2-8dd976b95f7f",
+      // label: !isFirst ? "Front Driver's License" : "Backside Driver's License",
+      // description: !isFirst
+      //   ? "Front of Driver's License"
+      //   : "Back of Driver's License",
+      // file: req.file,
+      // public: true,
     // },
     data: uploadedInfo,
     url: "https://sandbox.primetrust.com/v2/uploaded-documents",
   })
     .then((response) => {
-      console.log("response", response.data);
+      // console.log("response", response.data);
       res.send(response.data);
     })
     .catch((err) => {
@@ -216,8 +224,7 @@ const accountPolicy = catchAsync(async (req, res) => {
   await axios({
     method: "GET",
     headers: {
-      authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdXRoX3NlY3JldCI6IjBhMDdjZDAyLTlhNzAtNDkzZS1hYjU5LWUxNjZkZDdiMDlkYyIsInVzZXJfZ3JvdXBzIjpbXSwibm93IjoxNjYxNDA1Mzk4LCJleHAiOjE2NjIwMTAxOTh9.4tBzk45vuAmOWiY6HfgXYDllxzQ91VnFyJzf0IKPAxk",
+      authorization: ptToken,
     },
     url: "https://sandbox.primetrust.com/v2/account-aggregate-policies",
     // url: "https://sandbox.primetrust.com/v2/users",

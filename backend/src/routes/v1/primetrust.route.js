@@ -1,6 +1,14 @@
 const express = require("express");
 const multer = require("multer");
-const upload = multer({ dest: "uploads" });
+var storage = multer.diskStorage({
+  destination: "./uploads/",
+  filename: function (req, file, cb) {
+    //req.body is empty...
+    //How could I get the new_file_name property sent from client here?
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage });
 const fs = require("fs");
 const validate = require("../../middlewares/validate");
 const checkHeader = require("../../middlewares/checkHeader");

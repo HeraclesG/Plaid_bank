@@ -3,32 +3,11 @@ const mongoose = require('mongoose');
 const { email } = require('../config/config');
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
-const { createWyreUser } = require('./fintech.service');
 /**
  * Create a user
  * @param {Object} userBody
  * @returns {Promise<User>}
  */
-const createUser = async (userBody) => {
-  if (await User.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
-
-  const id = mongoose.Types.ObjectId();
-
-  const wyreUser = await createWyreUser();
-
-  if (!wyreUser) throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'create wyre user fail');
-
-  const body = {
-    ...userBody,
-    _id: id,
-    userId: wyreUser.id,
-    ethWalletAddr: wyreUser.depositAddresses.ETH,
-  };
-
-  return User.create(body);
-};
 
 /**
  * Query for users
@@ -101,7 +80,6 @@ const searchUser = async (keyword) => {
 };
 
 module.exports = {
-  createUser,
   queryUsers,
   getUserById,
   getUserByEmail,
