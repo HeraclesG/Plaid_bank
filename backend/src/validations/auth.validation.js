@@ -17,17 +17,15 @@ const register = {
     postalCode: Joi.string().required(),
     street1: Joi.string().required(),
     street2: Joi.string().required(),
-    pin: Joi.string().required().custom(pin),
-    accountId: Joi.string().required(),
-    contactId: Joi.string().required(),
+    password: Joi.string().required().custom(password),
   }),
 };
 
 const login = {
   body: Joi.object().keys({
-    userName: Joi.string().required(),
+    email: Joi.string().required().email(),
     // password: Joi.string().required().custom(password),
-    pin: Joi.string().required().custom(pin),
+    password: Joi.string().required().custom(password),
   }),
 };
 

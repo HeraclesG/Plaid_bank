@@ -19,13 +19,13 @@ const userSchema = mongoose.Schema(
     userName: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
     email: {
       type: String,
       required: true,
       trim: true,
+      unique: true,
       lowercase: true,
       validate(value) {
         if (!validator.isEmail(value)) {
@@ -34,7 +34,7 @@ const userSchema = mongoose.Schema(
       },
     },
     birthday: {
-      type: String,
+      type: Date,
       required: true,
       trim: true,
     },
@@ -91,31 +91,31 @@ const userSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    // password: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    //   minlength: 8,
-    //   validate(value) {
-    //     if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-    //       throw new Error(
-    //         "Password must contain at least one letter and one number"
-    //       );
-    //     }
-    //   },
-    //   private: true, // used by the toJSON plugin
-    // },
-    pin: {
+    password: {
       type: String,
       required: true,
       trim: true,
+      minlength: 8,
+      validate(value) {
+        if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
+          throw new Error(
+            "Password must contain at least one letter and one number"
+          );
+        }
+      },
+      private: true, // used by the toJSON plugin
     },
+    // pin: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
     role: {
       type: String,
       enum: roles,
       default: "user",
     },
-    isEmailVerified: {
+    isVerified: {
       type: Boolean,
       default: false,
     },
@@ -141,8 +141,8 @@ userSchema.plugin(paginate);
  * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
  * @returns {Promise<boolean>}
  */
-userSchema.statics.isUserNameTaken = async function (userName, excludeUserId) {
-  const user = await this.findOne({ userName, _id: { $ne: excludeUserId } });
+userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
+  const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
   return !!user;
 };
 
