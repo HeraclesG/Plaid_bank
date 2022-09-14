@@ -31,8 +31,8 @@ const getUserEmail = catchAsync(async (req, res) => {
     res.status(400).send({ message: "User is not registered." });
     return;
   }
-  res.send({ email: currentUser.email, accountId: currentUser.accountId });
-});
+  res.send({ email: currentUser.email, accountId: currentUser.accountId, contactId: currentUser.contactId });
+})
 
 const login = catchAsync(async (req, res) => {
   const { userName, pin } = req.body;

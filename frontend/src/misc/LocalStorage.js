@@ -21,9 +21,11 @@ export class LocalStorage {
       const userParsed = JSON.parse(userString)
       return new User(
         userParsed.id,
+        userParsed.contactId,
         userParsed.email,
         userParsed.authToken,
         userParsed.username,
+        userParsed.midvalue,
         userParsed.permission
       )
     })

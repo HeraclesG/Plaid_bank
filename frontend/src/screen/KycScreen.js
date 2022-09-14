@@ -132,10 +132,12 @@ export default function KycScreen({ navigation }) {
     })
       .then((response) => {
         const loginResponse = {
-          userId: contactId,// contact id
+          id: contactId,// contact id
           contactId: contactId,
           authToken: userStore.user.authToken,
           username: userStore.user.username,
+          midvalue: '',
+          midprice: '',
           permission: 0,
         };
         const user = User.fromJson(loginResponse, userStore.user.email);

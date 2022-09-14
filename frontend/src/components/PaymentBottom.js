@@ -11,7 +11,7 @@ export default function PaymentBottom({ navigation, item }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => { }} style={{ paddingHorizontal: 19, }}>
+        <TouchableOpacity onPress={() => { }} style={{ paddingHorizontal: 19, zIndex: 1 }}>
           <Svg
             width={14}
             height={16}

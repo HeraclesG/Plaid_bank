@@ -1,14 +1,15 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { ImageBackground, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Text, ScrollView, Image, View, Alert } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg";
 import HomeCard from '../components/HomeCard';
-import SortModal from '../components/SortModal';
+import SwitchCurrency from '../components/SwitchCurrency';
 import DocumentPicker from 'react-native-document-picker';
 import axios from 'axios';
-import RNFS from 'react-native-fs';
+import { PRIME_TRUST_URL, SERVER_URL } from '@env';
+import { userStore } from '../module/user/UserStore';
 
 export default function HomeScreen({ navigation, onView }) {
   const data = [
@@ -17,11 +18,57 @@ export default function HomeScreen({ navigation, onView }) {
     { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
     { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
   ];
-  //Hi, are you @bunny?
   const refRBSheet = useRef();
   const [sort, setSort] = useState(true);
   const [singleFile, setSingleFile] = useState(null);
   const [message, setMessage] = useState('aaa');
+  const [currentval, setVal] = useState('');
+  useEffect(() => {
+    if (sort) {
+      accountCash();
+    } else {
+      console.log('first');
+      accountUSDCCash();
+    }
+  }, [sort])
+  const accountCash = async () => {
+    console.log(userStore)
+    console.log(`${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`)
+    await axios({
+      method: "GET",
+      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
+      url: `${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`,
+    })
+      .then((response) => {
+        setVal(response.data.data[0].attributes['contingent-hold']);
+        console.log(response);
+      })
+      .catch((err) => {
+        console.log(err?.response?.data?.errors);
+        setMessage(err?.response?.data?.errors[0].detail);
+
+        handleOpenModalPress();
+      });
+  }
+  const accountUSDCCash = async () => {
+    console.log(userStore)
+    console.log(`${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`)
+    await axios({
+      method: "GET",
+      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
+      url: `${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`,
+    })
+      .then((response) => {
+        setVal(response.data.data[0].attributes['contingent-hold']);
+        console.log(response);
+      })
+      .catch((err) => {
+        console.log(err?.response?.data?.errors);
+        setMessage(err?.response?.data?.errors[0].detail);
+
+        handleOpenModalPress();
+      });
+  }
   const uploadImage = async () => {
     // Check if any file is selected or not
     if (singleFile != null) {
@@ -138,13 +185,13 @@ export default function HomeScreen({ navigation, onView }) {
             }
           }}
         >
-          <SortModal sort={sort} setSort={setSort} onPress={() => { refRBSheet.current.close() }} />
+          <SwitchCurrency sort={sort} setSort={setSort} onPress={() => { refRBSheet.current.close() }} />
         </RBSheet>
         <Text style={styles.currentval}>
           Current Balance
         </Text>
         <Text style={styles.currentmoney}>
-          $405.00
+          ${currentval}
         </Text>
       </ImageBackground>
       <View style={styles.group0}>

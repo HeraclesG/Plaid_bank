@@ -9,7 +9,7 @@ export default function SortModal({ sort, setSort, onPress }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => { onPress() }} style={{ paddingHorizontal: 19, }}>
+        <TouchableOpacity onPress={() => { onPress() }} style={{ paddingHorizontal: 19, zIndex: 1 }}>
           <Svg
             width={14}
             height={16}

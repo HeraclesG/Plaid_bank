@@ -21,15 +21,14 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
   const login = async () => {
-
-    // if (email === '') {
-    //   Alert.alert('Warning', 'Please input Login');
-    //   return;
-    // }
-    // if (password === '') {
-    //   Alert.alert('Warning', 'Please input password');
-    //   return;
-    // }
+    if (email === '') {
+      Alert.alert('Warning', 'Please input Login');
+      return;
+    }
+    if (password === '') {
+      Alert.alert('Warning', 'Please input password');
+      return;
+    }
     await axios({
       method: "POST",
       data: {
@@ -59,13 +58,15 @@ export default function LoginScreen({ navigation }) {
       }
     ).then((data) => {
       const loginResponse = {
-        userId: id,
+        id: id,
         contactId: contactId,
         authToken: data.data.token,
         username: email.value,
+        midvalue: '',
+        midprice: '',
         permission: 1,
       };
-      const user = User.fromJson(loginResponse, email.value);
+      const user = User.fromJson(loginResponse, email1);
       userStore.setUser(user);
     }).catch(err => {
       console.log(err)

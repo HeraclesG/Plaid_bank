@@ -77,10 +77,12 @@ export default function SignupScreen({ navigation }) {
     ).then((data) => {
       console.log('11111', data.data);
       const loginResponse = {
-        userId: pin,
+        id: pin,
         contactId: '1',
         authToken: data.data.token,
         username: username,
+        midvalue: '',
+        midprice: val,
         permission: 0,
       };
       const user = User.fromJson(loginResponse, email.value);

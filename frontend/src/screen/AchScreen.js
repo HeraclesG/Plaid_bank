@@ -42,6 +42,7 @@ export default function AchScreen({ navigation }) {
     //   handleOpenModalPress();
     //   return;
     // }
+    console.log(userStore.user.contactId);
     await axios({
       method: "POST",
       headers: { Authorization: `Bearer ${userStore.user.authToken}` },
@@ -52,7 +53,7 @@ export default function AchScreen({ navigation }) {
             "contact-id": userStore.user.contactId,
             "bank-account-name": "John James Doe",
             "routing-number": "123456789",
-            "ip-address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+            // "ip-address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
             "bank-account-type": "checking",
             "bank-account-number": "1234567890",
             "ach-check-type": "personal",
@@ -63,10 +64,16 @@ export default function AchScreen({ navigation }) {
       url: `${PRIME_TRUST_URL}v2/funds-transfer-methods`,
     })
       .then((response) => {
+        const loginResponse = {
+          ...userStore.user,
+          midvalue: response.data.data.id
+        }
+        const user = User.fromJson(loginResponse, loginResponse.email)
+        userStore.setUser(user);
         navigation.navigate('AddmoneystepScreen');
       })
       .catch((err) => {
-        navigation.navigate('AddmoneystepScreen');
+        console.log(err);
         setMessage(err?.response?.data?.errors[0].detail);
         handleOpenModalPress();
       });
@@ -83,7 +90,7 @@ export default function AchScreen({ navigation }) {
   //     }
   //   ).then((data) => {
   //     const loginResponse = {
-  //       userId: id,
+  //       id: id,
 
   //       authToken: data.data.token,
   //       username: email.value,
