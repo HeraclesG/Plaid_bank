@@ -7,7 +7,7 @@ import TextInput from '../components/TextInput';
 import CheckBox from 'react-native-check-box';
 import { User } from '../module/user/User';
 import axios from 'axios';
-import { userStore } from '../module/user/UserStore';
+import { api,get } from '../module/server/api';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Svg, { Path, Circle } from "react-native-svg"
 import Modal from 'react-native-modal';
@@ -29,6 +29,7 @@ export default function LoginScreen({ navigation }) {
       Alert.alert('Warning', 'Please input password');
       return;
     }
+    await get('v1/auth/getUserEmail')
     await axios({
       method: "POST",
       data: {
