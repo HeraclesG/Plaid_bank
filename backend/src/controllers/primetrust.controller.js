@@ -656,6 +656,123 @@ const assetTransactionHistory = catchAsync(async (req, res) => {
     });
 });
 
+const withdrawFund = catchAsync(async (req, res) => {
+  let fundsTransferMethodId = "";
+  await axios({
+    method: "POST",
+    headers: {
+      Authorization: ptToken,
+    },
+    data: {
+      data: {
+        type: "funds-transfer-methods",
+        attributes: {
+          "contact-id": req.user.contactId,
+          "bank-account-name": req.body.bankAccountName,
+          "routing-number": req.body.routingNumber,
+          "bank-account-number": req.body.bankAccountNumber,
+          "funds-transfer-type": "wire",
+        },
+      },
+    },
+    url: `${primeTrustUrl}/v2/funds-transfer-methods?include=bank`,
+  })
+    .then(async (response) => {
+      fundsTransferMethodId = response.data.data.id;
+      await axios({
+        method: "POST",
+        headers: {
+          Authorization: ptToken,
+        },
+        data: {
+          data: {
+            type: "disbursements",
+            attributes: {
+              amount: req.body.amount,
+              "funds-transfer-method-id": fundsTransferMethodId,
+              "account-id": req.user.accountId,
+            },
+          },
+        },
+        url: `${primeTrustUrl}/v2/disbursements?include=funds-transfer,disbursement-authorization`,
+      }).then(async (resp1) => {
+        res.send(resp1.data);
+        return
+        console.log(resp1.data.included[0].id);
+        //settle deposit -- we have to remove this in real production
+        // --------------------------------------------------------- remove this -----------------------------------------------------------//
+        // await axios({
+        //   method: "POST",
+        //   headers: {
+        //     Authorization: ptToken,
+        //   },
+        //   url: `${primeTrustUrl}/v2/funds-transfers/${resp1.data.included[0].id}/sandbox/settle`,
+        // })
+        //   .then(async (resp2) => {
+        //     await axios({
+        //       method: "GET",
+        //       headers: {
+        //         Authorization: ptToken,
+        //       },
+        //       url: `${primeTrustUrl}/v2/funds-transfers?filter[id eq]=${resp1.data.included[0].id}&include=contingent-holds`,
+        //     })
+        //       .then(async (resp3) => {
+        //         console.log(resp3.data);
+        //         await axios({
+        //           method: "POST",
+        //           headers: {
+        //             Authorization: ptToken,
+        //           },
+        //           url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[0].id}/sandbox/clear`,
+        //         })
+        //           .then(async (resp4) => {
+        //             console.log("first is approved", resp4.data);
+        //             await axios({
+        //               method: "POST",
+        //               headers: {
+        //                 Authorization: ptToken,
+        //               },
+        //               url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[1].id}/sandbox/clear`,
+        //             })
+        //               .then(async (resp5) => {
+        //                 console.log("second is approved", resp5.data);
+        //               })
+        //               .catch((err) => {
+        //                 console.log(err.response.data);
+        //               });
+        //           })
+        //           .catch(async (err) => {
+        //             console.log(err.response.data);
+        //             await axios({
+        //               method: "POST",
+        //               headers: {
+        //                 Authorization: ptToken,
+        //               },
+        //               url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[1].id}/sandbox/clear`,
+        //             })
+        //               .then(async (resp5) => {
+        //                 console.log("second is approved", resp5.data);
+        //               })
+        //               .catch((err) => {
+        //                 console.log(err.response.data);
+        //               });
+        //           });
+        //       })
+        //       .catch((err) => {
+        //         console.log(err);
+        //       });
+        //   })
+        //   .catch((err) => {
+        //     console.log(err);
+        //   });
+      });
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
 module.exports = {
   createUser,
   createJwt,
@@ -676,4 +793,5 @@ module.exports = {
   transferAsset,
   fundTransactionHistory,
   assetTransactionHistory,
+  withdrawFund,
 };

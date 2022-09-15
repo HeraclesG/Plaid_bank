@@ -106,4 +106,11 @@ router.post(
   primeTrustController.assetTransactionHistory
 );
 
+router.post(
+  "/withdraw_fund",
+  auth(),
+  validate(primeTrustValidation.depositFund),
+  primeTrustController.withdrawFund
+);
+
 module.exports = router;
