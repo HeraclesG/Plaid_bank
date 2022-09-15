@@ -1,6 +1,6 @@
 
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { theme } from '../core/theme';
 import Button from '../components/Button';
@@ -11,35 +11,48 @@ import { User } from '../module/user/User'
 import { userStore } from '../module/user/UserStore'
 import Svg, { Path, Circle } from "react-native-svg"
 import Modal from 'react-native-modal';
+import Moment from 'moment';
+import * as RNLocalize from "react-native-localize";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import PhoneInput from "react-native-phone-number-input";
+import CountryPicker from "react-native-region-country-picker";
+import { Picker } from '@react-native-picker/picker';
+import { signUp } from '../module/server/auth_api';
+import { post } from '../module/server/api';
 
 export default function SignupScreen({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [message, setMessage] = useState('error');
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [conpassword, setConPassword] = useState({ value: '', error: '' })
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [conpin, setConpin] = useState({ value: '', error: '' });
-  const [def, setDef] = useState('');
-  const [pin, setPin] = useState('');
+  const [email, setEmail] = useState({ value: 'aresdood@areses.anonaddy.me', error: '' })
+  const [conpassword, setConPassword] = useState({ value: 'aaaAAA111222@', error: '' })
+  const [username, setUsername] = useState('Ares');
+  const [password, setPassword] = useState('aaaAAA111222@');
+  const [firstname, setfirst] = useState('aaa');
+  const [lastname, setLast] = useState('bbb');
+  const [birth, setBirth] = useState('1999-2-4');
+  const [taxid, setTaxid] = useState('111222333');
+  const [street_1, setSt1] = useState('wewr');
+  const [street_2, setSt2] = useState('werwer');
+  const [city, setCity] = useState('adsfsdf');
+  const [postalcode, setPostalCode] = useState('19450');
+  const [phonenumber, setPhonenumber] = useState('1234567890');
+  const [phoneco, setPhoneco] = useState('US');
+  const phoneInput = useRef();
+  let countryPickerRef = useRef();
+  const [formattedValue, setFormattedValue] = useState("");
+  const [country, setCountry] = useState('US');
+  const [region, setRegion] = useState('AL');
+  const [isreg, setIsreg] = useState(true);
   const onTextChanged = (value) => {
-    // code to remove non-numeric characters from text
-    if (value.length > 4) {
-      return;
-    }
-    setPin(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
+    setTaxid(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
   };
-  const onreTextChanged = (value) => {
-    // code to remove non-numeric characters from text
-    if (value.length > 4) {
-      return;
-    }
-    setConpin({ value: value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''), error: '' });
+  const onpostalCode = (value) => {
+    setPostalCode(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
   };
   const validate = () => {
-    if (email.value == '' || password == '' || pin == '') {
+    if (firstname === '' || lastname === '' || birth === '' || taxid === '' || street_1 === '' | street_2 === '' || city === '' || postalcode === '' | phoneco === '' || phonenumber === '' || country === '') {
       setMessage('please enter all data');
       handleOpenModalPress();
       return;
@@ -52,68 +65,51 @@ export default function SignupScreen({ navigation }) {
       setConPassword({ value: conpassword.value, error: 'not match password' });
       return;
     }
-    if (pin !== conpin.value) {
-      setConpin({ value: conpin.value, error: 'not match pin' });
-      return;
-    }
-    getToken();
+    createUser();
   }
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+  const handleConfirm = (date) => {
+    console.log(date);
+    setBirth(Moment(date).format('y-M-d'));
+    hideDatePicker();
+  };
   const validateEmail = (email) => {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
   };
-  const getToken = async () => {
-    await axios(
-      // `${PRIME_TRUST_URL}auth/jwts?email=${email.value}&password=${password}`,
-      {
-        url: `${PRIME_TRUST_URL}auth/jwts?email=${email.value}&password=${password}`,
-        //`${PRIME_TRUST_URL}auth/jwts?email=blackhole.rsb@gmail.com&password=aaaAAA111222@`,
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-
-        },//flm reference
-      }
-    ).then((data) => {
-      console.log('11111', data.data);
-      const loginResponse = {
-        id: pin,
-        contactId: '1',
-        authToken: data.data.token,
-        username: username,
-        midvalue: '',
-        midprice: val,
-        permission: 0,
-      };
-      const user = User.fromJson(loginResponse, email.value);
-      userStore.setUser(user);
-      navigation.navigate('KycScreen');
-    }).catch(err => { createUser(); });
-  };
   const createUser = async () => {
-    await axios({
-      method: "POST",
-      data: {
-        data: {
-          type: "user",
-          attributes: {
-            email: email.value,
-            name: username,
-            password: password,
-          },
-        },
-      },
-      url: `${PRIME_TRUST_URL}v2/users`,
-    })
-      .then((response) => {
-        console.log('createuser', response.data);
-        getToken();
-      })
-      .catch((err) => {
-        console.log("createusererror", err?.response?.data?.errors[0]?.title);
-        setMessage('creatuser error');
-        handleOpenModalPress();
-      });
+    const response = await signUp(
+      {
+        firstName: firstname,
+        lastName: lastname,
+        email: email.value,
+        password: password,
+        userName: username,
+        phone: phonenumber,
+        city: city,
+        country: country,
+        taxIdNum: taxid,
+        taxCountry: country,
+        birthday: birth,
+        region: region,
+        postalCode: postalcode,
+        street1: street_1,
+        street2: street_2,
+      }
+    );
+    if (response === 'success') {
+      navigation.navigate('FileuploadScreen');
+    }
+    setMessage(response);
+    handleOpenModalPress();
   };
   return (
     <ScrollView contentContainerStyle={{ paddingVertical: 110 }} style={styles.container}>
@@ -168,39 +164,249 @@ export default function SignupScreen({ navigation }) {
             secureTextEntry={true}
             placeholder="Re-enter your password"
             returnKeyType="next"
-            value={conpassword}
+            value={conpassword.value}
             onChangeText={(text) => setConPassword({ value: text, error: '' })}
             error={!!conpassword.error}
             errorText={conpassword.error}
             autoCapitalize="none"
           />
         </View>
+        <View style={styles.doublegroup}>
+          <View style={[styles.inputgroup, { width: '45%' }]}>
+            <Text style={styles.label}>First Name</Text>
+            <TextInput
+              placeholder="Enter First Name"
+              returnKeyType="next"
+              value={firstname}
+              onChangeText={(text) => setfirst(text)}
+              autoCapitalize="none"
+            />
+          </View>
+          <View style={[styles.inputgroup, { width: '45%' }]}>
+            <Text style={styles.label}>Last Name</Text>
+            <TextInput
+              placeholder="Enter Last Name"
+              returnKeyType="next"
+              value={lastname}
+              onChangeText={(text) => setLast(text)}
+              autoCapitalize="none"
+            />
+          </View>
+        </View>
         <View style={styles.inputgroup}>
-          <Text style={styles.label}>PIN</Text>
+          <Text style={styles.label}>Birthday</Text>
           <TextInput
-            secureTextEntry={true}
-            placeholder="PIN number must be 4 digits "
+            onPressIn={(e) => { showDatePicker() }}
+            showSoftInputOnFocus={false}
+            type='date'
+            placeholder="1991-01-01"
+            returnKeyType="next"
+            value={birth}
+            onChangeText={(text) => setBirth(text)}
+            autoCapitalize="none"
+            textContentType="emailAddress"
+            keyboardType="email-address"
+          />
+        </View>
+        <View style={styles.inputgroup}>
+          <Text style={styles.label}>Tax Id</Text>
+          <TextInput
+            placeholder="taxid"
             keyboardType='numeric'
             returnKeyType="next"
-            value={pin}
+            value={taxid}
             onChangeText={(text) => onTextChanged(text)}
             autoCapitalize="none"
           />
-
         </View>
         <View style={styles.inputgroup}>
-          <Text style={styles.label}>Confirm PIN</Text>
+          <Text style={styles.label}>Street 1</Text>
           <TextInput
-            secureTextEntry={true}
-            placeholder="Re-enter your PIN number"
+            placeholder="Enter street1"
             returnKeyType="next"
-            keyboardType='numeric'
-            value={conpin}
-            onChangeText={(text) => onreTextChanged(text)}
-            error={!!conpin.error}
-            errorText={conpin.error}
+            value={street_1}
+            onChangeText={(text) => setSt1(text)}
             autoCapitalize="none"
           />
+        </View>
+        <View style={styles.inputgroup}>
+          <Text style={styles.label}>Street 2</Text>
+          <TextInput
+            placeholder="Enter street2"
+            returnKeyType="next"
+            value={street_2}
+            onChangeText={(text) => setSt2(text)}
+            autoCapitalize="none"
+          />
+        </View>
+        <View style={styles.inputgroup}>
+          <Text style={styles.label}>city</Text>
+          <TextInput
+            placeholder="Enter city"
+            returnKeyType="next"
+            value={city}
+            onChangeText={(text) => setCity(text)}
+            autoCapitalize="none"
+          />
+        </View>
+        <View style={styles.inputgroup}>
+          <Text style={styles.label}>postalCode</Text>
+          <TextInput
+            placeholder="Enter postalCode"
+            keyboardType='numeric'
+            returnKeyType="next"
+            value={postalcode}
+            onChangeText={(text) => onpostalCode(text)}
+            autoCapitalize="none"
+          />
+        </View>
+        <Text style={styles.label}>Phone Number</Text>
+        <PhoneInput
+          ref={phoneInput}
+          defaultValue={phonenumber}
+          value={phonenumber}
+          defaultCode={phoneco}
+          onChangeText={(text) => {
+            setPhonenumber(text);
+            console.log('phone:', phonenumber);
+          }}
+          onChangeCountry={(text) => {
+            setPhoneco(text.cca2);
+          }}
+          layout="first"
+          containerStyle={{
+            width: '100%',
+            height: 49,
+            borderRadius: 10,
+            backgroundColor: theme.colors.textinputbackColor,
+            marginBottom: 20,
+          }}
+          textContainerStyle={{ paddingVertical: 0, borderRadius: 10, backgroundColor: theme.colors.textinputbackColor }}
+          codeTextStyle={{ paddingVertical: 0, color: theme.colors.whiteColor }}
+          textInputStyle={{ paddingVertical: 0, color: theme.colors.whiteColor }}
+          onChangeFormattedText={(text) => {
+            setFormattedValue(text);
+          }}
+          withDarkTheme
+          withShadow
+        />
+        <Text style={styles.label}>Country</Text>
+        <CountryPicker
+          countryPickerRef={(ref) => {
+            countryPickerRef = ref;
+          }}
+          enable={true}
+          darkMode={false}
+          countryCode={country}
+          containerConfig={{
+            showFlag: true,
+            showCallingCode: true,
+            showCountryName: true,
+            showCountryCode: true,
+          }}
+          modalConfig={{
+            showFlag: true,
+            showCallingCode: true,
+            showCountryName: true,
+            showCountryCode: true,
+          }}
+          onSelectCountry={(data) => {
+            console.log(data.code);
+            if (data.code == 'US') {
+              setIsreg(true);
+            } else {
+              setIsreg(false);
+            }
+            setCountry(data.code);
+          }}
+          onInit={(data) => {
+            console.log("DATA", data);
+          }}
+          onOpen={() => {
+            console.log("Open");
+          }}
+          onClose={() => {
+            console.log("Close");
+          }}
+          containerStyle={{
+            container: {
+              paddingHorizontal: '4%',
+              width: '100%',
+              height: 49,
+              backgroundColor: theme.colors.textinputbackColor,
+              borderRadius: 10,
+              marginBottom: 20,
+            },
+            flagStyle: {
+              fontSize: 20,
+              textAlign: 'center',
+            },
+            callingCodeStyle: {
+              paddingHorizontal: 'auto',
+              textAlign: 'center',
+              color: theme.colors.whiteColor,
+            },
+            countryCodeStyle: {
+              paddingHorizontal: 'auto',
+              textAlign: 'center',
+              color: theme.colors.whiteColor
+            },
+            countryNameStyle: {
+              paddingHorizontal: 'auto',
+              textAlign: 'center',
+              color: theme.colors.whiteColor
+            },
+          }}
+          modalStyle={{
+            container: {},
+            searchStyle: {},
+            tileStyle: {},
+            itemStyle: {
+              itemContainer: {},
+              flagStyle: {},
+              countryCodeStyle: {},
+              countryNameStyle: {},
+              callingNameStyle: {},
+            },
+          }}
+          title={"Country"}
+          searchPlaceholder={"Search"}
+          showCloseButton={true}
+          showModalTitle={true}
+        />
+        {isreg ? <Text style={styles.label}>Region</Text> : <Text></Text>}
+        <View
+          style={{ width: '100%', height: 49, marginBottom: 10, borderRadius: 10, overflow: 'hidden', }}>
+          {isreg ? <Picker
+            style={{ backgroundColor: theme.colors.textinputbackColor, width: '100%', height: 49, color: theme.colors.whiteColor }}
+            selectedValue={region}
+            themeVariant='dark'
+            onValueChange={(itemValue, itemIndex) =>
+              setRegion(itemValue)
+            }>
+            <Picker.Item label="Alabama" value="AL" />
+            <Picker.Item label="Alaska" value="AK" />
+            <Picker.Item label="American Samoa" value="AS" />
+            <Picker.Item label="Arizona" value="AZ" />
+            <Picker.Item label="Arkansas" value="AR" />
+            <Picker.Item label="Caliornia" value="CA" />
+            <Picker.Item label="Colorado" value="CO" />
+            <Picker.Item label="Connecticut" value="CT" />
+            <Picker.Item label="Delaware" value="DE" />
+            <Picker.Item label="District Of Columbia" value="DC" />
+            <Picker.Item label="Federated States Of Micronesia" value="FM" />
+            {/* <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" /> */}
+          </Picker> : <View></View>}
         </View>
         <Modal isVisible={isModalVisible} hasBackdrop={true} >
           <View style={styles.modal}>
@@ -238,6 +444,12 @@ export default function SignupScreen({ navigation }) {
           </Text>
         </TouchableOpacity>
       </View>
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+      />
     </ScrollView>
   );
 }

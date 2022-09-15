@@ -7,6 +7,8 @@ import Button from '../components/Button';
 import DocumentPicker from 'react-native-document-picker';
 import { userStore } from '../module/user/UserStore';
 import Modal from 'react-native-modal';
+import { Picker } from '@react-native-picker/picker';
+import { uploadImageApi } from '../module/server/auth_api';
 
 export default function FileuploadScreen({ navigation }) {
   const [selected, setSelected] = useState(['', '']);
@@ -14,9 +16,31 @@ export default function FileuploadScreen({ navigation }) {
   const [front, setFront] = useState(null);
   const [back, setBack] = useState(null);
   const [message, setMessage] = useState('error');
+  const [region, setRegion] = useState('driver');
+  const [backimage, setBackImage] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
+  const changePart = (itemValue) => {
+    switch (itemValue) {
+      case "driver":
+        setBackImage(true);
+        break;
+      case "governmentId":
+        setBackImage(false);
+        break;
+      case "passport":
+        setBackImage(false);
+        break;
+      case "residencePermit":
+        setBackImage(true);
+        break;
+      case "utilityBill":
+        setBackImage(false);
+        break;
+    }
+    setRegion(itemValue);
+  };
   const selectFront = async () => {
     try {
       const res = await DocumentPicker.pick({
@@ -55,70 +79,49 @@ export default function FileuploadScreen({ navigation }) {
       }
     }
   };
-  const uploadImage = async () => {
-    // Check if any file is selected or not
-    if (selected[0] !== '' && selected[1] !== '') {
-      console.log(userStore.user.id);
-      const fs = require
-      const fileToUpload = front;
-      const data = new FormData();
-      console.log(fileToUpload);
-      data.append('file', fileToUpload[0]);
-      data.append('contact-id', userStore.user.id);
-      data.append('description', "Front of Driver's License");
-      data.append('label', "Front Driver's License");
-      data.append('public', true);
-      // Please change file upload URL
-      await fetch(
-        'https://sandbox.primetrust.com/v2/uploaded-documents',
-        {
-          method: 'post',
-          body: data,
-          headers: {
-            // 'Accept': 'application/json',
-            Authorization: `Bearer ${userStore.user.authToken}`,
-            'Content-Type': 'multipart/form-data; ',
-          },
-        }
-      ).then(res => res.json()).then(async (data1) => {
-        const fs = require
-        const fileToUpload = back;
-        const data = new FormData();
-        console.log(fileToUpload);
-        data.append('file', fileToUpload[0]);
-        data.append('contact-id', userStore.user.id);
-        data.append('description', "Back of Driver's License");
-        data.append('label', "Backside Driver's License");
-        data.append('public', true);
-        // Please change file upload URL
-        await fetch(
-          'https://sandbox.primetrust.com/v2/uploaded-documents',
-          {
-            method: 'post',
-            body: data,
-            headers: {
-              // 'Accept': 'application/json',
-              Authorization: `Bearer ${userStore.user.authToken}`,
-              'Content-Type': 'multipart/form-data; ',
-            },
-          }
-        ).then(res => res.json()).then((data1) => {
+  const validate = () => {
+    if (selected[0] === '') {
+      setMessage('Please Select File first');
+      handleOpenModalPress();
+      return;
+    }
+    if (backimage) {
+      if (selected[1] === '') {
+        setMessage('Please Select File first');
+        handleOpenModalPress();
+        return;
+      }
+      if (uploadImage(front, 'Front')) {
+        if (uploadImage(back, 'Back')) {
           setMessage('Please wait until verify');
           setSuccess(true);
           handleOpenModalPress();
-        }).catch(err => {
-          setMessage('File upload falied');
-          handleOpenModalPress(); return;
-        });
-      }).catch(err => {
-        setMessage('File upload falied');
-        handleOpenModalPress(); return;
-      });
-    } else {
-      setMessage('Please Select File first');
+        }
+        return;
+      }
+      return;
+    }
+    if (uploadImage(front, '')) {
+      setMessage('Please wait until verify');
+      setSuccess(true);
       handleOpenModalPress();
     }
-
+    return;
+  }
+  const uploadImage = async (file, name) => {
+    const response = uploadImageApi(
+      {
+        kycdoc: file,
+        type: region + name,
+        userId: userStore.user.id
+      }
+    );
+    if (response === 'success') {
+      return true;
+    }
+    setMessage(response);
+    handleOpenModalPress();
+    return false;
   };
   return (
     <View style={styles.container}>
@@ -141,6 +144,22 @@ export default function FileuploadScreen({ navigation }) {
             KYC file upload
           </Text>
         </View>
+        <View
+          style={{ width: '100%', height: 49, marginBottom: 10, borderRadius: 10, overflow: 'hidden', }}>
+          <Picker
+            style={{ backgroundColor: theme.colors.textinputbackColor, width: '100%', height: 49, color: theme.colors.whiteColor }}
+            selectedValue={region}
+            themeVariant='dark'
+            onValueChange={(itemValue, itemIndex) =>
+              changePart(itemValue)
+            }>
+            <Picker.Item label="Driver's License" value="driver" />
+            <Picker.Item label="Government ID" value="governmentId" />
+            <Picker.Item label="Passport" value="passport" />
+            <Picker.Item label="Residence Permit" value="residencePermit" />
+            <Picker.Item label="Utility Bill" value="utilityBill" />
+          </Picker>
+        </View>
         <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
           <View style={{ width: '80%', displa: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: 'auto' }}>
             <Text style={{ color: theme.colors.whiteColor }}>Front</Text>
@@ -159,23 +178,24 @@ export default function FileuploadScreen({ navigation }) {
             </TouchableOpacity>
             <Text style={{ color: theme.colors.whiteColor }}>{selected[0]}</Text>
           </View>
-          <View style={{ width: '80%', displa: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: 'auto' }}>
-            <Text style={{ color: theme.colors.whiteColor }}>Back</Text>
-            <TouchableOpacity style={styles.upload} onPress={selectBack}>
-              <Svg
-                width={20}
-                height={20}
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <Path
-                  d="M10 0a1.25 1.25 0 0 1 1.25 1.25v7.5h7.5a1.25 1.25 0 0 1 0 2.5h-7.5v7.5a1.25 1.25 0 0 1-2.5 0v-7.5h-7.5a1.25 1.25 0 0 1 0-2.5h7.5v-7.5A1.25 1.25 0 0 1 10 0Z"
-                  fill="#fff"
-                />
-              </Svg>
-            </TouchableOpacity>
-            <Text style={{ color: theme.colors.whiteColor }}>{selected[1]}</Text>
-          </View>
+          {backimage ?
+            <View style={{ width: '80%', displa: 'flex', alignItems: 'center', marginLeft: 'auto', marginRight: 'auto' }}>
+              <Text style={{ color: theme.colors.whiteColor }}>Back</Text>
+              <TouchableOpacity style={styles.upload} onPress={selectBack}>
+                <Svg
+                  width={20}
+                  height={20}
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <Path
+                    d="M10 0a1.25 1.25 0 0 1 1.25 1.25v7.5h7.5a1.25 1.25 0 0 1 0 2.5h-7.5v7.5a1.25 1.25 0 0 1-2.5 0v-7.5h-7.5a1.25 1.25 0 0 1 0-2.5h7.5v-7.5A1.25 1.25 0 0 1 10 0Z"
+                    fill="#fff"
+                  />
+                </Svg>
+              </TouchableOpacity>
+              <Text style={{ color: theme.colors.whiteColor }}>{selected[1]}</Text>
+            </View> : <View></View>}
         </View>
       </View>
       <Modal isVisible={isModalVisible} hasBackdrop={true} >
