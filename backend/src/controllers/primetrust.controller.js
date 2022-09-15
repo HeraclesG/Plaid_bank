@@ -306,6 +306,32 @@ const getResourceTokens = catchAsync(async (req, res) => {
     });
 });
 
+const fakeFund = catchAsync(async (req, res) => {
+  await axios({
+    method: "POST",
+    headers: {
+      Authorization: ptToken,
+    },
+    data: {
+      data: {
+        type: "accounts",
+        attributes: {
+          amount: "50000",
+        },
+      },
+    },
+    url: `${primeTrustUrl}/v2/accounts/1a5004ce-1254-4ce9-93af-254b7261be8b/sandbox/fund`,
+  })
+    .then((response) => {
+      console.log(response.data);
+      res.send({ amount: response.data });
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]?.title);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
 const depositFund = catchAsync(async (req, res) => {
   let fundsTransferMethodId = "";
   await axios({
@@ -350,15 +376,73 @@ const depositFund = catchAsync(async (req, res) => {
         url: `${primeTrustUrl}/v2/contributions?include=funds-transfer`,
       }).then(async (resp1) => {
         res.send(resp1.data);
-        console.log(resp1.data.included[0].id)
+        console.log(resp1.data.included[0].id);
         //settle deposit -- we have to remove this in real production
+        // --------------------------------------------------------- remove this -----------------------------------------------------------//
         await axios({
           method: "POST",
           headers: {
             Authorization: ptToken,
           },
           url: `${primeTrustUrl}/v2/funds-transfers/${resp1.data.included[0].id}/sandbox/settle`,
-        });
+        })
+          .then(async (resp2) => {
+            await axios({
+              method: "GET",
+              headers: {
+                Authorization: ptToken,
+              },
+              url: `${primeTrustUrl}/v2/funds-transfers?filter[id eq]=${resp1.data.included[0].id}&include=contingent-holds`,
+            })
+              .then(async (resp3) => {
+                console.log(resp3.data);
+                await axios({
+                  method: "POST",
+                  headers: {
+                    Authorization: ptToken,
+                  },
+                  url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[0].id}/sandbox/clear`,
+                })
+                  .then(async (resp4) => {
+                    console.log("first is approved", resp4.data);
+                    await axios({
+                      method: "POST",
+                      headers: {
+                        Authorization: ptToken,
+                      },
+                      url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[1].id}/sandbox/clear`,
+                    })
+                      .then(async (resp5) => {
+                        console.log("second is approved", resp5.data);
+                      })
+                      .catch((err) => {
+                        console.log(err.response.data);
+                      });
+                  })
+                  .catch(async (err) => {
+                    console.log(err.response.data);
+                    await axios({
+                      method: "POST",
+                      headers: {
+                        Authorization: ptToken,
+                      },
+                      url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[1].id}/sandbox/clear`,
+                    })
+                      .then(async (resp5) => {
+                        console.log("second is approved", resp5.data);
+                      })
+                      .catch((err) => {
+                        console.log(err.response.data);
+                      });
+                  });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
     })
     .catch((err) => {
@@ -405,7 +489,7 @@ const transferFund = catchAsync(async (req, res) => {
   })
     .then((response) => {
       console.log(response.data);
-      res.send({ amount: response.data.data[0].attributes.amount });
+      res.send(response.data);
     })
     .catch((err) => {
       console.log("error", err?.response?.data?.errors[0]);
@@ -427,4 +511,5 @@ module.exports = {
   depositFund,
   getFundBalance,
   transferFund,
+  fakeFund,
 };

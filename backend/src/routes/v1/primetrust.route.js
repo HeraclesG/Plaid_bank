@@ -70,4 +70,9 @@ router.post(
   primeTrustController.transferFund
 );
 
+router.post(
+  "/fake_fund",
+  primeTrustController.fakeFund
+);
+
 module.exports = router;
