@@ -461,7 +461,7 @@ const getFundBalance = catchAsync(async (req, res) => {
   })
     .then((response) => {
       console.log(response.data);
-      res.send({ amount: response.data });
+      res.send(response.data);
     })
     .catch((err) => {
       console.log("error", err?.response?.data?.errors[0]?.title);
@@ -497,6 +497,129 @@ const transferFund = catchAsync(async (req, res) => {
     });
 });
 
+const depositAsset = catchAsync(async (req, res) => {
+  await axios({
+    method: "POST",
+    headers: {
+      Authorization: ptToken,
+    },
+    data: {
+      data: {
+        type: "asset-transfer-methods",
+        attributes: {
+          label: "Deposit Address for USDC",
+          // "cost-basis": 1,
+          // "acquisition-on": new Date(),
+          // "currency-type": "USD",
+          "asset-id": "15593c9b-f00d-483e-8958-422e42440a76",
+          "contact-id": req.user.contactId,
+          "account-id": req.user.accountId,
+          "transfer-direction": "incoming",
+          "single-use": false,
+          "asset-transfer-type": "ethereum",
+        },
+      },
+    },
+    url: `${primeTrustUrl}/v2/asset-transfer-methods`,
+  })
+    .then(async (response) => {
+      res.send(response.data);
+      // ---------------------------------------------- remove this in real production ----------------------------------------------------- //
+      await axios({
+        method: "POST",
+        headers: {
+          Authorization: ptToken,
+        },
+        data: {
+          data: {
+            type: "asset-contributions",
+            attributes: {
+              "unit-count": 10000,
+              "asset-id": "15593c9b-f00d-483e-8958-422e42440a76",
+              "account-id": req.user.accountId,
+              "contact-id": req.user.contactId,
+              "asset-transfer-method-id": response.data.data.id,
+              // "acquisition-on" : new Date(),
+              // "cost-basis" : 1,
+              // "currency-type" : "USD"
+            },
+          },
+        },
+        url: `${primeTrustUrl}/v2/asset-contributions?include=asset-transfer-method,asset-transfer`,
+      })
+        .then(async (resp1) => {
+          await axios({
+            method: "POST",
+            headers: {
+              Authorization: ptToken,
+            },
+            url: `${primeTrustUrl}/v2/asset-transfers/${resp1.data.included[1].id}/sandbox/settle`,
+          })
+            .then(async (resp2) => {
+              console.log(resp2.data);
+            })
+            .catch((err) => {
+              console.log("error", err?.response?.data);
+            });
+        })
+        .catch((err) => {
+          console.log("error", err?.response?.data);
+        });
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
+const getAssetBalance = catchAsync(async (req, res) => {
+  await axios({
+    method: "GET",
+    headers: {
+      Authorization: ptToken,
+    },
+    url: `${primeTrustUrl}/v2/account-asset-totals?account.id=${req.user.accountId}`,
+  })
+    .then((response) => {
+      console.log(response.data);
+      res.send(response.data);
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]?.title);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.title });
+    });
+});
+
+const transferAsset = catchAsync(async (req, res) => {
+  await axios({
+    method: "POST",
+    headers: {
+      Authorization: ptToken,
+    },
+    data: {
+      data: {
+        type: "internal-asset-transfers",
+        attributes: {
+          "unit-count": req.body.amount,
+          "asset-id": "15593c9b-f00d-483e-8958-422e42440a76",
+          "from-account-id": req.user.accountId,
+          "to-account-id": req.body.receiverAccountId,
+          reference: "For Trade Settlement",
+        },
+      },
+    },
+    url: `${primeTrustUrl}/v2/internal-asset-transfers`,
+  })
+    .then((response) => {
+      console.log(response.data);
+      res.send(response.data);
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
 module.exports = {
   createUser,
   createJwt,
@@ -512,4 +635,7 @@ module.exports = {
   getFundBalance,
   transferFund,
   fakeFund,
+  depositAsset,
+  getAssetBalance,
+  transferAsset,
 };

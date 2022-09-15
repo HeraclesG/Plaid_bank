@@ -75,4 +75,23 @@ router.post(
   primeTrustController.fakeFund
 );
 
+router.post(
+  "/deposit_asset",
+  auth(),
+  primeTrustController.depositAsset
+);
+
+router.post(
+  "/get_asset_balance",
+  auth(),
+  primeTrustController.getAssetBalance
+);
+
+router.post(
+  "/transfer_asset",
+  auth(),
+  validate(primeTrustValidation.transferFund),
+  primeTrustController.transferAsset
+);
+
 module.exports = router;
