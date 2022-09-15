@@ -620,6 +620,42 @@ const transferAsset = catchAsync(async (req, res) => {
     });
 });
 
+const fundTransactionHistory = catchAsync(async (req, res) => {
+  await axios({
+    method: "GET",
+    headers: {
+      Authorization: ptToken,
+    },
+    url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
+  })
+    .then((response) => {
+      console.log(response.data);
+      res.send(response.data);
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
+const assetTransactionHistory = catchAsync(async (req, res) => {
+  await axios({
+    method: "GET",
+    headers: {
+      Authorization: ptToken,
+    },
+    url: `${primeTrustUrl}/v2/asset-transactions?account.id=${req.user.accountId}`,
+  })
+    .then((response) => {
+      console.log(response.data);
+      res.send(response.data);
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
 module.exports = {
   createUser,
   createJwt,
@@ -638,4 +674,6 @@ module.exports = {
   depositAsset,
   getAssetBalance,
   transferAsset,
+  fundTransactionHistory,
+  assetTransactionHistory,
 };

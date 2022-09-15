@@ -94,4 +94,16 @@ router.post(
   primeTrustController.transferAsset
 );
 
+router.post(
+  "/fund_transaction_history",
+  auth(),
+  primeTrustController.fundTransactionHistory
+);
+
+router.post(
+  "/asset_transaction_history",
+  auth(),
+  primeTrustController.assetTransactionHistory
+);
+
 module.exports = router;
