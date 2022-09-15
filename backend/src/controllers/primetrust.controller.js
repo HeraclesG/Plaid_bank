@@ -330,7 +330,6 @@ const depositFund = catchAsync(async (req, res) => {
     url: `${primeTrustUrl}/v2/funds-transfer-methods`,
   })
     .then(async (response) => {
-      console.log(req.user.accountId);
       fundsTransferMethodId = response.data.data.id;
       await axios({
         method: "POST",
