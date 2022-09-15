@@ -350,6 +350,7 @@ const depositFund = catchAsync(async (req, res) => {
         url: `${primeTrustUrl}/v2/contributions?include=funds-transfer`,
       }).then(async (resp1) => {
         res.send(resp1.data);
+        console.log(resp1.data.included[0].id)
         //settle deposit -- we have to remove this in real production
         await axios({
           method: "POST",
@@ -375,11 +376,40 @@ const getFundBalance = catchAsync(async (req, res) => {
     url: `${primeTrustUrl}/v2/account-cash-totals?account.id=${req.user.accountId}`,
   })
     .then((response) => {
-      res.send({ amount: response.data.data[0].attributes.settled });
+      console.log(response.data);
+      res.send({ amount: response.data });
     })
     .catch((err) => {
       console.log("error", err?.response?.data?.errors[0]?.title);
       res.status(400).send({ message: err.response?.data?.errors[0]?.title });
+    });
+});
+
+const transferFund = catchAsync(async (req, res) => {
+  await axios({
+    method: "POST",
+    headers: {
+      Authorization: ptToken,
+    },
+    data: {
+      data: {
+        type: "account-cash-transfers",
+        attributes: {
+          amount: req.body.amount,
+          "from-account-id": req.user.accountId,
+          "to-account-id": req.body.receiverAccountId,
+        },
+      },
+    },
+    url: `${primeTrustUrl}/v2/account-cash-transfers?include=from-account-cash-totals,to-account-cash-totals`,
+  })
+    .then((response) => {
+      console.log(response.data);
+      res.send({ amount: response.data.data[0].attributes.amount });
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
     });
 });
 
@@ -396,4 +426,5 @@ module.exports = {
   getResourceTokens,
   depositFund,
   getFundBalance,
+  transferFund,
 };

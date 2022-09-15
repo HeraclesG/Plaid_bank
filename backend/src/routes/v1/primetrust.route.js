@@ -63,4 +63,11 @@ router.post(
   primeTrustController.getFundBalance
 );
 
+router.post(
+  "/transfer_fund",
+  auth(),
+  validate(primeTrustValidation.transferFund),
+  primeTrustController.transferFund
+);
+
 module.exports = router;

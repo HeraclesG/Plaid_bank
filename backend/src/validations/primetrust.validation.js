@@ -23,8 +23,16 @@ const depositFund = {
   }),
 };
 
+const transferFund = {
+  body: Joi.object().keys({
+    receiverAccountId: Joi.string().required(),
+    amount: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   setAccount,
   uploadDocuments,
   depositFund,
+  transferFund,
 };
