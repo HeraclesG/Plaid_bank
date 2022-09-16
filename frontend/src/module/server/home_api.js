@@ -61,6 +61,12 @@ export const searchUserApi = async (data) => {
 export const transferFundApi = async (data) => {
   return await post('v1/primetrust/transfer_fund', data).then(
     function (response) {
+      const loginResponse = {
+        ...userStore.user,
+        midprice: data.amount,
+      }
+      const user = User.fromJson(loginResponse, loginResponse.email);
+      userStore.setUser(user);
       return {
         message: true
       };
@@ -113,6 +119,24 @@ export const fundHistoryApi = async () => {
       console.log(response.data);
       return {
         value: response.data,
+        message: true
+      };
+    })
+    .catch(function (error) {
+      console.log(error);
+      return {
+        value: error.response.data.message,
+        message: false
+      };
+    });
+}
+
+export const depositAssetApi = async () => {
+  return await post('v1/primetrust/deposit_asset', {}).then(
+    function (response) {
+      console.log(response.data);
+      return {
+        value: response.data.address,
         message: true
       };
     })

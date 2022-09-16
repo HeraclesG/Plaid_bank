@@ -13,6 +13,7 @@ export const signUp = async (data) => {
         username: '',
         midvalue: '',
         midprice: '',
+        cash_num: 1,
         permission: 0,
       };
       const user = User.fromJson(loginResponse, data.email);
@@ -37,6 +38,7 @@ export const loginApi = async (data) => {
         username: response.data.currentUser.userName,
         midvalue: '',
         midprice: '',
+        cash_num: true,
         permission: 2,
       };
       const user = User.fromJson(loginResponse, data.email);

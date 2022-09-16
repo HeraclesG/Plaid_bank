@@ -44,7 +44,7 @@ export default function SendMoneystepScreen({ navigation }) {
     );
     if (response.message) {
       setVal('0');
-      navigation.navigate('TransactioncompScreen');
+      navigation.navigate('TransactionSendcompScreen');
     }
     setMessage(response.value);
     handleOpenModalPress();

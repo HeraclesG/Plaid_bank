@@ -43,7 +43,7 @@ export default function SendMoneyScreen({ navigation }) {
     <View style={styles.container}>
       <View>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => { navigation.goBack() }}>
+          <TouchableOpacity onPress={() => { navigation.goBack() }} style={{ zIndex: 1 }}>
             <Svg
               width={22}
               height={20}
@@ -96,6 +96,8 @@ export default function SendMoneyScreen({ navigation }) {
                 const loginResponse = {
                   ...userStore.user,
                   contactId: item.contactId,
+                  authToken: item.name,
+                  midvalue: item.data,
                 }
                 const user = User.fromJson(loginResponse, loginResponse.email);
                 userStore.setUser(user);

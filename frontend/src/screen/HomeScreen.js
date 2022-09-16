@@ -9,17 +9,12 @@ import SwitchCurrency from '../components/SwitchCurrency';
 import DocumentPicker from 'react-native-document-picker';
 import { fundBalanceApi, fundSHistoryApi, getAssetBalanceApi } from '../module/server/home_api';
 import { userStore } from '../module/user/UserStore';
+import { User } from '../module/user/User';
 
 export default function HomeScreen({ navigation, onView }) {
-  // const data = [
-  //   { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
-  //   { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
-  //   { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
-  //   { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
-  // ];
   const [data, setData] = useState([]);
   const refRBSheet = useRef();
-  const [sort, setSort] = useState(true);
+  const [sort, setSort] = useState(userStore.user.cash_num);
   const [singleFile, setSingleFile] = useState(null);
   const [message, setMessage] = useState('aaa');
   const [currentval, setVal] = useState('');
@@ -36,7 +31,7 @@ export default function HomeScreen({ navigation, onView }) {
     const response = await getAssetBalanceApi();
     if (response.message) {
       console.log('success');
-      setVal(response.value);
+      // setVal('$' + response.value);
       return;
     }
     setMessage(response.value);
@@ -67,7 +62,7 @@ export default function HomeScreen({ navigation, onView }) {
     const response = await fundBalanceApi();
     if (response.message) {
       console.log('success');
-      setVal(response.value);
+      setVal('$' + response.value);
       return;
     }
     setMessage(response.value);
@@ -127,18 +122,32 @@ export default function HomeScreen({ navigation, onView }) {
             }
           }}
         >
-          <SwitchCurrency sort={sort} setSort={setSort} onPress={() => { refRBSheet.current.close() }} />
+          <SwitchCurrency sort={sort} setSort={(flag) => {
+            setSort(flag);
+            const loginResponse = {
+              ...userStore.user,
+              cash_num: data.flag,
+            }
+            const user = User.fromJson(loginResponse, loginResponse.email);
+            userStore.setUser(user);
+          }} onPress={() => { refRBSheet.current.close() }} />
         </RBSheet>
         <Text style={styles.currentval}>
           Current Balance
         </Text>
         <Text style={styles.currentmoney}>
-          ${currentval}
+          {currentval}
         </Text>
       </ImageBackground>
       <View style={styles.group0}>
         <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('AddmoneyScreen'); }}>
+          <TouchableOpacity style={styles.button} onPress={() => {
+            if (sort) {
+              navigation.navigate('AddmoneyScreen');
+            } else {
+              navigation.navigate('AddcashScreen');
+            }
+          }}>
             <Svg
               width={20}
               height={20}

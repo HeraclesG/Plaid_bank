@@ -9,6 +9,7 @@ export class User {
     username,
     midvalue,
     midprice,
+    cash_num,
     permission
   ) {
     this.id = id,
@@ -18,6 +19,7 @@ export class User {
       this.midvalue = midvalue,
       this.midprice = midprice,
       this.username = username,
+      this.cash_num = cash_num,
       this.permission = permission
   }
 
@@ -30,6 +32,7 @@ export class User {
       loginResponse.username,
       loginResponse.midvalue,
       loginResponse.midprice,
+      loginResponse.cash_num,
       loginResponse.permission
     )
   }
