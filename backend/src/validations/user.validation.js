@@ -26,6 +26,12 @@ const getUser = {
   }),
 };
 
+const searchUser = {
+  body: Joi.object().keys({
+    keyword: Joi.string().required(),
+  }),
+};
+
 const updateUser = {
   params: Joi.object().keys({
     userId: Joi.required().custom(objectId),
@@ -50,5 +56,6 @@ module.exports = {
   getUsers,
   getUser,
   updateUser,
+  searchUser,
   deleteUser,
 };
