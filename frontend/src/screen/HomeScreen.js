@@ -7,9 +7,7 @@ import Svg, { Path } from "react-native-svg";
 import HomeCard from '../components/HomeCard';
 import SwitchCurrency from '../components/SwitchCurrency';
 import DocumentPicker from 'react-native-document-picker';
-import axios from 'axios';
-import { PRIME_TRUST_URL, SERVER_URL } from '@env';
-import { userStore } from '../module/user/UserStore';
+import { fundBalanceApi, getAssetBalanceApi } from '../module/server/home_api';
 
 export default function HomeScreen({ navigation, onView }) {
   const data = [
@@ -25,49 +23,31 @@ export default function HomeScreen({ navigation, onView }) {
   const [currentval, setVal] = useState('');
   useEffect(() => {
     if (sort) {
-      accountCash();
+      fundBalance();
     } else {
       console.log('first');
-      accountUSDCCash();
+      getAssetBalance();
     }
   }, [sort])
-  const accountCash = async () => {
-    console.log(userStore)
-    console.log(`${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`)
-    await axios({
-      method: "GET",
-      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
-      url: `${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`,
-    })
-      .then((response) => {
-        setVal(response.data.data[0].attributes['contingent-hold']);
-        console.log(response);
-      })
-      .catch((err) => {
-        console.log(err?.response?.data?.errors);
-        setMessage(err?.response?.data?.errors[0].detail);
-
-        handleOpenModalPress();
-      });
+  const getAssetBalance = async () => {
+    const response = await getAssetBalanceApi();
+    if (response.message) {
+      console.log('success');
+      setVal(response.value);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
   }
-  const accountUSDCCash = async () => {
-    console.log(userStore)
-    console.log(`${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`)
-    await axios({
-      method: "GET",
-      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
-      url: `${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`,
-    })
-      .then((response) => {
-        setVal(response.data.data[0].attributes['contingent-hold']);
-        console.log(response);
-      })
-      .catch((err) => {
-        console.log(err?.response?.data?.errors);
-        setMessage(err?.response?.data?.errors[0].detail);
-
-        handleOpenModalPress();
-      });
+  const fundBalance = async () => {
+    const response = await fundBalanceApi();
+    if (response.message) {
+      console.log('success');
+      setVal(response.value);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
   }
   const uploadImage = async () => {
     // Check if any file is selected or not
@@ -249,8 +229,30 @@ export default function HomeScreen({ navigation, onView }) {
             Transfer
           </Text>
         </View>
+        <View style={styles.buttonzip}>
+          <TouchableOpacity style={styles.button}>
+            <Svg
+              width={26}
+              height={26}
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <Path
+                d="M17.988 11.969c.66-1.125.945-2.43.813-3.727-.193-1.933-1.272-3.641-3.036-4.81l-1.197 1.805c1.212.804 1.95 1.949 2.077 3.222a4 4 0 0 1-1.16 3.235l-1.292 1.29 1.753.515c4.584 1.344 4.638 5.954 4.638 6.001h2.166c0-1.938-1.035-5.725-4.762-7.531Z"
+                fill="#fff"
+              />
+              <Path
+                d="M10.291 13a4.338 4.338 0 0 0 4.334-4.333 4.338 4.338 0 0 0-4.334-4.334 4.338 4.338 0 0 0-4.333 4.334A4.338 4.338 0 0 0 10.291 13Zm0-6.5c1.195 0 2.167.972 2.167 2.167a2.169 2.169 0 0 1-2.167 2.166 2.169 2.169 0 0 1-2.166-2.166c0-1.195.972-2.167 2.166-2.167Zm1.625 7.583h-3.25a6.507 6.507 0 0 0-6.5 6.5v1.084h2.167v-1.084a4.338 4.338 0 0 1 4.333-4.333h3.25a4.338 4.338 0 0 1 4.334 4.333v1.084h2.166v-1.084c0-3.584-2.915-6.5-6.5-6.5Z"
+                fill="#fff"
+              />
+            </Svg>
+          </TouchableOpacity>
+          <Text style={styles.text}>
+            quikbank
+          </Text>
+        </View>
       </View>
-      <View style={styles.group1}>
+      {/* <View style={styles.group1}>
         <View style={styles.buttonzip}>
           <TouchableOpacity style={styles.button} onPress={() => { onView(2) }} r>
             <Svg
@@ -291,7 +293,7 @@ export default function HomeScreen({ navigation, onView }) {
             quikbank
           </Text>
         </View>
-      </View>
+      </View> */}
       <View style={styles.body}>
         {/* <TouchableOpacity onPress={selectFile}>
           <Text>select</Text>
@@ -407,7 +409,7 @@ const styles = StyleSheet.create({
     fontWeight: theme.fontWeight.normal,
   },
   group0: {
-    paddingHorizontal: '8%',
+    paddingHorizontal: '3%',
     position: 'absolute',
     width: '100%',
     top: 313,
@@ -444,7 +446,7 @@ const styles = StyleSheet.create({
     fontWeight: theme.fontWeight.normal,
   },
   body: {
-    marginTop: 190,
+    marginTop: 80,
     backgroundColor: theme.colors.homebackgroundColor,
   },
   row: {

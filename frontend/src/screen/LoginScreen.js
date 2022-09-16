@@ -19,8 +19,8 @@ export default function LoginScreen({ navigation }) {
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [message, setMessage] = useState('error');
   const [isSelected, setSelection] = useState(false);
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [email, setEmail] = useState({ value: 'aaaa@test.com', error: '' })
+  const [password, setPassword] = useState({ value: 'aaaAAA111222@', error: '' })
   const login = async () => {
     const response = await loginApi(
       {

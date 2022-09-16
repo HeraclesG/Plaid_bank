@@ -8,36 +8,27 @@ import SendCard from '../components/SendCard';
 import axios from 'axios';
 import { userStore } from '../module/user/UserStore';
 import { User } from '../module/user/User';
-
+import { searchUserApi } from '../module/server/home_api';
 export default function SendMoneyScreen({ navigation }) {
   const getEmail = async () => {
     if (searchQuery === '') {
       Alert.alert('Warning', 'Please input query');
       return;
     }
-    await axios({
-      method: "POST",
-      data: {
-        userName: searchQuery,
-      },
-      url: `http://localhost:4000/v1/auth/getUserEmail`,
-    })
-      .then((response) => {
-        console.log('getemail', response);
-        setData([{ id: 1, avatar: "avatar.jpg", name: searchQuery, date: response.data.email, money: "" },]);
-        const loginResponse = {
-          ...userStore.user,
-          midvalue: response.data.accountId,
-        }
-        const user = User.fromJson(loginResponse, loginResponse.email)
-        userStore.setUser(user);
-        // primeLogin(response.data.email, response.data.accountId, response.data.contactId);
-      })
-      .catch((err) => {
-        console.log("error", err);
-        setMessage('login backend error');
-        handleOpenModalPress();
-      });
+    const response = await searchUserApi(
+      { keyword: searchQuery }
+    );
+    if (response.message) {
+      const mid = [];
+      for (let i = 0; i < response.value.length; i++) {
+        if (userStore.user.email != response.value[i].email)
+          mid.push({ id: i + 1, avatar: "avatar.jpg", name: response.value[i].userName, date: response.value[i].email, contactId: response.value[i].accountId, });
+      }
+      setData(mid);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
   }
   // const data = [
   //   { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
@@ -101,7 +92,15 @@ export default function SendMoneyScreen({ navigation }) {
           renderItem={(list) => {
             const item = list.item;
             return (
-              <TouchableOpacity onPress={() => { navigation.navigate('SendMoneystepScreen') }}>
+              <TouchableOpacity onPress={() => {
+                const loginResponse = {
+                  ...userStore.user,
+                  contactId: item.contactId,
+                }
+                const user = User.fromJson(loginResponse, loginResponse.email);
+                userStore.setUser(user);
+                navigation.navigate('SendMoneystepScreen');
+              }}>
                 <SendCard item={item} />
               </TouchableOpacity>
             )

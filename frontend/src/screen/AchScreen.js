@@ -17,9 +17,9 @@ export default function AchScreen({ navigation }) {
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [message, setMessage] = useState('error');
-  const [name, setName] = useState('')
-  const [routing, setRouting] = useState('');
-  const [number, setNumber] = useState('');
+  const [name, setName] = useState('aaaa')
+  const [routing, setRouting] = useState('123456789');
+  const [number, setNumber] = useState('123456789');
   const onTextChanged = (value) => {
     setNumber(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
   };
@@ -34,9 +34,12 @@ export default function AchScreen({ navigation }) {
     }
     const loginResponse = {
       ...userStore.user,
-      midvalue: response.data.accountId,
+      contactId: name,
+      midvalue: routing,
+      authToken: number,
     }
-    const user = User.fromJson(loginResponse, loginResponse.email)
+    const user = User.fromJson(loginResponse, loginResponse.email);
+    userStore.setUser(user);
     navigation.navigate('AddmoneystepScreen');
   }
   return (
