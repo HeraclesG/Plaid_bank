@@ -28,10 +28,12 @@ export const loginApi = async (data) => {
   return await post('v1/auth/login', data).then(
     function (response) {
       console.log(response.data);
+      api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+      // console.log(api.defaults.headers);
       const loginResponse = {
         id: response.data.currentUser.id,
         contactId: '',
-        authToken: '',
+        authToken: response.data.token,
         username: response.data.currentUser.userName,
         midvalue: '',
         midprice: '',

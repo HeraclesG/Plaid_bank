@@ -18,7 +18,7 @@ export default function SendCard({ item }) {
           </View>
         </View>
         <Text style={styles.money}>
-          {item.money}
+          {''}
         </Text>
       </View>
       <View style={styles.underline}></View>

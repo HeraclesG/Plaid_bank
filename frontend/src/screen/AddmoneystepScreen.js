@@ -10,6 +10,7 @@ import { userStore } from '../module/user/UserStore';
 import { User } from '../module/user/User';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Modal from 'react-native-modal';
+import { fundBalanceApi, depositFundApi } from '../module/server/home_api';
 
 export default function AddmoneystepScreen({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -18,97 +19,58 @@ export default function AddmoneystepScreen({ navigation }) {
   const [message, setMessage] = useState('error');
   const [val, setVal] = useState(0);
   const [currentval, setCurrentVal] = useState('');
+  const [midval, setMidValue] = useState('0');
   useEffect(() => {
     setVal('0');
-    accountCash();
+    fundBalance();
   }, [])
-  const accountCash = async () => {
-    console.log(userStore)
-    console.log(`${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`)
-    await axios({
-      method: "GET",
-      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
-      url: `${PRIME_TRUST_URL}v2/account-cash-totals?account.id=${userStore.user.id}`,
-    })
-      .then((response) => {
-        setCurrentVal(response.data.data[0].attributes['contingent-hold']);
-        console.log(response);
-      })
-      .catch((err) => {
-        console.log(err?.response?.data?.errors);
-        setMessage(err?.response?.data?.errors[0].detail);
-
-        handleOpenModalPress();
-      });
+  const fundBalance = async () => {
+    const response = await fundBalanceApi();
+    if (response.message) {
+      console.log('success');
+      setCurrentVal(response.value);
+      setMidValue(response.value)
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
   }
-  const fundsTransfer = async () => {
-    await axios({
-      method: "POST",
-      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
-      data: {
-        "data": {
-          "type": "contributions",
-          "attributes": {
-            "amount": val,
-            "contact-id": userStore.user.contactId,
-            "funds-transfer-method-id": userStore.user.midvalue,
-            "account-id": userStore.user.id,
-          }
-        }
-      },
-      url: `${PRIME_TRUST_URL}v2/contributions?include=funds-transfer`,
-    })
-      .then((response) => {
-        console.log(userStore.user.authToken);
-        const loginResponse = {
-          ...userStore.user,
-          midprice: val,
-        }
-        const user = User.fromJson(loginResponse, loginResponse.email)
-        userStore.setUser(user);
-        Aprove(response.data.included[0].id);
-        navigation.navigate('TransactioncompScreen');
-      })
-      .catch((err) => {
-        console.log(err?.response?.data?.errors);
-        setMessage(err?.response?.data?.errors[0].detail);
-        handleOpenModalPress();
-      });
-  }
-  const Aprove = async (fundId) => {
-    await axios({
-      method: "POST",
-      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
-      url: `${PRIME_TRUST_URL}v2/funds-transfers/${fundId}/sandbox/settle`,
-    })
-      .then((response) => {
-        console.log(response);
-
-      })
-      .catch((err) => {
-        console.log(err?.response?.data?.errors);
-      });
+  const depositFund = async () => {
+    const response = await depositFundApi(
+      {
+        bankAccountName: userStore.user.contactId,
+        bankAccountNumber: userStore.user.authToken,
+        routingNumber: userStore.user.midvalue,
+        amount: val
+      }
+    );
+    if (response.message) {
+      setVal('0');
+      navigation.navigate('TransactioncompScreen');
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
   }
   function addPin(mon) {
     if (val != '0') {
       const mid = val + mon;
       setVal(mid);
-      setCurrentVal(Number(currentval) + Number(mid));
+      setMidValue(Number(currentval) + Number(mid));
     } else {
       const mid = mon;
       setVal(mid);
-      setCurrentVal(Number(currentval) + Number(mid));
+      setMidValue(Number(currentval) + Number(mid));
     }
   }
   function delPin() {
     if (val.length != 1) {
       const mid = val.toString().slice(0, -1);
-      setCurrentVal(Number(currentval) + Number(mid));
+      setMidValue(Number(currentval) + Number(mid));
       setVal(mid);
     } else {
       const mid = '0';
       setVal(mid);
-      setCurrentVal(Number(currentval) + Number(mid));
+      setMidValue(Number(currentval) + Number(mid));
     }
 
   }
@@ -152,7 +114,7 @@ export default function AddmoneystepScreen({ navigation }) {
           ${val}.00
         </Text>
         <Text style={styles.subtitle}>
-          Wallet balance after transaction: ${currentval}
+          Wallet balance after transaction: ${midval}
         </Text>
         <Modal isVisible={isModalVisible} hasBackdrop={true} >
           <View style={styles.modal}>
@@ -174,7 +136,7 @@ export default function AddmoneystepScreen({ navigation }) {
             <Text style={styles.message}>{message}</Text>
           </View>
         </Modal>
-        <Button onPress={() => { fundsTransfer(); }} color={theme.colors.backgroundColor} style={styles.Sign}>
+        <Button onPress={() => { depositFund(); }} color={theme.colors.backgroundColor} style={styles.Sign}>
           <Text style={styles.bttext}>
             Add Money
           </Text>
