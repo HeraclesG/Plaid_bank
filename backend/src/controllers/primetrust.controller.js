@@ -498,7 +498,68 @@ const transferFund = catchAsync(async (req, res) => {
     });
 });
 
+// asset-transfer-methods?account.id=7714d097-b814-40f8-ae64-76281ef27b95
 const depositAsset = catchAsync(async (req, res) => {
+  let assetTransferMethod;
+  await axios({
+    method: "GET",
+    headers: {
+      Authorization: ptToken,
+    },
+    url: `${primeTrustUrl}/v2/asset-transfer-methods?account.id=${req.user.accountId}`,
+  })
+    .then(async (response) => {
+      let methods = [];
+      if (response.data.data.length > 0) {
+        methods = await response.data.data.filter((method) => {
+          return method.attributes.label === "Deposit Address for USDC";
+        });
+      }
+      if (methods.length > 0) {
+        assetTransferMethod = methods[0].id;
+      } else {
+        await axios({
+          method: "POST",
+          headers: {
+            Authorization: ptToken,
+          },
+          data: {
+            data: {
+              type: "asset-transfer-methods",
+              attributes: {
+                label: "Deposit Address for USDC",
+                // "cost-basis": 1,
+                // "acquisition-on": new Date(),
+                // "currency-type": "USD",
+                "asset-id": "15593c9b-f00d-483e-8958-422e42440a76",
+                "contact-id": req.user.contactId,
+                "account-id": req.user.accountId,
+                "transfer-direction": "incoming",
+                "single-use": false,
+                "asset-transfer-type": "ethereum",
+              },
+            },
+          },
+          url: `${primeTrustUrl}/v2/asset-transfer-methods`,
+        })
+          .then(async (response) => {
+            assetTransferMethod = response.data.data.id;
+          })
+          .catch((err) => {
+            console.log("error", err?.response?.data);
+            res
+              .status(400)
+              .send({ message: err.response?.data?.errors[0]?.detail });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  console.log("sssssssssss", assetTransferMethod);
+  res.send({ address: assetTransferMethod });
+  // ---------------------------------------------- remove this in real production ----------------------------------------------------- //
   await axios({
     method: "POST",
     headers: {
@@ -506,62 +567,32 @@ const depositAsset = catchAsync(async (req, res) => {
     },
     data: {
       data: {
-        type: "asset-transfer-methods",
+        type: "asset-contributions",
         attributes: {
-          label: "Deposit Address for USDC",
-          // "cost-basis": 1,
-          // "acquisition-on": new Date(),
-          // "currency-type": "USD",
+          "unit-count": 10000,
           "asset-id": "15593c9b-f00d-483e-8958-422e42440a76",
-          "contact-id": req.user.contactId,
           "account-id": req.user.accountId,
-          "transfer-direction": "incoming",
-          "single-use": false,
-          "asset-transfer-type": "ethereum",
+          "contact-id": req.user.contactId,
+          "asset-transfer-method-id": assetTransferMethod,
+          // "acquisition-on" : new Date(),
+          // "cost-basis" : 1,
+          // "currency-type" : "USD"
         },
       },
     },
-    url: `${primeTrustUrl}/v2/asset-transfer-methods`,
+    url: `${primeTrustUrl}/v2/asset-contributions?include=asset-transfer-method,asset-transfer`,
   })
-    .then(async (response) => {
-      res.send(response.data);
-      // ---------------------------------------------- remove this in real production ----------------------------------------------------- //
+    .then(async (resp1) => {
       await axios({
         method: "POST",
         headers: {
           Authorization: ptToken,
         },
-        data: {
-          data: {
-            type: "asset-contributions",
-            attributes: {
-              "unit-count": 10000,
-              "asset-id": "15593c9b-f00d-483e-8958-422e42440a76",
-              "account-id": req.user.accountId,
-              "contact-id": req.user.contactId,
-              "asset-transfer-method-id": response.data.data.id,
-              // "acquisition-on" : new Date(),
-              // "cost-basis" : 1,
-              // "currency-type" : "USD"
-            },
-          },
-        },
-        url: `${primeTrustUrl}/v2/asset-contributions?include=asset-transfer-method,asset-transfer`,
+        url: `${primeTrustUrl}/v2/asset-transfers/${resp1.data.included[1].id}/sandbox/settle`,
       })
-        .then(async (resp1) => {
-          await axios({
-            method: "POST",
-            headers: {
-              Authorization: ptToken,
-            },
-            url: `${primeTrustUrl}/v2/asset-transfers/${resp1.data.included[1].id}/sandbox/settle`,
-          })
-            .then(async (resp2) => {
-              console.log(resp2.data);
-            })
-            .catch((err) => {
-              console.log("error", err?.response?.data);
-            });
+        .then(async (resp2) => {
+          // console.log(resp2.data);
+          console.log("resp2.data");
         })
         .catch((err) => {
           console.log("error", err?.response?.data);
@@ -569,7 +600,6 @@ const depositAsset = catchAsync(async (req, res) => {
     })
     .catch((err) => {
       console.log("error", err?.response?.data);
-      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
     });
 });
 
