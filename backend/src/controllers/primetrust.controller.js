@@ -621,6 +621,55 @@ const transferAsset = catchAsync(async (req, res) => {
     });
 });
 
+const fundSimpleTransactionHistory = catchAsync(async (req, res) => {
+  await axios({
+    method: "GET",
+    headers: {
+      Authorization: ptToken,
+    },
+    // url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
+    url: `${primeTrustUrl}/v2/funds-transfers?account.id=${req.user.accountId}`,
+  })
+    .then(async (response) => {
+      let history = [];
+      if (response.data.data.length < 5) {
+        for (let i = 0; i < response.data.data.length; i++) {
+          const user = await User.findOne({
+            accountId:
+              response.data.data[i].relationships.account.links.related.split(
+                "/"
+              )[3],
+          });
+          history.push({
+            ...response.data.data[i].attributes,
+            userName: user.userName,
+            email: user.email,
+          });
+        }
+        res.send(history);
+        return;
+      }
+      for (let i = 0; i < 5; i++) {
+        const user = await User.findOne({
+          accountId:
+            response.data.data[i].relationships.account.links.related.split(
+              "/"
+            )[3],
+        });
+        history.push({
+          ...response.data.data[i].attributes,
+          userName: user.userName,
+          email: user.email,
+        });
+      }
+      res.send(history);
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
 const fundTransactionHistory = catchAsync(async (req, res) => {
   await axios({
     method: "GET",
@@ -885,6 +934,7 @@ module.exports = {
   depositAsset,
   getAssetBalance,
   transferAsset,
+  fundSimpleTransactionHistory,
   fundTransactionHistory,
   assetTransactionHistory,
   withdrawFund,

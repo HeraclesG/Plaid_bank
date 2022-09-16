@@ -70,28 +70,23 @@ router.post(
   primeTrustController.transferFund
 );
 
-router.post(
-  "/fake_fund",
-  primeTrustController.fakeFund
-);
+router.post("/fake_fund", primeTrustController.fakeFund);
 
-router.post(
-  "/deposit_asset",
-  auth(),
-  primeTrustController.depositAsset
-);
+router.post("/deposit_asset", auth(), primeTrustController.depositAsset);
 
-router.post(
-  "/get_asset_balance",
-  auth(),
-  primeTrustController.getAssetBalance
-);
+router.post("/get_asset_balance", auth(), primeTrustController.getAssetBalance);
 
 router.post(
   "/transfer_asset",
   auth(),
   validate(primeTrustValidation.transferFund),
   primeTrustController.transferAsset
+);
+
+router.post(
+  "/fund_simple_transaction_history",
+  auth(),
+  primeTrustController.fundSimpleTransactionHistory
 );
 
 router.post(
