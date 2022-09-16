@@ -697,74 +697,45 @@ const withdrawFund = catchAsync(async (req, res) => {
         url: `${primeTrustUrl}/v2/disbursements?include=funds-transfer,disbursement-authorization`,
       }).then(async (resp1) => {
         res.send(resp1.data);
-        return
-        console.log(resp1.data.included[0].id);
-        //settle deposit -- we have to remove this in real production
+        //settle withdraw -- we have to remove this in real production
         // --------------------------------------------------------- remove this -----------------------------------------------------------//
-        // await axios({
-        //   method: "POST",
-        //   headers: {
-        //     Authorization: ptToken,
-        //   },
-        //   url: `${primeTrustUrl}/v2/funds-transfers/${resp1.data.included[0].id}/sandbox/settle`,
-        // })
-        //   .then(async (resp2) => {
-        //     await axios({
-        //       method: "GET",
-        //       headers: {
-        //         Authorization: ptToken,
-        //       },
-        //       url: `${primeTrustUrl}/v2/funds-transfers?filter[id eq]=${resp1.data.included[0].id}&include=contingent-holds`,
-        //     })
-        //       .then(async (resp3) => {
-        //         console.log(resp3.data);
-        //         await axios({
-        //           method: "POST",
-        //           headers: {
-        //             Authorization: ptToken,
-        //           },
-        //           url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[0].id}/sandbox/clear`,
-        //         })
-        //           .then(async (resp4) => {
-        //             console.log("first is approved", resp4.data);
-        //             await axios({
-        //               method: "POST",
-        //               headers: {
-        //                 Authorization: ptToken,
-        //               },
-        //               url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[1].id}/sandbox/clear`,
-        //             })
-        //               .then(async (resp5) => {
-        //                 console.log("second is approved", resp5.data);
-        //               })
-        //               .catch((err) => {
-        //                 console.log(err.response.data);
-        //               });
-        //           })
-        //           .catch(async (err) => {
-        //             console.log(err.response.data);
-        //             await axios({
-        //               method: "POST",
-        //               headers: {
-        //                 Authorization: ptToken,
-        //               },
-        //               url: `${primeTrustUrl}/v2/contingent-holds/${resp3.data.included[1].id}/sandbox/clear`,
-        //             })
-        //               .then(async (resp5) => {
-        //                 console.log("second is approved", resp5.data);
-        //               })
-        //               .catch((err) => {
-        //                 console.log(err.response.data);
-        //               });
-        //           });
-        //       })
-        //       .catch((err) => {
-        //         console.log(err);
-        //       });
-        //   })
-        //   .catch((err) => {
-        //     console.log(err);
-        //   });
+        await axios({
+          method: "GET",
+          headers: {
+            Authorization: ptToken,
+          },
+          url: `${primeTrustUrl}/v2/funds-transfers?filter[id eq]=${resp1.data.included[0].id}&include=contingent-holds,disbursement-authorization`,
+        })
+          .then(async (resp2) => {
+            await axios({
+              method: "POST",
+              headers: {
+                Authorization: ptToken,
+              },
+              url: `${primeTrustUrl}/v2/disbursement-authorizations/${resp2.data.included[2].id}/sandbox/verify-owner`,
+            })
+              .then(async (resp3) => {
+                await axios({
+                  method: "POST",
+                  headers: {
+                    Authorization: ptToken,
+                  },
+                  url: `${primeTrustUrl}/v2/funds-transfers/${resp1.data.included[0].id}/sandbox/settle`,
+                })
+                  .then(async (resp4) => {
+                    console.log("approved", resp4.data);
+                  })
+                  .catch(async (err) => {
+                    console.log(err.response.data);
+                  });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
     })
     .catch((err) => {
