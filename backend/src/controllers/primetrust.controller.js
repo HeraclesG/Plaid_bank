@@ -501,6 +501,7 @@ const transferFund = catchAsync(async (req, res) => {
 // asset-transfer-methods?account.id=7714d097-b814-40f8-ae64-76281ef27b95
 const depositAsset = catchAsync(async (req, res) => {
   let assetTransferMethod;
+  let address = "";
   await axios({
     method: "GET",
     headers: {
@@ -517,6 +518,7 @@ const depositAsset = catchAsync(async (req, res) => {
       }
       if (methods.length > 0) {
         assetTransferMethod = methods[0].id;
+        address = methods[0].attributes['wallet-address'];
       } else {
         await axios({
           method: "POST",
@@ -544,6 +546,7 @@ const depositAsset = catchAsync(async (req, res) => {
         })
           .then(async (response) => {
             assetTransferMethod = response.data.data.id;
+            address = response.data.data.attributes['wallet-address'];
           })
           .catch((err) => {
             console.log("error", err?.response?.data);
@@ -558,7 +561,7 @@ const depositAsset = catchAsync(async (req, res) => {
     });
 
   console.log("sssssssssss", assetTransferMethod);
-  res.send({ address: assetTransferMethod });
+  res.send({ address: address });
   // ---------------------------------------------- remove this in real production ----------------------------------------------------- //
   await axios({
     method: "POST",
@@ -672,9 +675,8 @@ const fundSimpleTransactionHistory = catchAsync(async (req, res) => {
                 headers: {
                   Authorization: ptToken,
                 },
-                url: `${primeTrustUrl}/v2/accounts?filter[number]=${
-                  i.attributes["comments-1"].split(" ")[2]
-                }`,
+                url: `${primeTrustUrl}/v2/accounts?filter[number]=${i.attributes["comments-1"].split(" ")[2]
+                  }`,
               });
               return {
                 ...i.attributes,
@@ -702,9 +704,8 @@ const fundSimpleTransactionHistory = catchAsync(async (req, res) => {
               headers: {
                 Authorization: ptToken,
               },
-              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
-                i.attributes["comments-1"].split(" ")[2]
-              }`,
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${i.attributes["comments-1"].split(" ")[2]
+                }`,
             });
             return {
               ...i.attributes,
@@ -746,9 +747,8 @@ const fundTransactionHistory = catchAsync(async (req, res) => {
               headers: {
                 Authorization: ptToken,
               },
-              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
-                i.attributes["comments-1"].split(" ")[2]
-              }`,
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${i.attributes["comments-1"].split(" ")[2]
+                }`,
             });
             return {
               ...i.attributes,
