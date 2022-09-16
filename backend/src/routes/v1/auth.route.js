@@ -9,6 +9,7 @@ const router = express.Router();
 router.post('/register', validate(authValidation.register), authController.register);
 router.post('/login', validate(authValidation.login), authController.login);
 router.post('/getUserEmail', validate(authValidation.getUser), authController.getUserEmail);
+router.get('/unverifiedUser', authController.unverifiedUser);
 
 module.exports = router;
 

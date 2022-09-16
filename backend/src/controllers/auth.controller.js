@@ -99,6 +99,11 @@ const getUserEmail = catchAsync(async (req, res) => {
   });
 });
 
+const unverifiedUser = catchAsync(async (req, res) => {
+  const user = await User.find({ isVerified: false }).select(["accountId"]);
+  res.send(user);
+});
+
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const currentUser = await User.findOne({ email });
@@ -144,4 +149,5 @@ module.exports = {
   register,
   login,
   getUserEmail,
+  unverifiedUser,
 };
