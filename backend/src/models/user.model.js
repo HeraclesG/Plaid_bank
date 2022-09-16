@@ -20,6 +20,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     email: {
       type: String,
@@ -83,11 +84,11 @@ const userSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    accountId:{
+    accountId: {
       type: String,
       trim: true,
     },
-    contactId:{
+    contactId: {
       type: String,
       trim: true,
     },
@@ -143,6 +144,11 @@ userSchema.plugin(paginate);
  */
 userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+  return !!user;
+};
+
+userSchema.statics.isUserNameTaken = async function (userName, excludeUserId) {
+  const user = await this.findOne({ userName, _id: { $ne: excludeUserId } });
   return !!user;
 };
 

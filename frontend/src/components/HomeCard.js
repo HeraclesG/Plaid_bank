@@ -18,7 +18,10 @@ export default function HomeCard({ item }) {
           </View>
         </View>
         <Text style={styles.money}>
-          ${item.money}
+          {item.type === "internal" ? item.money > 0 ? "Received" : "Sent" : item.money > 0 ? "Deposit" : "Withdraw"}
+        </Text>
+        <Text style={styles.money}>
+          ${Math.abs(item.money)}
         </Text>
       </View>
       <View style={styles.underline}></View>

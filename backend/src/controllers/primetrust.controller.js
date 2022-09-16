@@ -627,8 +627,8 @@ const fundSimpleTransactionHistory = catchAsync(async (req, res) => {
     headers: {
       Authorization: ptToken,
     },
-    // url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
-    url: `${primeTrustUrl}/v2/funds-transfers?account.id=${req.user.accountId}`,
+    url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
+    // url: `${primeTrustUrl}/v2/funds-transfers?account.id=${req.user.accountId}`,
   })
     .then(async (response) => {
       let history = [];
@@ -677,7 +677,7 @@ const fundTransactionHistory = catchAsync(async (req, res) => {
       Authorization: ptToken,
     },
     // url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
-    url: `${primeTrustUrl}/v2/funds-transfers?account.id=${req.user.accountId}`,
+    url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
   })
     .then(async (response) => {
       let history = [];

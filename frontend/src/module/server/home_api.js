@@ -90,3 +90,37 @@ export const getAssetBalanceApi = async () => {
       };
     });
 }
+export const fundSHistoryApi = async () => {
+  return await post('v1/primetrust/fund_simple_transaction_history', {}).then(
+    function (response) {
+      console.log(response.data);
+      return {
+        value: response.data,
+        message: true
+      };
+    })
+    .catch(function (error) {
+      console.log(error);
+      return {
+        value: error.response.data.message,
+        message: false
+      };
+    });
+}
+export const fundHistoryApi = async () => {
+  return await post('v1/primetrust/fund_transaction_history', {}).then(
+    function (response) {
+      console.log(response.data);
+      return {
+        value: response.data,
+        message: true
+      };
+    })
+    .catch(function (error) {
+      console.log(error);
+      return {
+        value: error.response.data.message,
+        message: false
+      };
+    });
+}

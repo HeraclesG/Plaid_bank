@@ -1,20 +1,46 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Image, Text, TouchableOpacity, FlatList, View } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import HomeCard from '../components/HomeCard';
+import { fundHistoryApi } from '../module/server/home_api';
 
 export default function TransactionhistoryScreen({ navigation, onView }) {
-  const data = [
-    { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
-    { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
-    { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
-    { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
-  ];
+  // const data = [
+  //   { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
+  //   { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
+  //   { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
+  //   { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
+  // ];
+  useEffect(() => {
+    fundHistory();
+  }, [])
+  const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
+  const fundHistory = async () => {
+    const response = await fundHistoryApi();
+    if (response.message) {
+      const mid = [];
+      for (let i = 0; i < response.value.length; i++) {
+        mid.push({
+          id: i + 1,
+          avatar: "avatar.jpg",
+          name: response.value[i].userName,
+          type: response.value[i]['funds-transfer-type'],
+          date: response.value[i]['settled-on'],
+          money: response.value[i].amount,
+        });
+      }
+      console.log(mid);
+      setData(mid);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
+  }
   return (
     <View style={styles.container}>
       <View>

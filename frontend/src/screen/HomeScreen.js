@@ -7,15 +7,17 @@ import Svg, { Path } from "react-native-svg";
 import HomeCard from '../components/HomeCard';
 import SwitchCurrency from '../components/SwitchCurrency';
 import DocumentPicker from 'react-native-document-picker';
-import { fundBalanceApi, getAssetBalanceApi } from '../module/server/home_api';
+import { fundBalanceApi, fundSHistoryApi, getAssetBalanceApi } from '../module/server/home_api';
+import { userStore } from '../module/user/UserStore';
 
 export default function HomeScreen({ navigation, onView }) {
-  const data = [
-    { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
-    { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
-    { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
-    { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
-  ];
+  // const data = [
+  //   { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
+  //   { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
+  //   { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
+  //   { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
+  // ];
+  const [data, setData] = useState([]);
   const refRBSheet = useRef();
   const [sort, setSort] = useState(true);
   const [singleFile, setSingleFile] = useState(null);
@@ -24,6 +26,7 @@ export default function HomeScreen({ navigation, onView }) {
   useEffect(() => {
     if (sort) {
       fundBalance();
+      fundSHistory();
     } else {
       console.log('first');
       getAssetBalance();
@@ -39,6 +42,27 @@ export default function HomeScreen({ navigation, onView }) {
     setMessage(response.value);
     handleOpenModalPress();
   }
+  const fundSHistory = async () => {
+    const response = await fundSHistoryApi();
+    if (response.message) {
+      const mid = [];
+      for (let i = 0; i < response.value.length; i++) {
+        mid.push({
+          id: i + 1,
+          avatar: "avatar.jpg",
+          name: response.value[i].userName,
+          type: response.value[i]['funds-transfer-type'],
+          date: response.value[i]['settled-on'],
+          money: response.value[i].amount,
+        });
+      }
+      console.log(mid);
+      setData(mid);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
+  }
   const fundBalance = async () => {
     const response = await fundBalanceApi();
     if (response.message) {
@@ -49,68 +73,6 @@ export default function HomeScreen({ navigation, onView }) {
     setMessage(response.value);
     handleOpenModalPress();
   }
-  const uploadImage = async () => {
-    // Check if any file is selected or not
-    if (singleFile != null) {
-      // If file selected then create FormData
-      const fs = require
-      const fileToUpload = singleFile;
-      const data = new FormData();
-      console.log(fileToUpload);
-      data.append('file', fileToUpload[0]);
-      console.log(data);
-      // Please change file upload URL
-      await fetch(
-        'https://sandbox.primetrust.com/v2/uploaded-documents',
-        {
-          method: 'post',
-          body: data,
-          headers: {
-            // 'Accept': 'application/json',
-            Authorization: "Bearer " + 'eyJhbGciOiJIUzI1NiJ9.eyJhdXRoX3NlY3JldCI6Ijc4ZGFmZTI5LTcyMmMtNGQwNC05ODdiLTFhNmEzZTIzNTQzMiIsInVzZXJfZ3JvdXBzIjpbXSwibm93IjoxNjYyMjY3Nzg5LCJleHAiOjE2NjI4NzI1ODl9.bYnwsMEXKAbVqO8UIpkr_UZyG5kit1vN3hceNIV1kMo',
-            'Content-Type': 'multipart/form-data; ',
-          },
-        }
-      ).then(res => res.json()).then((data) => { console.log(data) }).catch(err => console.log('error', err));
-      // let responseJson = await res.json();
-      // if (responseJson.status == 1) {
-      //   setMessage('Upload Successful');
-      // }
-    } else {
-      // If no file selected the show setMessage
-      setMessage('Please Select File first');
-    }
-  };
-  const selectFile = async () => {
-    // Opening Document Picker to select one file
-    try {
-      const res = await DocumentPicker.pick({
-        // Provide which type of file you want user to pick
-        type: [DocumentPicker.types.allFiles],
-        // There can me more options as well
-        // DocumentPicker.types.allFiles
-        // DocumentPicker.types.images
-        // DocumentPicker.types.plainText
-        // DocumentPicker.types.audio
-        // DocumentPicker.types.pdf
-      });
-      // Printing the log realted to the file
-      setMessage('res : ' + JSON.stringify(res));
-      // Setting the state to show single file attributes
-      setSingleFile(res);
-    } catch (err) {
-      setSingleFile(null);
-      // Handling any exception (If any)
-      if (DocumentPicker.isCancel(err)) {
-        // If user canceled the document selection
-        setMessage('Canceled');
-      } else {
-        // For Unknown Error
-        setMessage('Unknown Error: ' + JSON.stringify(err));
-        throw err;
-      }
-    }
-  };
   return (
     <ScrollView style={styles.container}>
       <ImageBackground source={require('../assets/background.png')} resizeMode="stretch" style={styles.header}>
@@ -118,7 +80,7 @@ export default function HomeScreen({ navigation, onView }) {
           <View style={styles.avatargroup}>
             <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
             <View style={styles.textgroup}>
-              <Text style={styles.name}>Hello John</Text>
+              <Text style={styles.name}>Hello {userStore.user.username}</Text>
               <Text style={styles.welcome}>Welcome Back</Text>
             </View>
           </View>

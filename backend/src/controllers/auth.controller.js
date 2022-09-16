@@ -14,6 +14,10 @@ const register = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
   }
 
+  if (await User.isUserNameTaken(req.body.userName)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Username already taken");
+  }
+
   const data = {
     type: "account",
     attributes: {
