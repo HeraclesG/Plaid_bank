@@ -7,6 +7,7 @@ const catchAsync = require("../utils/catchAsync");
 const { User } = require("../models");
 const config = require("../config/config");
 const { deserializeUser } = require("passport");
+const { collection } = require("../models/pay.method.model");
 
 const { ptToken } = config.jwt;
 const primeTrustUrl = config.primeTrust.url;
@@ -626,11 +627,25 @@ const fundTransactionHistory = catchAsync(async (req, res) => {
     headers: {
       Authorization: ptToken,
     },
-    url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
+    // url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
+    url: `${primeTrustUrl}/v2/funds-transfers?account.id=${req.user.accountId}`,
   })
-    .then((response) => {
-      console.log(response.data);
-      res.send(response.data);
+    .then(async (response) => {
+      let history = [];
+      for (let i = 0; i < response.data.data.length; i++) {
+        const user = await User.findOne({
+          accountId:
+            response.data.data[i].relationships.account.links.related.split(
+              "/"
+            )[3],
+        });
+        history.push({
+          ...response.data.data[i].attributes,
+          userName: user.userName,
+          email: user.email,
+        });
+      }
+      res.send(history);
     })
     .catch((err) => {
       console.log("error", err?.response?.data?.errors[0]);
@@ -644,11 +659,24 @@ const assetTransactionHistory = catchAsync(async (req, res) => {
     headers: {
       Authorization: ptToken,
     },
-    url: `${primeTrustUrl}/v2/asset-transactions?account.id=${req.user.accountId}`,
+    url: `${primeTrustUrl}/v2/asset-transfers?account.id=${req.user.accountId}`,
   })
-    .then((response) => {
-      console.log(response.data);
-      res.send(response.data);
+    .then(async (response) => {
+      let history = [];
+      for (let i = 0; i < response.data.data.length; i++) {
+        const user = await User.findOne({
+          accountId:
+            response.data.data[i].relationships.account.links.related.split(
+              "/"
+            )[3],
+        });
+        history.push({
+          ...response.data.data[i].attributes,
+          userName: user.userName,
+          email: user.email,
+        });
+      }
+      res.send(response.data.data);
     })
     .catch((err) => {
       console.log("error", err?.response?.data?.errors[0]);
