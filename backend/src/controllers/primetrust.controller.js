@@ -633,36 +633,63 @@ const fundSimpleTransactionHistory = catchAsync(async (req, res) => {
     .then(async (response) => {
       let history = [];
       if (response.data.data.length < 5) {
-        for (let i = 0; i < response.data.data.length; i++) {
-          const user = await User.findOne({
-            accountId:
-              response.data.data[i].relationships.account.links.related.split(
-                "/"
-              )[3],
-          });
-          history.push({
-            ...response.data.data[i].attributes,
-            userName: user.userName,
-            email: user.email,
-          });
-        }
-        res.send(history);
+        const res_data = await Promise.all(
+          response.data.data.map(async (i) => {
+            let actorAccount;
+            if (i.attributes["comments-1"].split(" ")[0] === "Transfer") {
+              actorAccount = await axios({
+                method: "GET",
+                headers: {
+                  Authorization: ptToken,
+                },
+                url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                  i.attributes["comments-1"].split(" ")[2]
+                }`,
+              });
+              return {
+                ...i.attributes,
+                userName: actorAccount.data.data[0].attributes.name,
+              };
+            } else {
+              return {
+                ...i.attributes,
+                userName: "Self",
+              };
+            }
+          })
+        );
+        console.log(res_data);
+        res.send(res_data);
         return;
       }
-      for (let i = 0; i < 5; i++) {
-        const user = await User.findOne({
-          accountId:
-            response.data.data[i].relationships.account.links.related.split(
-              "/"
-            )[3],
-        });
-        history.push({
-          ...response.data.data[i].attributes,
-          userName: user.userName,
-          email: user.email,
-        });
-      }
-      res.send(history);
+      const skippedData = response.data.data.slice(0, 5);
+      const res_data = await Promise.all(
+        skippedData.map(async (i) => {
+          let actorAccount;
+          if (i.attributes["comments-1"].split(" ")[0] === "Transfer") {
+            actorAccount = await axios({
+              method: "GET",
+              headers: {
+                Authorization: ptToken,
+              },
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                i.attributes["comments-1"].split(" ")[2]
+              }`,
+            });
+            return {
+              ...i.attributes,
+              userName: actorAccount.data.data[0].attributes.name,
+            };
+          } else {
+            return {
+              ...i.attributes,
+              userName: "Self",
+            };
+          }
+        })
+      );
+      console.log(res_data);
+      res.send(res_data);
     })
     .catch((err) => {
       console.log("error", err?.response?.data?.errors[0]);
@@ -680,24 +707,36 @@ const fundTransactionHistory = catchAsync(async (req, res) => {
     url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
   })
     .then(async (response) => {
-      let history = [];
-      for (let i = 0; i < response.data.data.length; i++) {
-        const user = await User.findOne({
-          accountId:
-            response.data.data[i].relationships.account.links.related.split(
-              "/"
-            )[3],
-        });
-        history.push({
-          ...response.data.data[i].attributes,
-          userName: user.userName,
-          email: user.email,
-        });
-      }
-      res.send(history);
+      const res_data = await Promise.all(
+        response.data.data.map(async (i) => {
+          let actorAccount;
+          if (i.attributes["comments-1"].split(" ")[0] === "Transfer") {
+            actorAccount = await axios({
+              method: "GET",
+              headers: {
+                Authorization: ptToken,
+              },
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                i.attributes["comments-1"].split(" ")[2]
+              }`,
+            });
+            return {
+              ...i.attributes,
+              userName: actorAccount.data.data[0].attributes.name,
+            };
+          } else {
+            return {
+              ...i.attributes,
+              userName: "Self",
+            };
+          }
+        })
+      );
+      console.log(res_data);
+      res.send(res_data);
     })
     .catch((err) => {
-      console.log("error", err?.response?.data?.errors[0]);
+      console.log("error", err);
       res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
     });
 });
