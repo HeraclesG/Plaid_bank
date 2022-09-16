@@ -25,7 +25,7 @@ export default function SignupScreen({ navigation }) {
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [message, setMessage] = useState('error');
-  const [email, setEmail] = useState({ value: 'aresdood@areses.anonaddy.me', error: '' })
+  const [email, setEmail] = useState({ value: 'aaa@test.com', error: '' })
   const [conpassword, setConPassword] = useState({ value: 'aaaAAA111222@', error: '' })
   const [username, setUsername] = useState('Ares');
   const [password, setPassword] = useState('aaaAAA111222@');
@@ -107,6 +107,7 @@ export default function SignupScreen({ navigation }) {
     );
     if (response === 'success') {
       navigation.navigate('FileuploadScreen');
+      return;
     }
     setMessage(response);
     handleOpenModalPress();

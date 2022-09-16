@@ -7,10 +7,11 @@ import TextInput from '../components/TextInput';
 import CheckBox from 'react-native-check-box';
 import { User } from '../module/user/User';
 import axios from 'axios';
-import { api,get } from '../module/server/api';
+import { api, get } from '../module/server/api';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Svg, { Path, Circle } from "react-native-svg"
 import Modal from 'react-native-modal';
+import { loginApi } from '../module/server/auth_api';
 
 export default function LoginScreen({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -21,60 +22,20 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
   const login = async () => {
-    if (email === '') {
-      Alert.alert('Warning', 'Please input Login');
-      return;
-    }
-    if (password === '') {
-      Alert.alert('Warning', 'Please input password');
-      return;
-    }
-    await get('v1/auth/getUserEmail')
-    await axios({
-      method: "POST",
-      data: {
-        userName: email.value,
-      },
-      url: `http://localhost:4000/v1/auth/getUserEmail`,
-    })
-      .then((response) => {
-        console.log('backgetemail', response);
-        primeLogin(response.data.email, response.data.accountId, response.data.contactId);
-      })
-      .catch((err) => {
-        console.log("error", err);
-        setMessage('login backend error');
-        handleOpenModalPress();
-      });
-  }
-  const primeLogin = async (email1, id, contactId) => {
-    await axios(
-      // `${PRIME_TRUST_URL}auth/jwts?email=${email.value}&password=${password}`,
+    const response = await loginApi(
       {
-        url: `${PRIME_TRUST_URL}auth/jwts?email=${email1}&password=${password.value}`,
-        method: 'post',
-        headers: {
-          'content-type': 'application/json',
-        },
+        email: email.value,
+        password: password.value,
       }
-    ).then((data) => {
-      const loginResponse = {
-        id: id,
-        contactId: contactId,
-        authToken: data.data.token,
-        username: email.value,
-        midvalue: '',
-        midprice: '',
-        permission: 1,
-      };
-      const user = User.fromJson(loginResponse, email1);
-      userStore.setUser(user);
-    }).catch(err => {
-      console.log(err)
-      setMessage('not authenticated');
-      handleOpenModalPress();
-    });
-  }
+    );
+    if (response === 'success') {
+      console.log('success');
+      // navigation.navigate('FileuploadScreen');
+      return;
+    }
+    setMessage(response);
+    handleOpenModalPress();
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -87,9 +48,9 @@ export default function LoginScreen({ navigation }) {
       </View>
       <View style={styles.body}>
         <View style={styles.inputgroup}>
-          <Text style={styles.label}>Username</Text>
+          <Text style={styles.label}>Email</Text>
           <TextInput
-            placeholder="Enter your username, email, or phone number"
+            placeholder="Enter your email"
             returnKeyType="next"
             value={email.value}
             onChangeText={(text) => setEmail({ value: text, error: '' })}

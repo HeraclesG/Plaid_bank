@@ -47,9 +47,11 @@ export default function FileuploadScreen({ navigation }) {
         type: [DocumentPicker.types.allFiles],
       });
       // setMessage('res : ' + JSON.stringify(res));
+      console.log("first")
       setFront(res);
       setSelected(['selected', selected[1]]);
     } catch (err) {
+      console.log("sssss")
       setFront(null);
       if (DocumentPicker.isCancel(err)) {
         // setMessage('Canceled');
@@ -59,13 +61,14 @@ export default function FileuploadScreen({ navigation }) {
         throw err;
       }
     }
+    console.log("firstrr")
   };
   const selectBack = async () => {
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
       });
-      setMessage('res : ' + JSON.stringify(res));
+      // setMessage('res : ' + JSON.stringify(res));
       setSelected([selected[0], 'selected']);
       setBack(res);
     } catch (err) {
@@ -80,6 +83,7 @@ export default function FileuploadScreen({ navigation }) {
     }
   };
   const validate = () => {
+    setSuccess(false);
     if (selected[0] === '') {
       setMessage('Please Select File first');
       handleOpenModalPress();
@@ -91,34 +95,40 @@ export default function FileuploadScreen({ navigation }) {
         handleOpenModalPress();
         return;
       }
-      if (uploadImage(front, 'Front')) {
-        if (uploadImage(back, 'Back')) {
+      if (uploadImage(front[0], 'Front')) {
+        console.log('first');
+        if (uploadImage(back[0], 'Back')) {
+          console.log('last');
           setMessage('Please wait until verify');
           setSuccess(true);
           handleOpenModalPress();
+          return;
         }
-        return;
+        handleOpenModalPress();
       }
       return;
     }
-    if (uploadImage(front, '')) {
+    if (uploadImage(front[0], '')) {
       setMessage('Please wait until verify');
       setSuccess(true);
       handleOpenModalPress();
+      return;
     }
+    handleOpenModalPress();
     return;
   }
   const uploadImage = async (file, name) => {
-    const response = uploadImageApi(
-      {
-        kycdoc: file,
-        type: region + name,
-        userId: userStore.user.id
-      }
+    const data = new FormData();
+    data.append('kycdoc', file);
+    data.append('type', region + name);
+    data.append('userId', userStore.user.id);
+    const response = await uploadImageApi(
+      data
     );
     if (response === 'success') {
       return true;
     }
+    setSuccess(false);
     setMessage(response);
     handleOpenModalPress();
     return false;
@@ -202,6 +212,7 @@ export default function FileuploadScreen({ navigation }) {
         <View style={styles.modal}>
           <TouchableOpacity onPress={() => {
             if (success) {
+              handleCloseModalPress()
               navigation.navigate('DashboardScreen');
             } else {
               handleCloseModalPress()
@@ -222,7 +233,7 @@ export default function FileuploadScreen({ navigation }) {
           <Text style={styles.message}>{message}</Text>
         </View>
       </Modal>
-      <Button onPress={() => { uploadImage(); }} color={theme.colors.backgroundColor} style={styles.mannual}>
+      <Button onPress={() => { validate(); }} color={theme.colors.backgroundColor} style={styles.mannual}>
         <Text style={styles.bttext}>
           Upload
         </Text>

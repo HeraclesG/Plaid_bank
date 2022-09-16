@@ -26,6 +26,7 @@ export class LocalStorage {
         userParsed.authToken,
         userParsed.username,
         userParsed.midvalue,
+        userParsed.midprice,
         userParsed.permission
       )
     })

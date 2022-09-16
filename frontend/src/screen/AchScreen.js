@@ -27,83 +27,18 @@ export default function AchScreen({ navigation }) {
     setRouting(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
   };
   const fundsTransfer = async () => {
-    // if (name === '') {
-    //   setMessage('please enter bank-account-name');
-    //   handleOpenModalPress();
-    //   return;
-    // }
-    // if (routing === '') {
-    //   setMessage('please enter routing-number');
-    //   handleOpenModalPress();
-    //   return;
-    // }
-    // if (number === '') {
-    //   setMessage('please enter bank-account-number');
-    //   handleOpenModalPress();
-    //   return;
-    // }
-    console.log(userStore.user.contactId);
-    await axios({
-      method: "POST",
-      headers: { Authorization: `Bearer ${userStore.user.authToken}` },
-      data: {
-        data: {
-          type: "funds-transfer-methods",
-          attributes: {
-            "contact-id": userStore.user.contactId,
-            "bank-account-name": "John James Doe",
-            "routing-number": "123456789",
-            // "ip-address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
-            "bank-account-type": "checking",
-            "bank-account-number": "1234567890",
-            "ach-check-type": "personal",
-            "funds-transfer-type": "ach"
-          }
-        },
-      },
-      url: `${PRIME_TRUST_URL}v2/funds-transfer-methods`,
-    })
-      .then((response) => {
-        const loginResponse = {
-          ...userStore.user,
-          midvalue: response.data.data.id
-        }
-        const user = User.fromJson(loginResponse, loginResponse.email)
-        userStore.setUser(user);
-        navigation.navigate('AddmoneystepScreen');
-      })
-      .catch((err) => {
-        console.log(err);
-        setMessage(err?.response?.data?.errors[0].detail);
-        handleOpenModalPress();
-      });
+    if (name == '' || routing == '' || number == '') {
+      setMessage('please enter all data');
+      handleOpenModalPress();
+      return;
+    }
+    const loginResponse = {
+      ...userStore.user,
+      midvalue: response.data.accountId,
+    }
+    const user = User.fromJson(loginResponse, loginResponse.email)
+    navigation.navigate('AddmoneystepScreen');
   }
-  // const primeLogin = async (email1, id) => {
-  //   await axios(
-  //     // `${PRIME_TRUST_URL}auth/jwts?email=${email.value}&password=${password}`,
-  //     {
-  //       url: `${PRIME_TRUST_URL}auth/jwts?email=${email1}&password=${password.value}`,
-  //       method: 'post',
-  //       headers: {
-  //         'content-type': 'application/json',
-  //       },
-  //     }
-  //   ).then((data) => {
-  //     const loginResponse = {
-  //       id: id,
-
-  //       authToken: data.data.token,
-  //       username: email.value,
-  //       permission: 1,
-  //     };
-  //     const user = User.fromJson(loginResponse, email.value);
-  //     userStore.setUser(user);
-  //   }).catch(err => {
-  //     console.log(err)
-  //     setMessage('not authenticated');
-  //     handleOpenModalPress();
-  //   });
-  // }
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={navigation.goBack}>
