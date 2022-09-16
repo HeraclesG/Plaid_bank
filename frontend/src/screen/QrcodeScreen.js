@@ -1,7 +1,6 @@
 
 import React, { useState, useRef } from 'react';
 import { StyleSheet, Image, Text, TouchableOpacity, View } from 'react-native';
-import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import PagerView from 'react-native-pager-view';
 import QRCode from 'react-native-qrcode-svg';
@@ -9,17 +8,39 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 import Button from '../components/Button';
 import Modal from 'react-native-modal';
-import { style } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes';
+import { userStore } from '../module/user/UserStore';
+import { theme } from '../core/theme';
+import { User } from '../module/user/User';
 
 export default function QrcodeScreen({ navigation }) {
+  const [name, setName]=useState('');
+  const [email,setemail]=useState('');
   const [check, setCheck] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
-  const handleCloseModalPress = () => setIsModalVisible(false);
+  const handleCloseModalPress = () => {
+    setIsModalVisible(false);
+    navigation.navigate('SendMoneystepScreen');
+  };
   const refPageview = useRef();
   const onSuccess = e => {
-    console.log(e);
+     console.log(e);
+    try{
+      let receiver=e.data.split('||');
+    setName(receiver[1]);
+    setemail(receiver[2]);
+    const loginResponse = {
+      ...userStore.user,
+      contactId: receiver[0],
+      authToken: receiver[1],
+      midvalue:receiver[2],
+    }
+    const user = User.fromJson(loginResponse, loginResponse.email);
+    userStore.setUser(user);
     handleOpenModalPress();
+    }catch(e){
+      console.log(e);
+    }
   }
   return (
     <View style={styles.container}>
@@ -69,14 +90,14 @@ export default function QrcodeScreen({ navigation }) {
           <View style={styles.qrcode}>
             <QRCode
               style={{ borderRadius: 20 }}
-              value="John Doe’s QR Code"
+              value={`${userStore.user.accountId}||${userStore.user.username}||${userStore.user.email}`}
               size={200}
               color={theme.colors.whiteColor}
               backgroundColor={theme.colors.qrcodeColor}
             />
           </View>
           <Text style={styles.mycode}>
-            John Doe’s QR Code
+            {userStore.user.username}’s QR Code
           </Text>
           <Text style={styles.description}>
             Scan the QR Code to send John a payment
@@ -102,16 +123,16 @@ export default function QrcodeScreen({ navigation }) {
             <View>
               <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
               <Text style={styles.name}>
-                Change Profile Picture
+                {name}
               </Text>
               <Text style={styles.greyid}>
-                @lisabenson94
+                {email}
               </Text>
             </View>
           </View>
           <Button onPress={handleCloseModalPress} color={theme.colors.backgroundColor} style={[styles.mannual]}>
             <Text style={[styles.bttext, { paddingHorizontal: 50 }]}>
-              Confirm
+              Next
             </Text>
           </Button>
         </View>

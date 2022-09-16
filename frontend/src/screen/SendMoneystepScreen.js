@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { StyleSheet, Image, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg"
@@ -10,20 +10,40 @@ import { userStore } from '../module/user/UserStore';
 import { User } from '../module/user/User';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Modal from 'react-native-modal';
-import { fundBalanceApi, transferFundApi } from '../module/server/home_api';
+import { fundBalanceApi,getAssetBalanceApi, transferFundApi,transferAssetApi } from '../module/server/home_api';
+import RBSheet from "react-native-raw-bottom-sheet";
+import SwitchCurrency from '../components/SwitchCurrency';
 
 export default function SendMoneystepScreen({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
+  const [sort, setSort] = useState(userStore.user.cash_num);
   const [message, setMessage] = useState('error');
   const [val, setVal] = useState(0);
   const [currentval, setCurrentVal] = useState('');
   const [midval, setMidValue] = useState('0');
+  const refRBSheet = useRef();
   useEffect(() => {
     setVal('0');
-    fundBalance();
-  }, []);
+    if (sort) {
+      fundBalance();
+    } else {
+      getAssetBalance();
+    }
+  }, [sort]);
+  const getAssetBalance = async () => {
+    const response = await getAssetBalanceApi();
+    if (response.message) {
+      console.log('success');
+      setCurrentVal(response.value);
+      setMidValue(response.value)
+
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
+  }
   const fundBalance = async () => {
     const response = await fundBalanceApi();
     if (response.message) {
@@ -31,6 +51,20 @@ export default function SendMoneystepScreen({ navigation }) {
       setCurrentVal(response.value);
       setMidValue(response.value)
       return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
+  }
+  const transferAsset = async () => {
+    const response = await transferAssetApi(
+      {
+        receiverAccountId: userStore.user.contactId,
+        amount: val
+      }
+    );
+    if (response.message) {
+      setVal('0');
+      navigation.navigate('TransactionSendcompScreen');
     }
     setMessage(response.value);
     handleOpenModalPress();
@@ -76,7 +110,7 @@ export default function SendMoneystepScreen({ navigation }) {
     <View style={styles.container} >
       <ScrollView>
         <View style={styles.header}>
-          <TouchableOpacity onPress={navigation.goBack}>
+          <TouchableOpacity onPress={()=>{console.log('first');navigation.goBack()}}>
             <Svg
               width={22}
               height={20}
@@ -94,8 +128,8 @@ export default function SendMoneystepScreen({ navigation }) {
           </Text>
           <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
         </View>
-        <TouchableOpacity style={styles.cashwallet}>
-          <Text style={styles.cahshtext}>Cash Wallet</Text>
+        <TouchableOpacity style={styles.cashwallet} onPress={() => refRBSheet.current.open()}>
+          <Text style={styles.cahshtext}>{sort?'Cash':'Crypto'} Wallet</Text>
           <Svg
             width={15}
             height={9}
@@ -109,10 +143,10 @@ export default function SendMoneystepScreen({ navigation }) {
           </Svg>
         </TouchableOpacity>
         <Text style={styles.currentmoney}>
-          ${val}.00
+          {sort?'$':''}{val}.00{sort?'':'USDC'}
         </Text>
         <Text style={styles.subtitle}>
-          Wallet balance after transaction: ${midval}
+          Wallet balance after transaction:{sort?'$':''}{midval}.00{sort?'':'USDC'}
         </Text>
         <Modal isVisible={isModalVisible} hasBackdrop={true} >
           <View style={styles.modal}>
@@ -134,7 +168,34 @@ export default function SendMoneystepScreen({ navigation }) {
             <Text style={styles.message}>{message}</Text>
           </View>
         </Modal>
-        <Button onPress={() => { transferFund(); }} color={theme.colors.backgroundColor} style={styles.Sign}>
+        <RBSheet
+          ref={refRBSheet}
+          height={300}
+          openDuration={250}
+          customStyles={{
+            container: {
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 5
+            }
+          }}
+        >
+          <SwitchCurrency sort={sort} setSort={(flag) => {
+            setSort(flag);
+            const loginResponse = {
+              ...userStore.user,
+              cash_num: flag,
+            }
+            const user = User.fromJson(loginResponse, loginResponse.email);
+            userStore.setUser(user);
+          }} onPress={() => { refRBSheet.current.close() }} />
+        </RBSheet>
+        <Button onPress={() => { 
+          if(sort){
+            transferFund();
+          }else{
+            transferAsset();
+          } }} color={theme.colors.backgroundColor} style={styles.Sign}>
           <Text style={styles.bttext}>
             Send Money
           </Text>

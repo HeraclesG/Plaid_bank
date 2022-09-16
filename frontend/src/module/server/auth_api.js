@@ -8,6 +8,7 @@ export const signUp = async (data) => {
       console.log(response.data.id);
       const loginResponse = {
         id: response.data.id,
+        accountId:'',
         contactId: '',
         authToken: '',
         username: '',
@@ -34,6 +35,7 @@ export const loginApi = async (data) => {
       const loginResponse = {
         id: response.data.currentUser.id,
         contactId: '',
+        accountId:response.data.currentUser.accountId,
         authToken: response.data.token,
         username: response.data.currentUser.userName,
         midvalue: '',

@@ -51,7 +51,7 @@ export default function TransactionSendcompScreen({ navigation }) {
           You successfully sent
         </Text>
         <Text style={styles.currentmoney}>
-          ${userStore.user.midprice}
+        {userStore.user.cash_num?'$':''}{userStore.user.midprice}{userStore.user.cash_num?'':'USDC'}
         </Text>
         <Text style={styles.currentval}>
           to {userStore.user.authToken} account

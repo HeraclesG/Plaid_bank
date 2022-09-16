@@ -7,7 +7,7 @@ import Svg, { Path } from "react-native-svg";
 import HomeCard from '../components/HomeCard';
 import SwitchCurrency from '../components/SwitchCurrency';
 import DocumentPicker from 'react-native-document-picker';
-import { fundBalanceApi, fundSHistoryApi, getAssetBalanceApi } from '../module/server/home_api';
+import { fundBalanceApi, tranSHistoryApi, fundSHistoryApi, getAssetBalanceApi } from '../module/server/home_api';
 import { userStore } from '../module/user/UserStore';
 import { User } from '../module/user/User';
 
@@ -23,15 +23,15 @@ export default function HomeScreen({ navigation, onView }) {
       fundBalance();
       fundSHistory();
     } else {
-      console.log('first');
       getAssetBalance();
+      tranSHistory();
     }
   }, [sort])
   const getAssetBalance = async () => {
     const response = await getAssetBalanceApi();
     if (response.message) {
       console.log('success');
-      // setVal('$' + response.value);
+      setVal(response.value + 'USDC');
       return;
     }
     setMessage(response.value);
@@ -49,6 +49,27 @@ export default function HomeScreen({ navigation, onView }) {
           type: response.value[i]['funds-transfer-type'],
           date: response.value[i]['settled-on'],
           money: response.value[i].amount,
+        });
+      }
+      console.log(mid);
+      setData(mid);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
+  }
+  const tranSHistory = async () => {
+    const response = await tranSHistoryApi();
+    if (response.message) {
+      const mid = [];
+      for (let i = 0; i < response.value.length; i++) {
+        mid.push({
+          id: i + 1,
+          avatar: "avatar.jpg",
+          name: response.value[i].userName,
+          type: response.value[i]['asset-transfer-type'],
+          date: response.value[i]['settled-on'],
+          money: response.value[i]['unit-count'],
         });
       }
       console.log(mid);
@@ -97,7 +118,7 @@ export default function HomeScreen({ navigation, onView }) {
           </View>
         </View>
         <TouchableOpacity style={styles.cashwallet} onPress={() => refRBSheet.current.open()}>
-          <Text style={styles.cahshtext}>Cash Wallet</Text>
+          <Text style={styles.cahshtext}>{sort?'Cash':'Crypto'} Wallet</Text>
           <Svg
             width={15}
             height={9}
@@ -126,7 +147,7 @@ export default function HomeScreen({ navigation, onView }) {
             setSort(flag);
             const loginResponse = {
               ...userStore.user,
-              cash_num: data.flag,
+              cash_num: flag,
             }
             const user = User.fromJson(loginResponse, loginResponse.email);
             userStore.setUser(user);

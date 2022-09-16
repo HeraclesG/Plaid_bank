@@ -29,7 +29,7 @@ export default function SwitchCurrency({ sort, setSort, onPress }) {
       </View>
       <View style={{ flex: 1, paddingHorizontal: 40, paddingVertical: 25, display: 'flex', justifyContent: 'space-around' }}>
         <TouchableOpacity style={styles.row} onPress={() => { setMid(true) }}>
-          <Text style={(midsort ? styles.checktext : styles.unchecktext)}>USD</Text>
+          <Text style={(midsort ? styles.checktext : styles.unchecktext)}>Cash</Text>
           <View style={(!midsort ? styles.uncheck : styles.check)}>
             {midsort ? <Svg
               width={14}
@@ -45,7 +45,7 @@ export default function SwitchCurrency({ sort, setSort, onPress }) {
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.row} onPress={() => { setMid(false) }}>
-          <Text style={(!midsort ? styles.checktext : styles.unchecktext)}>Gourde</Text>
+          <Text style={(!midsort ? styles.checktext : styles.unchecktext)}>Crypto</Text>
           <View style={(midsort ? styles.uncheck : styles.check)}>
             {!midsort ? <Svg
               width={14}

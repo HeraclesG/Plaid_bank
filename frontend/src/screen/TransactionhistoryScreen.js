@@ -5,7 +5,8 @@ import { Searchbar } from 'react-native-paper';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import HomeCard from '../components/HomeCard';
-import { fundHistoryApi } from '../module/server/home_api';
+import { fundHistoryApi,tranHistoryApi } from '../module/server/home_api';
+import { userStore } from '../module/user/UserStore';
 
 export default function TransactionhistoryScreen({ navigation, onView }) {
   // const data = [
@@ -15,7 +16,11 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
   //   { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
   // ];
   useEffect(() => {
-    fundHistory();
+    if(userStore.user.cash_num){
+      fundHistory();
+    }else{
+      tranHistory();
+    }
   }, [])
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -32,6 +37,27 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
           type: response.value[i]['funds-transfer-type'],
           date: response.value[i]['settled-on'],
           money: response.value[i].amount,
+        });
+      }
+      console.log(mid);
+      setData(mid);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
+  }
+  const tranHistory = async () => {
+    const response = await tranHistoryApi();
+    if (response.message) {
+      const mid = [];
+      for (let i = 0; i < response.value.length; i++) {
+        mid.push({
+          id: i + 1,
+          avatar: "avatar.jpg",
+          name: response.value[i].userName,
+          type: response.value[i]['asset-transaction-type'],
+          date: response.value[i]['settled-on'],
+          money: response.value[i]['unit-count'],
         });
       }
       console.log(mid);

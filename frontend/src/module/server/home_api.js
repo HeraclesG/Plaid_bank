@@ -79,13 +79,39 @@ export const transferFundApi = async (data) => {
       };
     });
 }
+export const transferAssetApi = async (data) => {
+  return await post('v1/primetrust/transfer_asset', data).then(
+    function (response) {
+      const loginResponse = {
+        ...userStore.user,
+        midprice: data.amount,
+      }
+      const user = User.fromJson(loginResponse, loginResponse.email);
+      userStore.setUser(user);
+      return {
+        message: true
+      };
+    })
+    .catch(function (error) {
+      console.log(error);
+      return {
+        value: error.response.data.message,
+        message: false
+      };
+    });
+}
 
 export const getAssetBalanceApi = async () => {
   return await post('v1/primetrust/get_asset_balance', {}).then(
     function (response) {
       console.log(response.data);
+      let val = 0;
+      if (response.data.data.length != 0) {
+        val = response.data.data[0].attributes.disbursable;
+      }
       return {
-        message: true
+        message: true,
+        value: val,
       };
     })
     .catch(function (error) {
@@ -137,6 +163,40 @@ export const depositAssetApi = async () => {
       console.log(response.data);
       return {
         value: response.data.address,
+        message: true
+      };
+    })
+    .catch(function (error) {
+      console.log(error);
+      return {
+        value: error.response.data.message,
+        message: false
+      };
+    });
+}
+export const tranSHistoryApi = async () => {
+  return await post('v1/primetrust/asset_simple_transaction_history', {}).then(
+    function (response) {
+      console.log(response.data);
+      return {
+        value: response.data,
+        message: true
+      };
+    })
+    .catch(function (error) {
+      console.log(error);
+      return {
+        value: error.response.data.message,
+        message: false
+      };
+    });
+}
+export const tranHistoryApi = async () => {
+  return await post('v1/primetrust/asset_transaction_history', {}).then(
+    function (response) {
+      console.log(response.data);
+      return {
+        value: response.data,
         message: true
       };
     })
