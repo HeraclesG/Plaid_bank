@@ -113,4 +113,11 @@ router.post(
   primeTrustController.withdrawFund
 );
 
+router.post(
+  "/withdraw_asset",
+  auth(),
+  validate(primeTrustValidation.withdrawAsset),
+  primeTrustController.withdrawAsset
+);
+
 module.exports = router;

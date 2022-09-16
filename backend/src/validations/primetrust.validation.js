@@ -30,9 +30,17 @@ const transferFund = {
   }),
 };
 
+const withdrawAsset = {
+  body: Joi.object().keys({
+    walletAddress: Joi.string().required(),
+    amount: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   setAccount,
   uploadDocuments,
   depositFund,
   transferFund,
+  withdrawAsset,
 };
