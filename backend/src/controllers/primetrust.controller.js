@@ -518,7 +518,7 @@ const depositAsset = catchAsync(async (req, res) => {
       }
       if (methods.length > 0) {
         assetTransferMethod = methods[0].id;
-        address = methods[0].attributes['wallet-address'];
+        address = methods[0].attributes["wallet-address"];
       } else {
         await axios({
           method: "POST",
@@ -546,7 +546,7 @@ const depositAsset = catchAsync(async (req, res) => {
         })
           .then(async (response) => {
             assetTransferMethod = response.data.data.id;
-            address = response.data.data.attributes['wallet-address'];
+            address = response.data.data.attributes["wallet-address"];
           })
           .catch((err) => {
             console.log("error", err?.response?.data);
@@ -675,8 +675,9 @@ const fundSimpleTransactionHistory = catchAsync(async (req, res) => {
                 headers: {
                   Authorization: ptToken,
                 },
-                url: `${primeTrustUrl}/v2/accounts?filter[number]=${i.attributes["comments-1"].split(" ")[2]
-                  }`,
+                url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                  i.attributes["comments-1"].split(" ")[2]
+                }`,
               });
               return {
                 ...i.attributes,
@@ -704,8 +705,9 @@ const fundSimpleTransactionHistory = catchAsync(async (req, res) => {
               headers: {
                 Authorization: ptToken,
               },
-              url: `${primeTrustUrl}/v2/accounts?filter[number]=${i.attributes["comments-1"].split(" ")[2]
-                }`,
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                i.attributes["comments-1"].split(" ")[2]
+              }`,
             });
             return {
               ...i.attributes,
@@ -747,8 +749,9 @@ const fundTransactionHistory = catchAsync(async (req, res) => {
               headers: {
                 Authorization: ptToken,
               },
-              url: `${primeTrustUrl}/v2/accounts?filter[number]=${i.attributes["comments-1"].split(" ")[2]
-                }`,
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                i.attributes["comments-1"].split(" ")[2]
+              }`,
             });
             return {
               ...i.attributes,
@@ -771,30 +774,114 @@ const fundTransactionHistory = catchAsync(async (req, res) => {
     });
 });
 
+const assetSimpleTransactionHistory = catchAsync(async (req, res) => {
+  await axios({
+    method: "GET",
+    headers: {
+      Authorization: ptToken,
+    },
+    url: `${primeTrustUrl}/v2/asset-transactions?account.id=${req.user.accountId}`,
+    // url: `${primeTrustUrl}/v2/funds-transfers?account.id=${req.user.accountId}`,
+  })
+    .then(async (response) => {
+      if (response.data.data.length < 5) {
+        const res_data = await Promise.all(
+          response.data.data.map(async (i) => {
+            let actorAccount;
+            if (i.attributes["comments-1"].split(" ")[0] === "Transfer") {
+              actorAccount = await axios({
+                method: "GET",
+                headers: {
+                  Authorization: ptToken,
+                },
+                url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                  i.attributes["comments-1"].split(" ")[2]
+                }`,
+              });
+              return {
+                ...i.attributes,
+                userName: actorAccount.data.data[0].attributes.name,
+              };
+            } else {
+              return {
+                ...i.attributes,
+                userName: "Self",
+              };
+            }
+          })
+        );
+        res.send(res_data);
+        return;
+      }
+      const skippedData = response.data.data.slice(0, 5);
+      const res_data = await Promise.all(
+        skippedData.map(async (i) => {
+          let actorAccount;
+          if (i.attributes["comments-1"].split(" ")[0] === "Transfer") {
+            actorAccount = await axios({
+              method: "GET",
+              headers: {
+                Authorization: ptToken,
+              },
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                i.attributes["comments-1"].split(" ")[2]
+              }`,
+            });
+            return {
+              ...i.attributes,
+              userName: actorAccount.data.data[0].attributes.name,
+            };
+          } else {
+            return {
+              ...i.attributes,
+              userName: "Self",
+            };
+          }
+        })
+      );
+      res.send(res_data);
+    })
+    .catch((err) => {
+      console.log("error", err?.response?.data?.errors[0]);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
 const assetTransactionHistory = catchAsync(async (req, res) => {
   await axios({
     method: "GET",
     headers: {
       Authorization: ptToken,
     },
-    url: `${primeTrustUrl}/v2/asset-transfers?account.id=${req.user.accountId}`,
+    url: `${primeTrustUrl}/v2/asset-transactions?account.id=${req.user.accountId}`,
   })
     .then(async (response) => {
-      let history = [];
-      for (let i = 0; i < response.data.data.length; i++) {
-        const user = await User.findOne({
-          accountId:
-            response.data.data[i].relationships.account.links.related.split(
-              "/"
-            )[3],
-        });
-        history.push({
-          ...response.data.data[i].attributes,
-          userName: user.userName,
-          email: user.email,
-        });
-      }
-      res.send(response.data.data);
+      const res_data = await Promise.all(
+        response.data.data.map(async (i) => {
+          let actorAccount;
+          if (i.attributes["comments-1"].split(" ")[0] === "Transfer") {
+            actorAccount = await axios({
+              method: "GET",
+              headers: {
+                Authorization: ptToken,
+              },
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                i.attributes["comments-1"].split(" ")[2]
+              }`,
+            });
+            return {
+              ...i.attributes,
+              userName: actorAccount.data.data[0].attributes.name,
+            };
+          } else {
+            return {
+              ...i.attributes,
+              userName: "Self",
+            };
+          }
+        })
+      );
+      res.send(res_data);
     })
     .catch((err) => {
       console.log("error", err?.response?.data?.errors[0]);
@@ -1005,6 +1092,7 @@ module.exports = {
   transferAsset,
   fundSimpleTransactionHistory,
   fundTransactionHistory,
+  assetSimpleTransactionHistory,
   assetTransactionHistory,
   withdrawFund,
   withdrawAsset,

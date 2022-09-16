@@ -96,6 +96,12 @@ router.post(
 );
 
 router.post(
+  "/asset_simple_transaction_history",
+  auth(),
+  primeTrustController.assetSimpleTransactionHistory
+);
+
+router.post(
   "/asset_transaction_history",
   auth(),
   primeTrustController.assetTransactionHistory
