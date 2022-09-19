@@ -1072,6 +1072,50 @@ const withdrawAsset = catchAsync(async (req, res) => {
     });
 });
 
+const addContact = catchAsync(async (req, res) => {
+  await axios({
+    method: "GET",
+    headers: {
+      Authorization: ptToken,
+    },
+    // url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
+    url: `${primeTrustUrl}/v2/cash-transactions?account.id=${req.user.accountId}`,
+  })
+    .then(async (response) => {
+      const res_data = await Promise.all(
+        response.data.data.map(async (i) => {
+          let actorAccount;
+          if (i.attributes["comments-1"].split(" ")[0] === "Transfer") {
+            actorAccount = await axios({
+              method: "GET",
+              headers: {
+                Authorization: ptToken,
+              },
+              url: `${primeTrustUrl}/v2/accounts?filter[number]=${
+                i.attributes["comments-1"].split(" ")[2]
+              }`,
+            });
+            return {
+              ...i.attributes,
+              userName: actorAccount.data.data[0].attributes.name,
+            };
+          } else {
+            return {
+              ...i.attributes,
+              userName: "Self",
+            };
+          }
+        })
+      );
+      console.log(res_data);
+      res.send(res_data);
+    })
+    .catch((err) => {
+      console.log("error", err);
+      res.status(400).send({ message: err.response?.data?.errors[0]?.detail });
+    });
+});
+
 module.exports = {
   createUser,
   createJwt,
@@ -1096,4 +1140,5 @@ module.exports = {
   assetTransactionHistory,
   withdrawFund,
   withdrawAsset,
+  addContact
 };
