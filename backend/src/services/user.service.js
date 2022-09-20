@@ -76,8 +76,19 @@ const deleteUserById = async (userId) => {
 
 const searchUser = async (keyword) => {
   const candidates = await User.find({
-    email: { $regex: keyword, $options: "i" },
-  }).select(["email", "accountId", "contactId", "userName"]);
+    $and: [
+      {
+        $or: [
+          { email: { $regex: keyword, $options: "i" } },
+          { userName: { $regex: keyword, $options: "i" } },
+          { firstName: { $regex: keyword, $options: "i" } },
+          { lastName: { $regex: keyword, $options: "i" } },
+        ],
+      },
+      { isVerified: true },
+    ],
+  })
+  // .select(["email", "accountId", "contactId", "userName"]);
   return candidates;
 };
 
