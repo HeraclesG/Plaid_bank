@@ -10,9 +10,9 @@ const { ptToken } = config.jwt;
 const primeTrustUrl = config.primeTrust.url;
 
 const register = catchAsync(async (req, res) => {
-  if (await User.isEmailTaken(req.body.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
-  }
+  // if (await User.isEmailTaken(req.body.email)) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
+  // }
 
   if (await User.isUserNameTaken(req.body.userName)) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Username already taken");
@@ -105,8 +105,8 @@ const unverifiedUser = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-  const currentUser = await User.findOne({ email });
+  const { userName, password } = req.body;
+  const currentUser = await User.findOne({ userName });
   if (!currentUser || !(await currentUser.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email or password");
   }
