@@ -1,6 +1,5 @@
-import { userStore } from '../user/UserStore';
-import { User } from '../user/User'
 import { api, get, post, fileUpload } from './api';
+import { successmoney, transferfunding,transferasset } from '../../redux/actions/user';
 
 export const fundBalanceApi = async () => {
   return await post('v1/primetrust/get_fund_balance', {}).then(
@@ -19,18 +18,14 @@ export const fundBalanceApi = async () => {
     });
 }
 
-export const depositFundApi = async (data) => {
+export const depositFundApi = async (data,dispatch) => {
   return await post('v1/primetrust/deposit_fund', data).then(
     function (response) {
       console.log(response.data);
-      const loginResponse = {
-        ...userStore.user,
+      dispatch(successmoney({
         midprice: data.amount,
-      }
-      const user = User.fromJson(loginResponse, loginResponse.email);
-      userStore.setUser(user);
+      }));
       return {
-        // value: response.data.attributes.disbursable,
         message: true
       };
     })
@@ -58,15 +53,12 @@ export const searchUserApi = async (data) => {
       };
     });
 }
-export const transferFundApi = async (data) => {
+export const transferFundApi = async (data,dispatch) => {
   return await post('v1/primetrust/transfer_fund', data).then(
     function (response) {
-      const loginResponse = {
-        ...userStore.user,
+      dispatch(transferfunding({
         midprice: data.amount,
-      }
-      const user = User.fromJson(loginResponse, loginResponse.email);
-      userStore.setUser(user);
+      }));
       return {
         message: true
       };
@@ -82,12 +74,9 @@ export const transferFundApi = async (data) => {
 export const transferAssetApi = async (data) => {
   return await post('v1/primetrust/transfer_asset', data).then(
     function (response) {
-      const loginResponse = {
-        ...userStore.user,
+      dispatch(transferasset({
         midprice: data.amount,
-      }
-      const user = User.fromJson(loginResponse, loginResponse.email);
-      userStore.setUser(user);
+      }));
       return {
         message: true
       };

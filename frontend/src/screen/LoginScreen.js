@@ -12,21 +12,23 @@ import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Svg, { Path, Circle } from "react-native-svg"
 import Modal from 'react-native-modal';
 import { loginApi } from '../module/server/auth_api';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function LoginScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [message, setMessage] = useState('error');
   const [isSelected, setSelection] = useState(false);
-  const [email, setEmail] = useState({ value: 'aaaa@test.com', error: '' })
+  const [email, setEmail] = useState({ value: 'Ares', error: '' })
   const [password, setPassword] = useState({ value: 'aaaAAA111222@', error: '' })
   const login = async () => {
     const response = await loginApi(
       {
-        email: email.value,
+        userName: email.value,
         password: password.value,
-      }
+      },dispatch
     );
     if (response === 'success') {
       console.log('success');
@@ -48,9 +50,9 @@ export default function LoginScreen({ navigation }) {
       </View>
       <View style={styles.body}>
         <View style={styles.inputgroup}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>Username</Text>
           <TextInput
-            placeholder="Enter your email"
+            placeholder="Enter your username"
             returnKeyType="next"
             value={email.value}
             onChangeText={(text) => setEmail({ value: text, error: '' })}

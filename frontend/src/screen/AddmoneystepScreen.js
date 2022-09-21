@@ -6,13 +6,16 @@ import Svg, { Path } from "react-native-svg"
 import Keyboard from '../components/Keyboard';
 import Button from '../components/Button';
 import axios from 'axios';
-import { userStore } from '../module/user/UserStore';
-import { User } from '../module/user/User';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Modal from 'react-native-modal';
+import { useSelector, useDispatch } from 'react-redux';
 import { fundBalanceApi, depositFundApi } from '../module/server/home_api';
 
 export default function AddmoneystepScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const bankAccountName = useSelector((store) => store.user.contactId);
+  const bankAccountNumber = useSelector((store) => store.user.authToken);
+  const routingNumber = useSelector((store) => store.user.midvalue);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
@@ -27,7 +30,6 @@ export default function AddmoneystepScreen({ navigation }) {
   const fundBalance = async () => {
     const response = await fundBalanceApi();
     if (response.message) {
-      console.log('success');
       setCurrentVal(response.value);
       setMidValue(response.value)
       return;
@@ -38,15 +40,17 @@ export default function AddmoneystepScreen({ navigation }) {
   const depositFund = async () => {
     const response = await depositFundApi(
       {
-        bankAccountName: userStore.user.contactId,
-        bankAccountNumber: userStore.user.authToken,
-        routingNumber: userStore.user.midvalue,
+        bankAccountName:bankAccountName,
+        bankAccountNumber: bankAccountNumber,
+        routingNumber: routingNumber,
         amount: val
-      }
+      },
+      dispatch
     );
     if (response.message) {
       setVal('0');
       navigation.navigate('TransactioncompScreen');
+      return;
     }
     setMessage(response.value);
     handleOpenModalPress();

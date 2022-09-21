@@ -6,19 +6,21 @@ import Svg, { Path } from "react-native-svg"
 import Keyboard from '../components/Keyboard';
 import Button from '../components/Button';
 import axios from 'axios';
-import { userStore } from '../module/user/UserStore';
-import { User } from '../module/user/User';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Modal from 'react-native-modal';
 import { fundBalanceApi,getAssetBalanceApi, transferFundApi,transferAssetApi } from '../module/server/home_api';
 import RBSheet from "react-native-raw-bottom-sheet";
+import { useSelector, useDispatch } from 'react-redux';
+import { setsort } from '../redux/actions/user';
 import SwitchCurrency from '../components/SwitchCurrency';
 
 export default function SendMoneystepScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const sort = useSelector((store) => store.user.cash_num);
+  const contactId = useSelector((store) => store.user.contactId);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
-  const [sort, setSort] = useState(userStore.user.cash_num);
   const [message, setMessage] = useState('error');
   const [val, setVal] = useState(0);
   const [currentval, setCurrentVal] = useState('');
@@ -38,7 +40,6 @@ export default function SendMoneystepScreen({ navigation }) {
       console.log('success');
       setCurrentVal(response.value);
       setMidValue(response.value)
-
       return;
     }
     setMessage(response.value);
@@ -47,7 +48,6 @@ export default function SendMoneystepScreen({ navigation }) {
   const fundBalance = async () => {
     const response = await fundBalanceApi();
     if (response.message) {
-      console.log('success');
       setCurrentVal(response.value);
       setMidValue(response.value)
       return;
@@ -58,13 +58,15 @@ export default function SendMoneystepScreen({ navigation }) {
   const transferAsset = async () => {
     const response = await transferAssetApi(
       {
-        receiverAccountId: userStore.user.contactId,
+        receiverAccountId:contactId,
         amount: val
-      }
+      },
+      dispatch
     );
     if (response.message) {
       setVal('0');
       navigation.navigate('TransactionSendcompScreen');
+      return;
     }
     setMessage(response.value);
     handleOpenModalPress();
@@ -72,13 +74,15 @@ export default function SendMoneystepScreen({ navigation }) {
   const transferFund = async () => {
     const response = await transferFundApi(
       {
-        receiverAccountId: userStore.user.contactId,
+        receiverAccountId:contactId,
         amount: val
-      }
+      },
+      dispatch
     );
     if (response.message) {
       setVal('0');
       navigation.navigate('TransactionSendcompScreen');
+      return;
     }
     setMessage(response.value);
     handleOpenModalPress();
@@ -148,6 +152,9 @@ export default function SendMoneystepScreen({ navigation }) {
         <Text style={styles.subtitle}>
           Wallet balance after transaction:{sort?'$':''}{midval}.00{sort?'':'USDC'}
         </Text>
+        <Text style={styles.subtitle}>
+          Wallet balance after transaction:{sort?'$':''}{currentval}.00{sort?'':'USDC'}
+        </Text>
         <Modal isVisible={isModalVisible} hasBackdrop={true} >
           <View style={styles.modal}>
             <TouchableOpacity onPress={() => {
@@ -180,15 +187,7 @@ export default function SendMoneystepScreen({ navigation }) {
             }
           }}
         >
-          <SwitchCurrency sort={sort} setSort={(flag) => {
-            setSort(flag);
-            const loginResponse = {
-              ...userStore.user,
-              cash_num: flag,
-            }
-            const user = User.fromJson(loginResponse, loginResponse.email);
-            userStore.setUser(user);
-          }} onPress={() => { refRBSheet.current.close() }} />
+          <SwitchCurrency onPress={() => { refRBSheet.current.close() }} />
         </RBSheet>
         <Button onPress={() => { 
           if(sort){

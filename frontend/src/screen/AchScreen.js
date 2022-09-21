@@ -5,14 +5,15 @@ import { theme } from '../core/theme';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 import CheckBox from 'react-native-check-box';
-import { User } from '../module/user/User';
 import axios from 'axios';
-import { userStore } from '../module/user/UserStore';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import Svg, { Path, Circle } from "react-native-svg"
 import Modal from 'react-native-modal';
+import { useSelector, useDispatch } from 'react-redux';
+import { fundstransfer } from '../redux/actions/user';
 
 export default function AchScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
@@ -32,14 +33,11 @@ export default function AchScreen({ navigation }) {
       handleOpenModalPress();
       return;
     }
-    const loginResponse = {
-      ...userStore.user,
+     dispatch(fundstransfer({
       contactId: name,
       midvalue: routing,
       authToken: number,
-    }
-    const user = User.fromJson(loginResponse, loginResponse.email);
-    userStore.setUser(user);
+     }));
     navigation.navigate('AddmoneystepScreen');
   }
   return (

@@ -4,9 +4,12 @@ import { StyleSheet, Image, Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import Button from '../components/Button';
-import { userStore } from '../module/user/UserStore';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function TransactionSendcompScreen({ navigation }) {
+  const value = useSelector((store) => store.user.midprice);
+  const cash_num = useSelector((store) => store.user.cash_num);
+  const authToken = useSelector((store) => store.user.authToken);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -51,10 +54,10 @@ export default function TransactionSendcompScreen({ navigation }) {
           You successfully sent
         </Text>
         <Text style={styles.currentmoney}>
-        {userStore.user.cash_num?'$':''}{userStore.user.midprice}{userStore.user.cash_num?'':'USDC'}
+        {cash_num?'$':''}{value}{cash_num?'':'USDC'}
         </Text>
         <Text style={styles.currentval}>
-          to {userStore.user.authToken} account
+          to {authToken} account
         </Text>
       </View>
       <View style={styles.footer}>
@@ -64,10 +67,10 @@ export default function TransactionSendcompScreen({ navigation }) {
         <View style={styles.sendcard}>
           <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
           <Text style={styles.name}>
-            {userStore.user.authToken}
+            {authToken}
           </Text>
           <Text style={styles.email}>
-            {userStore.user.midvalue}
+            {value}
           </Text>
         </View>
         <View style={styles.buttons}>

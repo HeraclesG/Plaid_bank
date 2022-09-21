@@ -2,10 +2,11 @@ import React from 'react'
 import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native'
 import { Button as PaperButton } from 'react-native-paper'
 import { theme } from '../core/theme'
-import { User } from '../module/user/User'
-import { userStore } from '../module/user/UserStore'
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/actions/user';
 
 export default function ProfilelistCard({ item, navigation }) {
+  const dispatch = useDispatch();
   const onpress = () => {
     switch (item.id) {
       case 1: navigation.navigate('ProfileeditScreen'); break;
@@ -13,12 +14,9 @@ export default function ProfilelistCard({ item, navigation }) {
       case 3: navigation.navigate('WalletnumberScreen'); break;
       case 4: navigation.navigate('PrivacyScreen'); break;
       case 5: navigation.navigate('HelpScreen'); break;
-      default: logout(); break;
+      default: dispatch(logout()); break;
     }
   };
-  const logout = () => {
-    userStore.logout();
-  }
   var icon;
   switch (item.id) {
     case 1: icon = require('../assets/profile/profile.png'); break;

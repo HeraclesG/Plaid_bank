@@ -8,11 +8,15 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 import Button from '../components/Button';
 import Modal from 'react-native-modal';
-import { userStore } from '../module/user/UserStore';
 import { theme } from '../core/theme';
-import { User } from '../module/user/User';
+import { useSelector,useDispatch } from 'react-redux';
+import { settransfer } from '../redux/actions/user';
 
 export default function QrcodeScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const accountId = useSelector((store) => store.user.accountId);
+  const sendername = useSelector((store) => store.user.username);
+  const senderemail = useSelector((store) => store.user.email);
   const [name, setName]=useState('');
   const [email,setemail]=useState('');
   const [check, setCheck] = useState(true);
@@ -29,14 +33,11 @@ export default function QrcodeScreen({ navigation }) {
       let receiver=e.data.split('||');
     setName(receiver[1]);
     setemail(receiver[2]);
-    const loginResponse = {
-      ...userStore.user,
+    dispatch(settransfer({
       contactId: receiver[0],
       authToken: receiver[1],
       midvalue:receiver[2],
-    }
-    const user = User.fromJson(loginResponse, loginResponse.email);
-    userStore.setUser(user);
+    }))
     handleOpenModalPress();
     }catch(e){
       console.log(e);
@@ -90,14 +91,14 @@ export default function QrcodeScreen({ navigation }) {
           <View style={styles.qrcode}>
             <QRCode
               style={{ borderRadius: 20 }}
-              value={`${userStore.user.accountId}||${userStore.user.username}||${userStore.user.email}`}
+              value={`${accountId}||${sendername}||${senderemail}`}
               size={200}
               color={theme.colors.whiteColor}
               backgroundColor={theme.colors.qrcodeColor}
             />
           </View>
           <Text style={styles.mycode}>
-            {userStore.user.username}’s QR Code
+            {sendername}’s QR Code
           </Text>
           <Text style={styles.description}>
             Scan the QR Code to send John a payment

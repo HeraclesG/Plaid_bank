@@ -4,8 +4,12 @@ import { StyleSheet, Image, Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import Button from './Button';
+import { useSelector, useDispatch } from 'react-redux';
+import { setsort } from '../redux/actions/user';
 
-export default function SwitchCurrency({ sort, setSort, onPress }) {
+export default function SwitchCurrency({ onPress }) {
+  const dispatch = useDispatch();
+  const sort = useSelector((store) => store.user.cash_num);
   const [midsort, setMid] = useState(sort);
   return (
     <View style={styles.container}>
@@ -62,7 +66,7 @@ export default function SwitchCurrency({ sort, setSort, onPress }) {
         </TouchableOpacity>
       </View>
       <View style={styles.footer}>
-        <Button onPress={() => { setSort(midsort); onPress() }} color={theme.colors.backgroundColor} style={[styles.mannual]}>
+        <Button onPress={() => { dispatch(setsort(midsort)); onPress() }} color={theme.colors.backgroundColor} style={[styles.mannual]}>
           <Text style={[styles.bttext, { paddingHorizontal: 50 }]}>
             Confirm
           </Text>
