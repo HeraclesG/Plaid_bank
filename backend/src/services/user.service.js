@@ -52,9 +52,9 @@ const updateUserById = async (userId, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
-  }
+  // if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, "Email already taken");
+  // }
   Object.assign(user, updateBody);
   await user.save();
   return user;
@@ -76,8 +76,55 @@ const deleteUserById = async (userId) => {
 
 const searchUser = async (keyword) => {
   const candidates = await User.find({
-    email: { $regex: keyword, $options: "i" },
-  }).select(["email", "accountId", "contactId", "userName"]);
+    $and: [
+      {
+        $or: [
+          { email: { $regex: keyword, $options: "i" } },
+          { userName: { $regex: keyword, $options: "i" } },
+          { firstName: { $regex: keyword, $options: "i" } },
+          { lastName: { $regex: keyword, $options: "i" } },
+        ],
+      },
+      { isVerified: true },
+    ],
+  });
+  // .select(["email", "accountId", "contactId", "userName"]);
+  return candidates;
+};
+
+const searchMyUser = async (keyword, email) => {
+  const candidates = await User.find({
+    $and: [
+      {
+        $or: [
+          { email: { $regex: keyword, $options: "i", $eq: email } },
+          { userName: { $regex: keyword, $options: "i" } },
+          { firstName: { $regex: keyword, $options: "i" } },
+          { lastName: { $regex: keyword, $options: "i" } },
+        ],
+      },
+      { isVerified: true },
+    ],
+  });
+  // .select(["email", "accountId", "contactId", "userName"]);
+  return candidates;
+};
+
+const searchOtherUser = async (keyword, email) => {
+  const candidates = await User.find({
+    $and: [
+      {
+        $or: [
+          { email: { $regex: keyword, $options: "i", $ne: email} },
+          { userName: { $regex: keyword, $options: "i" } },
+          { firstName: { $regex: keyword, $options: "i" } },
+          { lastName: { $regex: keyword, $options: "i" } },
+        ],
+      },
+      { isVerified: true },
+    ],
+  });
+  // .select(["email", "accountId", "contactId", "userName"]);
   return candidates;
 };
 
@@ -88,4 +135,6 @@ module.exports = {
   updateUserById,
   deleteUserById,
   searchUser,
+  searchMyUser,
+  searchOtherUser,
 };

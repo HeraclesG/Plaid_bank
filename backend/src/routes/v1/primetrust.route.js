@@ -121,4 +121,12 @@ router.post(
   primeTrustController.withdrawAsset
 );
 
+// is not related to Prime trust. Just needed for contact
+router.post(
+  "/add_contact",
+  auth(),
+  // validate(primeTrustValidation.withdrawAsset),
+  primeTrustController.addContact
+);
+
 module.exports = router;

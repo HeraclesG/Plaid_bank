@@ -29,6 +29,7 @@ const getUser = {
 const searchUser = {
   body: Joi.object().keys({
     keyword: Joi.string().required(),
+    type: Joi.string().required(),
   }),
 };
 

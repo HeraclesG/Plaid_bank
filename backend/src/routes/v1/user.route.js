@@ -39,6 +39,7 @@ router
 
 router.post(
   "/searchuser",
+  auth(),
   validate(userValidation.searchUser),
   userController.searchUser
 );
