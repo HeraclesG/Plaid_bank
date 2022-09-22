@@ -39,6 +39,17 @@ const getUserById = async (id) => {
   ]);
 };
 
+const getUserByUserName = async (userName) => {
+  return User.findOne({userName}).select([
+    "email",
+    "accountId",
+    "contactId",
+    "userName",
+    "firstName",
+    "lastName",
+  ]);
+};
+
 /**
  * Get user by email
  * @param {string} email
@@ -141,4 +152,5 @@ module.exports = {
   searchUser,
   searchMyUser,
   searchOtherUser,
+  getUserByUserName,
 };

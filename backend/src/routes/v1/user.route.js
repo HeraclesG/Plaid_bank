@@ -14,13 +14,13 @@ router
     userController.createUser
   )
   .get(
-    auth(),
+    auth("manageUsers"),
     validate(userValidation.getUsers),
     userController.getUsers
   );
 
 router
-  .route("/:userId")
+  .route("/:userName")
   .get(
     auth(),
     validate(userValidation.getUser),
