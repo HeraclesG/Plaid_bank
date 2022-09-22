@@ -14,7 +14,7 @@ router
     userController.createUser
   )
   .get(
-    auth("getUsers"),
+    auth(),
     validate(userValidation.getUsers),
     userController.getUsers
   );
@@ -22,7 +22,7 @@ router
 router
   .route("/:userId")
   .get(
-    auth("getUsers"),
+    auth(),
     validate(userValidation.getUser),
     userController.getUser
   )
