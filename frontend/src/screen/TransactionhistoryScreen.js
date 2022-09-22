@@ -7,9 +7,12 @@ import Svg, { Path, Circle } from "react-native-svg"
 import HomeCard from '../components/HomeCard';
 import { useSelector, useDispatch } from 'react-redux';
 import { fundHistoryApi,tranHistoryApi } from '../module/server/home_api';
+import { transdetail } from '../redux/actions/user';
+import LoadingCard from '../components/LoadingCard';
 
 export default function TransactionhistoryScreen({ navigation, onView }) {
   cash_num= useSelector((store) => store.user.username);
+  const dispatch=useDispatch();
   // const data = [
   //   { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
   //   { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
@@ -36,7 +39,7 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
           avatar: "avatar.jpg",
           name: response.value[i].userName,
           type: response.value[i]['funds-transfer-type'],
-          date: response.value[i]['settled-on'],
+          date: response.value[i]['settled-at'],
           money: response.value[i].amount,
         });
       }
@@ -57,7 +60,7 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
           avatar: "avatar.jpg",
           name: response.value[i].userName,
           type: response.value[i]['asset-transaction-type'],
-          date: response.value[i]['settled-on'],
+          date: response.value[i]['settled-at'],
           money: response.value[i]['unit-count'],
         });
       }
@@ -112,7 +115,7 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
           onChangeText={onChangeSearch}
           value={searchQuery}
         />
-        <FlatList style={styles.list}
+        {data.length?<FlatList style={styles.list}
           data={data}
           keyExtractor={(item) => {
             return item.id;
@@ -120,9 +123,18 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
           renderItem={(list) => {
             const item = list.item;
             return (
-              <HomeCard item={item} />
+              <TouchableOpacity onPress={()=>{
+                dispatch(transdetail({
+                  authToken:item.date,
+                  midvalue:item.name,
+                  midvalue2:item.type,
+                  contactId:item.money
+                }));
+                navigation.navigate('TransactionDetailScreen');}}>
+                <HomeCard item={item} />
+              </TouchableOpacity>
             )
-          }} />
+          }} />:<LoadingCard/>}
         <Text style={styles.subtitle}>
           no more transactions
         </Text>
@@ -163,7 +175,7 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-    color: theme.colors.blackColor,
+    color: theme.colors.whiteColor,
     fontSize: theme.fontSize.subtitle,
     fontWeight: theme.fontWeight.normal,
   },

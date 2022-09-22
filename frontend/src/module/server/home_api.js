@@ -197,3 +197,20 @@ export const tranHistoryApi = async () => {
       };
     });
 }
+export const transDetailApi = async (name) => {
+  return await get(`v1/user/${name}`).then(
+    function (response) {
+      console.log(response.data);
+      return {
+        value: response.data,
+        message: true
+      };
+    })
+    .catch(function (error) {
+      console.log(error);
+      return {
+        value: error.response.data.message,
+        message: false
+      };
+    });
+}

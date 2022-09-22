@@ -1,4 +1,4 @@
-import { LOGIN,SETSORT,FUNDSTRANSFER,LOGOUT,SUCCESSMONEY,SETTRANSFER,TRANSFERFUNDING, TRANSFERFASSERT, REGISTER } from "../constant";
+import { LOGIN,SETSORT,TRANSDETAIL,FUNDSTRANSFER,LOGOUT,SUCCESSMONEY,SETTRANSFER,TRANSFERFUNDING, TRANSFERFASSERT, REGISTER } from "../constant";
 
 const initialState = {
   id:'',
@@ -10,6 +10,7 @@ const initialState = {
   midprice:0,
   cash_num:true,
   accountId:'',
+  midvalue2:'',
   permission:0
 };
  
@@ -59,6 +60,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
       permission:0,
+      };
+    case TRANSDETAIL:
+      return {
+        ...state,
+        ...action.payload,
       };
     default:
       return state;

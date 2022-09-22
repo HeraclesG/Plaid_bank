@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React from 'react'
 import { StyleSheet, View, Image, Text } from 'react-native'
 import { theme } from '../core/theme'
@@ -13,7 +14,7 @@ export default function HomeCard({ item }) {
               {item.name}
             </Text>
             <Text style={styles.date}>
-              {item.date}
+              {moment(item.date).format('LL')}
             </Text>
           </View>
         </View>

@@ -9,3 +9,4 @@ export const FUNDSTRANSFER='FUNDSTRANSFER';
 export const SUCCESSMONEY='SUCCESSMONEY';
 export const LOGOUT='LOGOUT';
 export const SENDMONEY='SENDMONEY';
+export const TRANSDETAIL='TRANSDETAIL';

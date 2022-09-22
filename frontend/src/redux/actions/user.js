@@ -1,4 +1,4 @@
-import {LOGIN,SETSORT,FUNDSTRANSFER,SUCCESSMONEY,LOGOUT,SETTRANSFER,TRANSFERFUNDING, TRANSFERFASSERT, REGISTER} from '../constant';
+import {LOGIN,SETSORT,TRANSDETAIL,FUNDSTRANSFER,SUCCESSMONEY,LOGOUT,SETTRANSFER,TRANSFERFUNDING, TRANSFERFASSERT, REGISTER} from '../constant';
 export const login = (data) => {
   return {
     type: LOGIN,
@@ -49,6 +49,13 @@ export const settransfer = (data) => {
 export const logout = (data) => {
   return {
     type: LOGOUT,
+    payload:data,
+  };
+};
+
+export const transdetail = (data) => {
+  return {
+    type: TRANSDETAIL,
     payload:data,
   };
 };

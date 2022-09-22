@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.whiteColor,
     paddingHorizontal: 19,
-    paddingVertical: 50,
+    paddingTop: 40,
   },
   avatar: {
     width: 50,

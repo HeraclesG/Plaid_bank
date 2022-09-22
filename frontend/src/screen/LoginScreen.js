@@ -20,6 +20,7 @@ export default function LoginScreen({ navigation }) {
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [message, setMessage] = useState('error');
+  const [loading, setLoading]=useState(true);
   const [isSelected, setSelection] = useState(false);
   const [email, setEmail] = useState({ value: 'Ares', error: '' })
   const [password, setPassword] = useState({ value: 'aaaAAA111222@', error: '' })

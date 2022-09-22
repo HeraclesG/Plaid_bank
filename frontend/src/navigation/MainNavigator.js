@@ -32,6 +32,7 @@ import SendMoneystepScreen from '../screen/SendMoneystepScreen'
 import TransactionSendcompScreen from '../screen/TransactionSendcompScreen';
 import AddcashScreen from '../screen/AddcashScreen';
 import TransferMoneyScreen from '../screen/TransferMoneyScreen';
+import TransactionDetailScreen from '../screen/TransactionDetailScreen';
 
 const Stack = createNativeStackNavigator()
 
@@ -46,6 +47,11 @@ export function MainNavigator() {
       <Stack.Screen
         name="HomeScreen"
         component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TransactionDetailScreen"
+        component={TransactionDetailScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
