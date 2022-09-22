@@ -7,6 +7,7 @@ export const theme = {
     searchborderColor: "#BABABA",
     homebackgroundColor: '#EFEFEF',
     yellowtextColor: '#C6A15A',
+    buttonYColor:'#CCA12C',
     greytextColor: '#ADADAD',
     thickgreytextColor: '#5D5D5D',
     lightgreytextColor: '#5C5C5C',

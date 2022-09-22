@@ -31,6 +31,7 @@ export default function ProfileCard({ item }) {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop:20,
     marginVertical: 10,
     height: 200,
     borderRadius: 10,

@@ -4,9 +4,10 @@ import { StyleSheet, Image, Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import Button from '../components/Button';
-import { userStore } from '../module/user/UserStore';
+import { useSelector, useDispatch } from 'react-redux';
 
 export default function TransactioncompScreen({ navigation }) {
+  const value = useSelector((store) => store.user.midprice);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -51,7 +52,7 @@ export default function TransactioncompScreen({ navigation }) {
           You successfully added
         </Text>
         <Text style={styles.currentmoney}>
-          ${userStore.user.midprice}
+          ${value}
         </Text>
         <Text style={styles.currentval}>
           to your account

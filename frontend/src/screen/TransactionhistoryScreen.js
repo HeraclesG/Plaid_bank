@@ -5,9 +5,11 @@ import { Searchbar } from 'react-native-paper';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import HomeCard from '../components/HomeCard';
-import { fundHistoryApi } from '../module/server/home_api';
+import { useSelector, useDispatch } from 'react-redux';
+import { fundHistoryApi,tranHistoryApi } from '../module/server/home_api';
 
 export default function TransactionhistoryScreen({ navigation, onView }) {
+  cash_num= useSelector((store) => store.user.username);
   // const data = [
   //   { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
   //   { id: 2, avatar: "avatar.jpg", name: "Cody Christian", date: '21 July, 2022', money: "40.21" },
@@ -15,8 +17,12 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
   //   { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
   // ];
   useEffect(() => {
-    fundHistory();
-  }, [])
+    if(cash_num){
+      fundHistory();
+    }else{
+      tranHistory();
+    }
+  }, [cash_num])
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState('');
   const onChangeSearch = query => setSearchQuery(query);
@@ -41,6 +47,27 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
     setMessage(response.value);
     handleOpenModalPress();
   }
+  const tranHistory = async () => {
+    const response = await tranHistoryApi();
+    if (response.message) {
+      const mid = [];
+      for (let i = 0; i < response.value.length; i++) {
+        mid.push({
+          id: i + 1,
+          avatar: "avatar.jpg",
+          name: response.value[i].userName,
+          type: response.value[i]['asset-transaction-type'],
+          date: response.value[i]['settled-on'],
+          money: response.value[i]['unit-count'],
+        });
+      }
+      console.log(mid);
+      setData(mid);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
+  }
   return (
     <View style={styles.container}>
       <View>
@@ -54,7 +81,7 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
             >
               <Path
                 d="M20.333 8.667H4.52l4.84-5.814a1.335 1.335 0 1 0-2.053-1.706l-6.667 8c-.045.063-.085.13-.12.2 0 .066 0 .106-.093.173-.06.153-.092.316-.094.48.002.164.033.327.094.48 0 .067 0 .107.093.173.035.07.075.137.12.2l6.667 8a1.333 1.333 0 0 0 1.026.48 1.333 1.333 0 0 0 1.027-2.186l-4.84-5.814h15.813a1.333 1.333 0 1 0 0-2.666Z"
-                fill="#000"
+                fill="#fff"
               />
             </Svg>
           </TouchableOpacity>
@@ -75,7 +102,9 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
           </Svg>
         </View>
         <Searchbar
-          icon={<></>}
+          icon={TestIcon}
+          clearIcon={ClearIcon}
+          // icon={<></>}
           inputStyle={{ fontSize: theme.fontSize.smallSize }}
           style={styles.searchbar}
           elevation={0}
@@ -101,11 +130,23 @@ export default function TransactionhistoryScreen({ navigation, onView }) {
     </View>
   );
 }
+const ClearIcon=()=>null
+const TestIcon = () => <Svg
+width={20}
+height={22}
+fill="none"
+xmlns="http://www.w3.org/2000/svg"
+>
+<Path
+  d="m19.94 20.069-6.493-6.818A8.06 8.06 0 0 0 15 8.453c0-2.105-.783-4.08-2.198-5.568C11.387 1.397 9.502.578 7.5.578c-2.003 0-3.888.822-5.303 2.307C.78 4.371 0 6.348 0 8.453c0 2.103.782 4.082 2.197 5.568 1.415 1.488 3.298 2.307 5.303 2.307a7.212 7.212 0 0 0 4.567-1.628l6.493 6.815a.197.197 0 0 0 .29 0l1.09-1.142a.215.215 0 0 0 .06-.152.225.225 0 0 0-.06-.152Zm-8.48-7.458c-1.06 1.11-2.465 1.722-3.96 1.722s-2.9-.612-3.96-1.722A6 6 0 0 1 1.9 8.453c0-1.57.582-3.048 1.64-4.158C4.6 3.185 6.005 2.573 7.5 2.573s2.902.609 3.96 1.722a6 6 0 0 1 1.64 4.158c0 1.57-.583 3.048-1.64 4.158Z"
+  fill="#000"
+/>
+</Svg>
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.whiteColor,
+    backgroundColor: theme.colors.backgroundColor,
     paddingHorizontal: 19,
     paddingVertical: 45,
   },

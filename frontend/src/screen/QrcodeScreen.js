@@ -1,7 +1,6 @@
 
 import React, { useState, useRef } from 'react';
 import { StyleSheet, Image, Text, TouchableOpacity, View } from 'react-native';
-import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import PagerView from 'react-native-pager-view';
 import QRCode from 'react-native-qrcode-svg';
@@ -9,17 +8,40 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 import Button from '../components/Button';
 import Modal from 'react-native-modal';
-import { style } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes';
+import { theme } from '../core/theme';
+import { useSelector,useDispatch } from 'react-redux';
+import { settransfer } from '../redux/actions/user';
 
 export default function QrcodeScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const accountId = useSelector((store) => store.user.accountId);
+  const sendername = useSelector((store) => store.user.username);
+  const senderemail = useSelector((store) => store.user.email);
+  const [name, setName]=useState('');
+  const [email,setemail]=useState('');
   const [check, setCheck] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
-  const handleCloseModalPress = () => setIsModalVisible(false);
+  const handleCloseModalPress = () => {
+    setIsModalVisible(false);
+    navigation.navigate('SendMoneystepScreen');
+  };
   const refPageview = useRef();
   const onSuccess = e => {
-    console.log(e);
+     console.log(e);
+    try{
+      let receiver=e.data.split('||');
+    setName(receiver[1]);
+    setemail(receiver[2]);
+    dispatch(settransfer({
+      contactId: receiver[0],
+      authToken: receiver[1],
+      midvalue:receiver[2],
+    }))
     handleOpenModalPress();
+    }catch(e){
+      console.log(e);
+    }
   }
   return (
     <View style={styles.container}>
@@ -69,14 +91,14 @@ export default function QrcodeScreen({ navigation }) {
           <View style={styles.qrcode}>
             <QRCode
               style={{ borderRadius: 20 }}
-              value="John Doe’s QR Code"
+              value={`${accountId}||${sendername}||${senderemail}`}
               size={200}
               color={theme.colors.whiteColor}
               backgroundColor={theme.colors.qrcodeColor}
             />
           </View>
           <Text style={styles.mycode}>
-            John Doe’s QR Code
+            {sendername}’s QR Code
           </Text>
           <Text style={styles.description}>
             Scan the QR Code to send John a payment
@@ -102,16 +124,16 @@ export default function QrcodeScreen({ navigation }) {
             <View>
               <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
               <Text style={styles.name}>
-                Change Profile Picture
+                {name}
               </Text>
               <Text style={styles.greyid}>
-                @lisabenson94
+                {email}
               </Text>
             </View>
           </View>
           <Button onPress={handleCloseModalPress} color={theme.colors.backgroundColor} style={[styles.mannual]}>
             <Text style={[styles.bttext, { paddingHorizontal: 50 }]}>
-              Confirm
+              Next
             </Text>
           </Button>
         </View>

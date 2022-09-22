@@ -5,7 +5,6 @@ import { Searchbar } from 'react-native-paper';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import HomeCard from '../components/HomeCard';
-
 export default function ContactScreen({ navigation }) {
   const data = [
     { id: 1, avatar: "avatar.jpg", name: "Lisa Benson", date: '04 August, 2022', money: "25.95" },
@@ -49,7 +48,8 @@ export default function ContactScreen({ navigation }) {
           </Svg>
         </View>
         <Searchbar
-          icon={<></>}
+          icon={TestIcon}
+          clearIcon={ClearIcon}
           inputStyle={{ fontSize: theme.fontSize.smallSize }}
           style={styles.searchbar}
           elevation={0}
@@ -73,6 +73,18 @@ export default function ContactScreen({ navigation }) {
   );
 }
 
+const ClearIcon=()=>null
+const TestIcon = () => <Svg
+width={20}
+height={22}
+fill="none"
+xmlns="http://www.w3.org/2000/svg"
+>
+<Path
+  d="m19.94 20.069-6.493-6.818A8.06 8.06 0 0 0 15 8.453c0-2.105-.783-4.08-2.198-5.568C11.387 1.397 9.502.578 7.5.578c-2.003 0-3.888.822-5.303 2.307C.78 4.371 0 6.348 0 8.453c0 2.103.782 4.082 2.197 5.568 1.415 1.488 3.298 2.307 5.303 2.307a7.212 7.212 0 0 0 4.567-1.628l6.493 6.815a.197.197 0 0 0 .29 0l1.09-1.142a.215.215 0 0 0 .06-.152.225.225 0 0 0-.06-.152Zm-8.48-7.458c-1.06 1.11-2.465 1.722-3.96 1.722s-2.9-.612-3.96-1.722A6 6 0 0 1 1.9 8.453c0-1.57.582-3.048 1.64-4.158C4.6 3.185 6.005 2.573 7.5 2.573s2.902.609 3.96 1.722a6 6 0 0 1 1.64 4.158c0 1.57-.583 3.048-1.64 4.158Z"
+  fill="#000"
+/>
+</Svg>
 const styles = StyleSheet.create({
   container: {
     flex: 1,

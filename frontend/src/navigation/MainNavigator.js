@@ -31,6 +31,7 @@ import AchScreen from '../screen/AchScreen';
 import SendMoneystepScreen from '../screen/SendMoneystepScreen'
 import TransactionSendcompScreen from '../screen/TransactionSendcompScreen';
 import AddcashScreen from '../screen/AddcashScreen';
+import TransferMoneyScreen from '../screen/TransferMoneyScreen';
 
 const Stack = createNativeStackNavigator()
 
@@ -50,6 +51,11 @@ export function MainNavigator() {
       <Stack.Screen
         name="AddcashScreen"
         component={AddcashScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TransferMoneyScreen"
+        component={TransferMoneyScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

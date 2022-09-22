@@ -7,8 +7,6 @@ import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 import { PRIME_TRUST_URL, SERVER_URL } from '@env';
 import axios from 'axios';
-import { User } from '../module/user/User'
-import { userStore } from '../module/user/UserStore'
 import Svg, { Path, Circle } from "react-native-svg"
 import Modal from 'react-native-modal';
 import Moment from 'moment';
@@ -19,8 +17,11 @@ import CountryPicker from "react-native-region-country-picker";
 import { Picker } from '@react-native-picker/picker';
 import { signUp } from '../module/server/auth_api';
 import { post } from '../module/server/api';
+import { useSelector, useDispatch } from 'react-redux';
+import { setsort } from '../redux/actions/user';
 
 export default function SignupScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
@@ -103,7 +104,8 @@ export default function SignupScreen({ navigation }) {
         postalCode: postalcode,
         street1: street_1,
         street2: street_2,
-      }
+      },
+      dispatch
     );
     if (response === 'success') {
       navigation.navigate('FileuploadScreen');

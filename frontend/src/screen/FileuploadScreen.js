@@ -5,12 +5,13 @@ import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import Button from '../components/Button';
 import DocumentPicker from 'react-native-document-picker';
-import { userStore } from '../module/user/UserStore';
 import Modal from 'react-native-modal';
 import { Picker } from '@react-native-picker/picker';
 import { uploadImageApi } from '../module/server/auth_api';
+import { useSelector,useDispatch } from 'react-redux';
 
 export default function FileuploadScreen({ navigation }) {
+  const id = useSelector((store) => store.user.id);
   const [selected, setSelected] = useState(['', '']);
   const [success, setSuccess] = useState(false);
   const [front, setFront] = useState(null);
@@ -121,7 +122,8 @@ export default function FileuploadScreen({ navigation }) {
     const data = new FormData();
     data.append('kycdoc', file);
     data.append('type', region + name);
-    data.append('userId', userStore.user.id);
+    data.append('userId', id);
+    console.log(id);
     const response = await uploadImageApi(
       data
     );

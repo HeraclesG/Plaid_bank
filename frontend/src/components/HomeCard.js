@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   name: {
-    color: theme.colors.blackColor,
+    color: theme.colors.whiteColor,
     fontSize: theme.fontSize.content0,
     fontWeight: theme.fontWeight.normal
   },
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     fontWeight: theme.fontWeight.normal
   },
   money: {
-    color: theme.colors.lightgreytextColor,
+    color: theme.colors.whiteColor,
     fontSize: theme.fontSize.content0,
     fontWeight: theme.fontWeight.normal
   },

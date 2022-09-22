@@ -7,39 +7,16 @@
  */
 
 import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-import { LoginNavigator } from './src/navigation/LoginNavigator';
-import { NavigationContainer } from '@react-navigation/native';
-import { useInitUser, userStore } from './src/module/user/UserStore';
-import { MainNavigator } from './src/navigation/MainNavigator';
-import { PinNavigator } from './src/navigation/PinNavigator'
-import { observer } from 'mobx-react-lite';
+import NavigatorSwitch from './src/navigation/NavigatorSwitch';
+import { Provider } from 'react-redux';
+import {store} from './src/redux/store';
 
 
 
 export default App = () => {
-  useInitUser();
   return (
-    <NavigationContainer>
-      <NavigatorSwitch />
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigatorSwitch/>
+    </Provider>
   );
 };
-const NavigatorSwitch = observer(() => {
-  // console.log(userStore.user);
-  if (!userStore.user || userStore.user.permission == 0) {   //auth funcc
-    return <LoginNavigator />
-  } else if (userStore.user.permission == 1) {
-    return <PinNavigator />
-  } else {
-    return <MainNavigator />
-  }
-})

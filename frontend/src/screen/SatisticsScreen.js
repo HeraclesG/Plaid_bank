@@ -18,7 +18,7 @@ export default function SatisticsScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => { navigation.goBack }}>
+        <TouchableOpacity onPress={() => { navigation.goBack() }} style={{zIndex:1}}>
           <Svg
             width={22}
             height={20}
@@ -27,7 +27,7 @@ export default function SatisticsScreen({ navigation }) {
           >
             <Path
               d="M20.333 8.667H4.52l4.84-5.814a1.335 1.335 0 1 0-2.053-1.706l-6.667 8c-.045.063-.085.13-.12.2 0 .066 0 .106-.093.173-.06.153-.092.316-.094.48.002.164.033.327.094.48 0 .067 0 .107.093.173.035.07.075.137.12.2l6.667 8a1.333 1.333 0 0 0 1.026.48 1.333 1.333 0 0 0 1.027-2.186l-4.84-5.814h15.813a1.333 1.333 0 1 0 0-2.666Z"
-              fill="#141414"
+              fill="#fff"
             />
           </Svg>
         </TouchableOpacity>
@@ -35,7 +35,7 @@ export default function SatisticsScreen({ navigation }) {
           Statistics
         </Text>
       </View>
-      <Text style={styles.text}>
+      <Text style={styles.activity}>
         Activity
       </Text>
       <View style={styles.buttongroup}>
@@ -84,10 +84,10 @@ export default function SatisticsScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.whiteColor,
+    backgroundColor: theme.colors.backgroundColor,
     paddingTop: 45,
-    marginLeft: 30,
-    marginRight: 30,
+    paddingLeft: 30,
+    paddingRight: 30,
   },
   header: {
     width: '100%',
@@ -97,15 +97,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    position: 'absolute',
+    position:'absolute',
     width: '100%',
     textAlign: 'center',
-    color: theme.colors.backgroundColor,
+    color: theme.colors.whiteColor,
+    fontSize: theme.fontSize.subtitle,
+    fontWeight: theme.fontWeight.normal,
+  },
+  activity: {
+    paddingTop:30,
+    width: '100%',
+    textAlign: 'left',
+    color: theme.colors.whiteColor,
     fontSize: theme.fontSize.subtitle,
     fontWeight: theme.fontWeight.normal,
   },
   buttongroup: {
-    marginTop: 50,
+    marginTop: 20,
     position: 'relative',
     width: '100%',
     height: 39,
@@ -138,6 +146,7 @@ const styles = StyleSheet.create({
     color: theme.colors.whiteColor
   },
   spent: {
+    color:'#CACACA',
     textAlign: 'center',
     marginTop: 'auto',
     marginBottom: 'auto',
@@ -154,7 +163,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   body: {
-    backgroundColor: theme.colors.homebackgroundColor,
+    backgroundColor: theme.colors.backgroundColor,
   },
   row: {
     height: 60,
@@ -165,12 +174,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 17,
   },
   recent: {
-    color: theme.colors.blackColor,
+    color: theme.colors.whiteColor,
     fontSize: theme.fontSize.subtitle1,
     fontWeight: theme.fontWeight.normal,
   },
   all: {
-    color: theme.colors.lightgreytextColor,
+    color: theme.colors.whiteColor,
     fontSize: theme.fontSize.content0,
     fontWeight: theme.fontWeight.normal,
   },

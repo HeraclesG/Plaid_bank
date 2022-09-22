@@ -7,14 +7,15 @@ import Svg, { Path } from "react-native-svg";
 import HomeCard from '../components/HomeCard';
 import SwitchCurrency from '../components/SwitchCurrency';
 import DocumentPicker from 'react-native-document-picker';
-import { fundBalanceApi, fundSHistoryApi, getAssetBalanceApi } from '../module/server/home_api';
-import { userStore } from '../module/user/UserStore';
-import { User } from '../module/user/User';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { fundBalanceApi, tranSHistoryApi, fundSHistoryApi, getAssetBalanceApi } from '../module/server/home_api';
 export default function HomeScreen({ navigation, onView }) {
+ 
+  const username = useSelector((store) => store.user.username);
+  const sort = useSelector((store) => store.user.cash_num);
+  const midprice = useSelector((store) => store.user.midprice);
   const [data, setData] = useState([]);
   const refRBSheet = useRef();
-  const [sort, setSort] = useState(userStore.user.cash_num);
   const [singleFile, setSingleFile] = useState(null);
   const [message, setMessage] = useState('aaa');
   const [currentval, setVal] = useState('');
@@ -23,15 +24,15 @@ export default function HomeScreen({ navigation, onView }) {
       fundBalance();
       fundSHistory();
     } else {
-      console.log('first');
       getAssetBalance();
+      tranSHistory();
     }
-  }, [sort])
+  }, [sort,midprice])
   const getAssetBalance = async () => {
     const response = await getAssetBalanceApi();
     if (response.message) {
       console.log('success');
-      // setVal('$' + response.value);
+      setVal(response.value + 'USDC');
       return;
     }
     setMessage(response.value);
@@ -58,6 +59,27 @@ export default function HomeScreen({ navigation, onView }) {
     setMessage(response.value);
     handleOpenModalPress();
   }
+  const tranSHistory = async () => {
+    const response = await tranSHistoryApi();
+    if (response.message) {
+      const mid = [];
+      for (let i = 0; i < response.value.length; i++) {
+        mid.push({
+          id: i + 1,
+          avatar: "avatar.jpg",
+          name: response.value[i].userName,
+          type: response.value[i]['asset-transfer-type'],
+          date: response.value[i]['settled-on'],
+          money: response.value[i]['unit-count'],
+        });
+      }
+      console.log(mid);
+      setData(mid);
+      return;
+    }
+    setMessage(response.value);
+    handleOpenModalPress();
+  }
   const fundBalance = async () => {
     const response = await fundBalanceApi();
     if (response.message) {
@@ -75,7 +97,7 @@ export default function HomeScreen({ navigation, onView }) {
           <View style={styles.avatargroup}>
             <Image style={styles.avatar} source={require('../assets/avatar.jpg')} />
             <View style={styles.textgroup}>
-              <Text style={styles.name}>Hello {userStore.user.username}</Text>
+              <Text style={styles.name}>Hello {username}</Text>
               <Text style={styles.welcome}>Welcome Back</Text>
             </View>
           </View>
@@ -97,7 +119,7 @@ export default function HomeScreen({ navigation, onView }) {
           </View>
         </View>
         <TouchableOpacity style={styles.cashwallet} onPress={() => refRBSheet.current.open()}>
-          <Text style={styles.cahshtext}>Cash Wallet</Text>
+          <Text style={styles.cahshtext}>{sort?'Cash':'Crypto'} Wallet</Text>
           <Svg
             width={15}
             height={9}
@@ -122,15 +144,7 @@ export default function HomeScreen({ navigation, onView }) {
             }
           }}
         >
-          <SwitchCurrency sort={sort} setSort={(flag) => {
-            setSort(flag);
-            const loginResponse = {
-              ...userStore.user,
-              cash_num: data.flag,
-            }
-            const user = User.fromJson(loginResponse, loginResponse.email);
-            userStore.setUser(user);
-          }} onPress={() => { refRBSheet.current.close() }} />
+          <SwitchCurrency onPress={() => { refRBSheet.current.close() }} />
         </RBSheet>
         <Text style={styles.currentval}>
           Current Balance
@@ -141,11 +155,11 @@ export default function HomeScreen({ navigation, onView }) {
       </ImageBackground>
       <View style={styles.group0}>
         <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button} onPress={() => {
+          <TouchableOpacity style={styles.button} onPress={async () => {
             if (sort) {
-              navigation.navigate('AddmoneyScreen');
+              await navigation.navigate('AddmoneyScreen');
             } else {
-              navigation.navigate('AddcashScreen');
+              await navigation.navigate('AddcashScreen');
             }
           }}>
             <Svg
@@ -183,7 +197,7 @@ export default function HomeScreen({ navigation, onView }) {
           </Text>
         </View>
         <View style={styles.buttonzip}>
-          <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('TransferScreen'); }}>
+          <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('TransferMoneyScreen'); }}>
             <Svg
               width={25}
               height={24}
@@ -301,7 +315,7 @@ export default function HomeScreen({ navigation, onView }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.homebackgroundColor,
+    backgroundColor: theme.colors.backgroundColor,
   },
   header: {
     backgroundColor: theme.colors.backgroundColor,
@@ -380,6 +394,7 @@ const styles = StyleSheet.create({
     fontWeight: theme.fontWeight.normal,
   },
   group0: {
+    zIndex:1,
     paddingHorizontal: '3%',
     position: 'absolute',
     width: '100%',
@@ -404,7 +419,7 @@ const styles = StyleSheet.create({
   button: {
     width: 74,
     height: 74,
-    backgroundColor: theme.colors.pinbackColor,
+    backgroundColor: theme.colors.buttonYColor,
     borderRadius: 74,
     justifyContent: 'center',
     alignItems: 'center'
@@ -412,13 +427,13 @@ const styles = StyleSheet.create({
   text: {
     marginTop: 14,
     textAlign: 'center',
-    color: theme.colors.blackColor,
+    color: theme.colors.whiteColor,
     fontSize: theme.fontSize.content0,
     fontWeight: theme.fontWeight.normal,
   },
   body: {
-    marginTop: 80,
-    backgroundColor: theme.colors.homebackgroundColor,
+    paddingTop: 80,
+    backgroundColor: theme.colors.backgroundColor,
   },
   row: {
     height: 60,
@@ -429,7 +444,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 17,
   },
   recent: {
-    color: theme.colors.blackColor,
+    color: theme.colors.whiteColor,
     fontSize: theme.fontSize.subtitle1,
     fontWeight: theme.fontWeight.normal,
   },
@@ -440,5 +455,6 @@ const styles = StyleSheet.create({
   },
   list: {
     marginHorizontal: 17,
+    backgroundColor:theme.colors.backgroundColor
   }
 });

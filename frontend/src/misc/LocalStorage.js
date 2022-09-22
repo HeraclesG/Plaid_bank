@@ -28,6 +28,7 @@ export class LocalStorage {
         userParsed.midvalue,
         userParsed.midprice,
         userParsed.cash_num,
+        userParsed.accountId,
         userParsed.permission
       )
     })

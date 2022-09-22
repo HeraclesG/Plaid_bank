@@ -8,8 +8,6 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import PaymentBottom from '../components/PaymentBottom';
 import PaymentAdd from '../components/PaymentAdd';
 import axios from 'axios';
-import { User } from '../module/user/User'
-import { userStore } from '../module/user/UserStore'
 
 export default function SelectaccountScreen({ navigation }) {
   const data = [
