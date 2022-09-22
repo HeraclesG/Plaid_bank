@@ -29,7 +29,25 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
-  return User.findById(id);
+  return User.findById(id).select([
+    "email",
+    "accountId",
+    "contactId",
+    "userName",
+    "firstName",
+    "lastName",
+  ]);
+};
+
+const getUserByUserName = async (userName) => {
+  return User.findOne({userName}).select([
+    "email",
+    "accountId",
+    "contactId",
+    "userName",
+    "firstName",
+    "lastName",
+  ]);
 };
 
 /**
@@ -87,8 +105,7 @@ const searchUser = async (keyword) => {
       },
       { isVerified: true },
     ],
-  });
-  // .select(["email", "accountId", "contactId", "userName"]);
+  }).select(["email", "accountId", "contactId", "userName"]);
   return candidates;
 };
 
@@ -105,8 +122,7 @@ const searchMyUser = async (keyword, email) => {
       },
       { isVerified: true },
     ],
-  });
-  // .select(["email", "accountId", "contactId", "userName"]);
+  }).select(["email", "accountId", "contactId", "userName"]);
   return candidates;
 };
 
@@ -115,7 +131,7 @@ const searchOtherUser = async (keyword, email) => {
     $and: [
       {
         $or: [
-          { email: { $regex: keyword, $options: "i", $ne: email} },
+          { email: { $regex: keyword, $options: "i", $ne: email } },
           { userName: { $regex: keyword, $options: "i" } },
           { firstName: { $regex: keyword, $options: "i" } },
           { lastName: { $regex: keyword, $options: "i" } },
@@ -123,8 +139,7 @@ const searchOtherUser = async (keyword, email) => {
       },
       { isVerified: true },
     ],
-  });
-  // .select(["email", "accountId", "contactId", "userName"]);
+  }).select(["email", "accountId", "contactId", "userName"]);
   return candidates;
 };
 
@@ -137,4 +152,5 @@ module.exports = {
   searchUser,
   searchMyUser,
   searchOtherUser,
+  getUserByUserName,
 };
