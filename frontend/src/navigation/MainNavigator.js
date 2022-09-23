@@ -33,6 +33,7 @@ import TransactionSendcompScreen from '../screen/TransactionSendcompScreen';
 import AddcashScreen from '../screen/AddcashScreen';
 import TransferMoneyScreen from '../screen/TransferMoneyScreen';
 import TransactionDetailScreen from '../screen/TransactionDetailScreen';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator()
 
@@ -162,7 +163,7 @@ function MaineScreen() {
     }
   }
   return (
-    <Tab.Navigator
+     <Tab.Navigator
       screenListeners={{
         state: (e) => {
           setIndex(e.data.state.index);
@@ -177,7 +178,7 @@ function MaineScreen() {
         tabBarStyle: {
           height: 80,
           backgroundColor: theme.colors.backgroundColor,
-          borderWidth: 0
+          borderWidth: 0,
         }
       }}
     >
@@ -186,7 +187,7 @@ function MaineScreen() {
         component={ChangeHomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View style={index == 0 ? styles.active : ''}>
+            <View style={index == 0 ? styles.active : { marginTop:25,}}>
               <Svg
                 width={20}
                 height={20}
@@ -207,7 +208,7 @@ function MaineScreen() {
         component={SatisticsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View style={index == 1 ? styles.active : ''}>
+            <View style={index == 1 ? styles.active : { marginTop:25,}}>
               <Svg
                 width={20}
                 height={20}
@@ -250,7 +251,7 @@ function MaineScreen() {
         component={ContactScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View style={index == 3 ? styles.active : ''}>
+            <View style={index == 3 ? styles.active : { marginTop:25,}}>
               <Svg
                 width={22}
                 height={20}
@@ -274,7 +275,7 @@ function MaineScreen() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View style={index == 4 ? styles.active : ''}>
+            <View style={index == 4 ? styles.active : { marginTop:25,}}>
               <Svg
                 width={28}
                 height={28}
@@ -304,6 +305,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.bottomColor,
     paddingHorizontal: 20,
     justifyContent: 'center',
+    marginTop:25,
     marginBottom: 10,
     borderTopWidth: 5,
     borderTopColor: theme.colors.whiteColor

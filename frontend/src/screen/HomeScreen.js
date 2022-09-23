@@ -391,14 +391,16 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   notify: {
+    overflow:'hidden',
     width: 22,
     height: 22,
     fontWeight: theme.fontWeight.bold,
     backgroundColor: theme.colors.redColor,
-    borderRadius: 22,
+    borderRadius: 12,
     color: theme.colors.whiteColor,
     position: 'absolute',
     textAlign: 'center',
+    justifyContent:'center',
     right: -10,
     top: -10,
   },

@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.greytextColor,
     shadowColor: theme.colors.blackColor,
-    shadowOpacity: 0.8,
+    shadowOpacity: 0,
     shadowRadius: 2,
     shadowOffset: {
       height: 20,

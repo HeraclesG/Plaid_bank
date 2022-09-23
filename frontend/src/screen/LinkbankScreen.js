@@ -35,7 +35,7 @@ export default function LinkbankScreen({ navigation }) {
           </Text>
         </View>
         <Button onPress={() => { }} color={theme.colors.backgroundColor} style={styles.plaid}>
-          <Image source={require('../assets/link.png')} style={styles.iconSend} />
+          {/* <Image source={require('../assets/link.png')} style={styles.iconSend} /> */}
         </Button>
         <Button onPress={() => { navigation.navigate('LinkbankLoginScreen'); }} color={theme.colors.backgroundColor} style={styles.mannual}>
           <Text style={styles.bttext}>

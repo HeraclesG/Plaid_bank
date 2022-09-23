@@ -8,6 +8,7 @@
 
 import React from 'react';
 import NavigatorSwitch from './src/navigation/NavigatorSwitch';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import {store} from './src/redux/store';
 
@@ -16,7 +17,9 @@ import {store} from './src/redux/store';
 export default App = () => {
   return (
     <Provider store={store}>
-      <NavigatorSwitch/>
-    </Provider>
+      <SafeAreaProvider>
+       <NavigatorSwitch/>
+      </SafeAreaProvider>
+      </Provider>
   );
 };
