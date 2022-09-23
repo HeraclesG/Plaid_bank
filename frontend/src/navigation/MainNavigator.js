@@ -2,7 +2,7 @@ import {
   createNativeStackNavigator
 } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet,Platform, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Path, Circle } from "react-native-svg"
 import { theme } from '../core/theme';
 import React, { useState } from 'react';
@@ -187,7 +187,7 @@ function MaineScreen() {
         component={ChangeHomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View style={index == 0 ? styles.active : { marginTop:25,}}>
+            <View style={index == 0 ? styles.active :Platform.OS==='ios'? { marginTop:25,}:''}>
               <Svg
                 width={20}
                 height={20}
@@ -208,7 +208,7 @@ function MaineScreen() {
         component={SatisticsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View style={index == 1 ? styles.active : { marginTop:25,}}>
+            <View style={index == 1 ? styles.active :Platform.OS==='ios'? { marginTop:25,}:''}>
               <Svg
                 width={20}
                 height={20}
@@ -251,7 +251,7 @@ function MaineScreen() {
         component={ContactScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View style={index == 3 ? styles.active : { marginTop:25,}}>
+            <View style={index == 3 ? styles.active :Platform.OS==='ios'? { marginTop:25,}:''}>
               <Svg
                 width={22}
                 height={20}
@@ -275,7 +275,7 @@ function MaineScreen() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <View style={index == 4 ? styles.active : { marginTop:25,}}>
+            <View style={index == 4 ? styles.active :Platform.OS==='ios'? { marginTop:25,}:''}>
               <Svg
                 width={28}
                 height={28}
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.bottomColor,
     paddingHorizontal: 20,
     justifyContent: 'center',
-    marginTop:25,
+    marginTop:Platform.OS==='ios'?25:5,
     marginBottom: 10,
     borderTopWidth: 5,
     borderTopColor: theme.colors.whiteColor
