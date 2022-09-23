@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text,ScrollView, View } from 'react-native';
 import { theme } from '../core/theme';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
@@ -40,7 +40,7 @@ export default function LoginScreen({ navigation }) {
     handleOpenModalPress();
   };
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>
           Welcome Back
@@ -126,7 +126,7 @@ export default function LoginScreen({ navigation }) {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

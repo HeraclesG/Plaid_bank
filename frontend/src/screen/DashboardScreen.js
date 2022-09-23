@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet,ScrollView, Text, View } from 'react-native';
 import Button from '../components/Button';
 import { theme } from '../core/theme';
 import { ViewPager } from 'react-native-viewpager-carousel'
@@ -38,7 +38,7 @@ export default function DashboardScreen({ navigation }) {
   ]
   const [index, setIndex] = useState(1);
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.pageview}>
         <ViewPager
           onPageChange={(index) => {
@@ -66,7 +66,7 @@ export default function DashboardScreen({ navigation }) {
           </Text>
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

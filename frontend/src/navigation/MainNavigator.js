@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.bottomColor,
     paddingHorizontal: 20,
     justifyContent: 'center',
-    marginTop:Platform.OS==='ios'?25:5,
+    marginTop:5,
     marginBottom: 10,
     borderTopWidth: 5,
     borderTopColor: theme.colors.whiteColor
