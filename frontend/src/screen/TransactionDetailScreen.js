@@ -9,11 +9,12 @@ import TextInput from '../components/TextInput';
 import Modal from 'react-native-modal';
 import Svg, { Path, Circle } from "react-native-svg"
 import { useSelector, useDispatch } from 'react-redux';
-import { transDetailApi } from '../module/server/home_api';
+import { transDetailApi,transferasset } from '../module/server/home_api';
 import LoadingCard from '../components/LoadingCard';
 
 
 export default function TransactionDetailScreen({ navigation }) {
+  const dispatch=useDispatch();
   const handleOpenModalPress = () => setIsModalVisible(true);
   const handleCloseModalPress = () => setIsModalVisible(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -96,7 +97,14 @@ export default function TransactionDetailScreen({ navigation }) {
               </Svg>  
             </Button>
             <View style={{width:10}}></View>
-            <Button onPress={()=>{}} color={theme.colors.backgroundColor} style={styles.mannual2}>
+            <Button onPress={()=>{
+              dispatch(transferasset({
+                contactId: info.accountId,
+                authToken: username,
+                midvalue: info.email,
+              }));
+              navigation.navigate('SendMoneystepScreen');
+            }} color={theme.colors.backgroundColor} style={styles.mannual2}>
               <Text style={styles.bttext}>
                 Send Money
               </Text>  
